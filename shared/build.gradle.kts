@@ -124,11 +124,16 @@ kotlin {
         val sqlCipherHeadersPath = sqlCipherRoot
             .resolve("ios-arm64_x86_64-simulator/SQLCipher.framework/Headers")
             .absolutePath
+        val sqlCipherInteropHeadersPath = project.file("src/nativeInterop/cinterop").absolutePath
 
         compilations.getByName("main") {
             cinterops.create("BettamindSqlCipher") {
                 defFile(project.file("src/nativeInterop/cinterop/BettamindSqlCipher.def"))
-                compilerOpts("-I$sqlCipherHeadersPath", "-DSQLITE_HAS_CODEC")
+                compilerOpts(
+                    "-I$sqlCipherInteropHeadersPath",
+                    "-I$sqlCipherHeadersPath",
+                    "-DSQLITE_HAS_CODEC",
+                )
             }
         }
 

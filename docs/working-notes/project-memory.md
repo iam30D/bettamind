@@ -120,6 +120,11 @@ Codemagic `ios-simulator-unsigned` validation on macOS.
   SQLCipher store behaviour and Keychain key-manager replacement/deletion.
 - `iosApp.xcodeproj` now links the pinned `SQLCipher.swift` package product,
   and Codemagic now resolves Swift packages before `xcodebuild`.
+- Codemagic `ios-simulator-unsigned` for commit `7704ad7` failed in
+  `:shared:cinteropBettamindSqlCipherIosSimulatorArm64` because cinterop could
+  not find `BettamindSqlCipher.h`. The Gradle cinterop compiler options now add
+  `shared/src/nativeInterop/cinterop` before the SQLCipher framework header
+  path.
 
 ## Important files
 
@@ -164,6 +169,10 @@ Codemagic `ios-simulator-unsigned` validation on macOS.
   now succeeds on Windows by skipping disabled iOS cinterop targets.
 - `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --stacktrace`
   now succeeds on Windows by skipping disabled iOS cinterop targets.
+- `.\gradlew.bat phaseThreeCheck --no-daemon --stacktrace` passed after the
+  cinterop include-path fix.
+- `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --stacktrace`
+  passed after the include-path fix; Windows still skips the iOS cinterop target.
 - `backend\.venv\Scripts\ruff.exe check .`
 - `backend\.venv\Scripts\mypy.exe app`
 - `backend\.venv\Scripts\pytest.exe`
@@ -208,7 +217,7 @@ Codemagic `ios-simulator-unsigned` validation on macOS.
 
 ## Next approved task
 
-Commit and push the iOS SQLCipher completion slice, then have the owner rerun
+Commit and push the cinterop include-path fix, then have the owner rerun
 Codemagic `ios-simulator-unsigned`. If Codemagic passes, update memory to mark
-Phase 3 encrypted-storage proof complete. If it fails, fix the macOS native
+Phase 3 encrypted-storage proof complete. If it fails, fix the next macOS native
 compile/link/test issue before continuing. Do not begin Phase 5 automatically.
