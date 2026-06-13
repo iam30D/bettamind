@@ -8,7 +8,7 @@ storage work. Phase 4 remains intentionally in-memory for personal narrative
 content until encrypted storage is fully validated. Phase 3 now has a selected
 iOS SQLCipher route and adapter source, but completion still requires
 Codemagic `ios-simulator-unsigned` validation on macOS after the latest
-Kotlin/Native iOS file-size conversion fix.
+iOS Keychain query-construction fix.
 
 ## Locked decisions
 
@@ -153,6 +153,19 @@ Kotlin/Native iOS file-size conversion fix.
 - `IosSqlCipherEncryptedRecordStore` now converts `fread` and `fwrite` byte
   counts into explicit `platform.posix.size_t` variables before calling and
   comparing POSIX results.
+- Codemagic `ios-simulator-unsigned` for commit `d99cf09` compiled, linked and
+  started `:shared:iosSimulatorArm64Test`; 17 of 18 tests passed. The remaining
+  failure was
+  `IosEncryptedStorageIntegrationTest.keychainManagerStoresReplacesAndDeletesDatabaseKey`,
+  where the real iOS Keychain adapter reported encrypted storage unavailable.
+- `IosKeychainStorageKeyManager` now builds Security.framework queries with
+  CoreFoundation type dictionary callbacks instead of null callbacks, sets
+  `kSecUseDataProtectionKeychain` explicitly, and attaches OSStatus details as
+  the cause for Keychain failures. This keeps the adapter fail-closed and does
+  not add fallback key storage.
+- The iOS Keychain integration test now wraps Keychain operations with a
+  stricter diagnostic helper so any remaining simulator failure reports the
+  underlying OSStatus cause instead of an opaque `StoreUnavailable`.
 
 ## Important files
 
@@ -224,6 +237,22 @@ Kotlin/Native iOS file-size conversion fix.
 - `.\gradlew.bat :shared:compileKotlinIosSimulatorArm64 --no-daemon --stacktrace`
   completed on Windows after the `size_t` fix, with iOS Native targets still
   disabled because cinterop cannot be processed on `mingw_x64`.
+- Temporary Kotlin/Native compiler probe:
+  `kotlinc-native.bat .codex-scratch\IosKeychainProbe.kt -target ios_simulator_arm64 -produce library -o .codex-scratch\ios-keychain-probe`
+  passed with CoreFoundation type dictionary callbacks and
+  `kSecUseDataProtectionKeychain`; the scratch files were removed and were not
+  committed.
+- `.\gradlew.bat phaseThreeCheck --no-daemon --stacktrace` passed after the iOS
+  Keychain query-construction fix.
+- `.\gradlew.bat :shared:compileKotlinIosSimulatorArm64 --no-daemon --stacktrace`
+  completed on Windows after the Keychain fix, with iOS Native targets still
+  disabled because cinterop cannot be processed on `mingw_x64`.
+- `.\gradlew.bat phaseThreeCheck --no-daemon --stacktrace` passed after the
+  Keychain test diagnostic helper was added.
+- `.\gradlew.bat :shared:compileKotlinIosSimulatorArm64 --no-daemon --stacktrace`
+  completed on Windows after the Keychain test diagnostic helper was added,
+  with iOS Native targets still disabled because cinterop cannot be processed
+  on `mingw_x64`.
 - `backend\.venv\Scripts\ruff.exe check .`
 - `backend\.venv\Scripts\mypy.exe app`
 - `backend\.venv\Scripts\pytest.exe`
@@ -271,8 +300,9 @@ Kotlin/Native iOS file-size conversion fix.
 
 ## Next approved task
 
-Commit and push the explicit iOS `size_t` conversion fix, then have the owner
+Commit and push the iOS Keychain query-construction fix, then have the owner
 rerun Codemagic `ios-simulator-unsigned`. If Codemagic passes, update memory to
-mark Phase 3 encrypted-storage proof complete. If it fails, fix the next macOS
-native compile/link/test issue before continuing. Do not begin Phase 5
-automatically.
+mark Phase 3 encrypted-storage proof complete. If it still fails with a
+Keychain OSStatus, use that status to decide whether the Kotlin/Native
+standalone simulator test binary needs test-only entitlements. Do not begin
+Phase 5 automatically.

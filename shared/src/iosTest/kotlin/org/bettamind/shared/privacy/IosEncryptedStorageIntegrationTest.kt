@@ -6,6 +6,7 @@ import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
+import kotlin.test.fail
 import platform.Foundation.NSTemporaryDirectory
 import platform.posix.remove
 
@@ -53,21 +54,42 @@ class IosEncryptedStorageIntegrationTest {
     fun keychainManagerStoresReplacesAndDeletesDatabaseKey() {
         val service = "org.bettamind.test.${Random.nextInt()}"
         val manager = IosKeychainStorageKeyManager(service = service, account = "sqlcipher-key")
+        var keychainAvailable = false
         try {
-            val first = manager.loadOrCreateDatabaseKey()
-            val second = manager.loadOrCreateDatabaseKey()
+            val first = keychainOperation("load first database key") {
+                manager.loadOrCreateDatabaseKey()
+            }
+            keychainAvailable = true
+            val second = keychainOperation("load existing database key") {
+                manager.loadOrCreateDatabaseKey()
+            }
             assertContentEquals(first.copyBytes(), second.copyBytes())
 
             val replacement = key(9)
-            manager.replaceDatabaseKey(replacement)
-            val afterReplacement = manager.loadOrCreateDatabaseKey()
+            keychainOperation("replace database key") {
+                manager.replaceDatabaseKey(replacement)
+            }
+            val afterReplacement = keychainOperation("load replacement database key") {
+                manager.loadOrCreateDatabaseKey()
+            }
             assertContentEquals(replacement.copyBytes(), afterReplacement.copyBytes())
 
-            manager.deleteDatabaseKey()
-            val recreated = manager.loadOrCreateDatabaseKey()
-            assertContentEquals(recreated.copyBytes(), manager.loadOrCreateDatabaseKey().copyBytes())
+            keychainOperation("delete database key") {
+                manager.deleteDatabaseKey()
+            }
+            val recreated = keychainOperation("recreate database key") {
+                manager.loadOrCreateDatabaseKey()
+            }
+            val reloaded = keychainOperation("reload recreated database key") {
+                manager.loadOrCreateDatabaseKey()
+            }
+            assertContentEquals(recreated.copyBytes(), reloaded.copyBytes())
         } finally {
-            manager.deleteDatabaseKey()
+            if (keychainAvailable) {
+                keychainOperation("cleanup database key") {
+                    manager.deleteDatabaseKey()
+                }
+            }
         }
     }
 
@@ -100,4 +122,11 @@ class IosEncryptedStorageIntegrationTest {
         val random = Random(seed)
         return StorageKeyMaterial.fromBytes(ByteArray(32) { random.nextInt(0, 256).toByte() })
     }
+
+    private fun <T> keychainOperation(operation: String, block: () -> T): T =
+        try {
+            block()
+        } catch (exception: EncryptedStorageException.StoreUnavailable) {
+            fail("iOS Keychain $operation failed: ${exception.cause?.message ?: exception.message}")
+        }
 }

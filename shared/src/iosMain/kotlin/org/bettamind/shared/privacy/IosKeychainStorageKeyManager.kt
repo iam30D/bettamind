@@ -14,6 +14,8 @@ import platform.CoreFoundation.CFTypeRefVar
 import platform.CoreFoundation.kCFAllocatorDefault
 import platform.CoreFoundation.kCFBooleanTrue
 import platform.CoreFoundation.kCFStringEncodingUTF8
+import platform.CoreFoundation.kCFTypeDictionaryKeyCallBacks
+import platform.CoreFoundation.kCFTypeDictionaryValueCallBacks
 import platform.Security.SecItemAdd
 import platform.Security.SecItemCopyMatching
 import platform.Security.SecItemDelete
@@ -31,6 +33,7 @@ import platform.Security.kSecMatchLimit
 import platform.Security.kSecMatchLimitOne
 import platform.Security.kSecRandomDefault
 import platform.Security.kSecReturnData
+import platform.Security.kSecUseDataProtectionKeychain
 import platform.Security.kSecValueData
 import platform.darwin.OSStatus
 import platform.posix.memcpy
@@ -47,7 +50,7 @@ class IosKeychainStorageKeyManager(
         return try {
             val status = SecItemAdd(baseQuery().withValueData(key), null)
             if (status != errSecSuccess) {
-                throw EncryptedStorageException.StoreUnavailable()
+                throw keychainUnavailable("add database key", status)
             }
             StorageKeyMaterial.fromBytes(key)
         } finally {
@@ -63,10 +66,10 @@ class IosKeychainStorageKeyManager(
             if (status == errSecItemNotFound) {
                 val addStatus = SecItemAdd(baseQuery().withValueData(keyBytes), null)
                 if (addStatus != errSecSuccess) {
-                    throw EncryptedStorageException.StoreUnavailable()
+                    throw keychainUnavailable("add replacement database key", addStatus)
                 }
             } else if (status != errSecSuccess) {
-                throw EncryptedStorageException.StoreUnavailable()
+                throw keychainUnavailable("update database key", status)
             }
         } finally {
             keyBytes.fill(0)
@@ -76,7 +79,7 @@ class IosKeychainStorageKeyManager(
     override fun deleteDatabaseKey() {
         val status = SecItemDelete(baseQuery())
         if (status != errSecSuccess && status != errSecItemNotFound) {
-            throw EncryptedStorageException.StoreUnavailable()
+            throw keychainUnavailable("delete database key", status)
         }
     }
 
@@ -94,7 +97,7 @@ class IosKeychainStorageKeyManager(
                 ?: throw EncryptedStorageException.StoreUnavailable()
 
             errSecItemNotFound -> null
-            else -> throw EncryptedStorageException.StoreUnavailable()
+            else -> throw keychainUnavailable("read database key", status)
         }
     }
 
@@ -104,10 +107,16 @@ class IosKeychainStorageKeyManager(
             setValue(kSecAttrService, service.toCfString())
             setValue(kSecAttrAccount, account.toCfString())
             setValue(kSecAttrAccessible, kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly)
+            setValue(kSecUseDataProtectionKeychain, kCFBooleanTrue)
         }
 
     private fun mutableDictionary(): CFMutableDictionaryRef =
-        CFDictionaryCreateMutable(kCFAllocatorDefault, 0, null, null)
+        CFDictionaryCreateMutable(
+            kCFAllocatorDefault,
+            0,
+            kCFTypeDictionaryKeyCallBacks.ptr,
+            kCFTypeDictionaryValueCallBacks.ptr,
+        )
             ?: throw EncryptedStorageException.StoreUnavailable()
 
     private fun CFMutableDictionaryRef.withValueData(bytes: ByteArray): CFMutableDictionaryRef =
@@ -131,7 +140,7 @@ class IosKeychainStorageKeyManager(
             SecRandomCopyBytes(kSecRandomDefault, size.convert(), it.addressOf(0))
         }
         if (status != errSecSuccess) {
-            throw EncryptedStorageException.StoreUnavailable()
+            throw keychainUnavailable("generate random database key", status)
         }
         return bytes
     }
@@ -149,3 +158,8 @@ class IosKeychainStorageKeyManager(
         private const val SqlCipherKeyBytes = 32
     }
 }
+
+private fun keychainUnavailable(operation: String, status: OSStatus): EncryptedStorageException.StoreUnavailable =
+    EncryptedStorageException.StoreUnavailable(
+        IllegalStateException("iOS Keychain $operation failed with OSStatus $status."),
+    )
