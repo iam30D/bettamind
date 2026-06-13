@@ -76,6 +76,10 @@ long raw logs in it.
 - Maintain a valid minimal `iosApp` Xcode project.
 - Keep native integrations behind shared interfaces and platform adapters.
 - Store Apple signing material only in Codemagic secure credentials.
+- After pushing a commit that changes shared Kotlin, Compose resources,
+  `iosApp`, Gradle configuration that can affect iOS, or Codemagic iOS
+  workflow files, remind the owner to run Codemagic `ios-simulator-unsigned`
+  against the pushed commit SHA.
 
 ## Required verification after implementation
 

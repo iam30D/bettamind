@@ -54,6 +54,13 @@ Codemagic iOS validation.
   RTL detection.
 - Android backup and data extraction rules exclude app data in line with the
   offline/private product stance.
+- Android compile/target SDK was updated to 36 locally and in GitHub Actions.
+- Android lint now reports no issues.
+- Backend dev dependencies now use `httpx2` for Starlette's test client path;
+  pytest no longer emits the deprecated `httpx` warning.
+- `AGENTS.md` now reminds future passes to ask the owner to run Codemagic
+  `ios-simulator-unsigned` after pushed commits that affect shared/iOS/iOS
+  workflow surfaces.
 
 ## Important files
 
@@ -93,20 +100,16 @@ Codemagic iOS validation.
   the PNG fallback.
 - The source PNG has a baked checkerboard background; generated assets use a
   documented mask to derive transparency.
-- Android lint passes with 0 errors and 3 warnings: compile/target SDK 35 while
-  Android SDK 36 is available, plus `mipmap-anydpi-v26` being reported as
-  unnecessary even though moving the adaptive icon XML broke resource linking.
 - Locale packs are draft implementation foundations and require qualified human
   review before production use.
-- Backend pytest still emits one upstream Starlette/FastAPI deprecation warning
-  about `httpx` test client compatibility.
 - `java` is not available on global `PATH`; checks used Android Studio's
   bundled JBR at `C:\Program Files\Android\Android Studio\jbr`.
 
 ## Manual owner actions
 
-- Run Codemagic `ios-simulator-unsigned` for the Phase 2 shared/iOS/resource
-  changes after push.
+- Run Codemagic `ios-simulator-unsigned` for pushed commits that change shared
+  Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
+  iOS, or Codemagic iOS workflow files.
 - Provide `brand/source/bettamind-logo-master.svg` if a vector master exists,
   then regenerate assets from that source in a later approved pass.
 - Replace placeholder Android application ID and iOS bundle ID with owner-owned
@@ -116,5 +119,6 @@ Codemagic iOS validation.
 
 ## Next approved task
 
-Commit and push Phase 2, then wait for Codemagic iOS validation. Do not start
-Phase 3 until the owner explicitly approves it.
+Commit and push the Phase 2 cleanup, then wait for Codemagic iOS validation of
+the Phase 2 shared/iOS/resource commit. Do not start Phase 3 until the owner
+explicitly approves it.
