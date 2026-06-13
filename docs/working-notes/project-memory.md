@@ -213,6 +213,16 @@ app-hosted iOS encrypted-storage validation update.
   test-only simulator Keychain entitlement, ad-hoc signs the copy only for
   simulator installation, and stores the signed entitlements in
   `ios-storage-validation-entitlements.log`.
+- Codemagic `ios-simulator-unsigned` for commit `2a871c5` signed the validation
+  copy, but the simulator denied launching the app through SpringBoard. The
+  validation entitlements were too broad for ad-hoc simulator launch because
+  they included fake `application-identifier` and team identifier values.
+- The validation entitlement file now contains only the test
+  `keychain-access-groups` entry. `IosKeychainStorageKeyManager` accepts an
+  optional access group, and the app-hosted validation passes the same temporary
+  Codemagic access group through
+  `BETTAMIND_IOS_STORAGE_KEYCHAIN_ACCESS_GROUP`. Default production-style
+  Keychain use remains unchanged when no access group is supplied.
 
 ## Important files
 
@@ -320,6 +330,12 @@ app-hosted iOS encrypted-storage validation update.
 - `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --stacktrace`
   completed on Windows after the Codemagic ad-hoc signed validation-copy update,
   with the iOS Native test compile task still skipped on Windows.
+- `.\gradlew.bat phaseThreeCheck --no-daemon --stacktrace` passed after the
+  minimal Codemagic Keychain access-group entitlement update.
+- `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --stacktrace`
+  completed on Windows after the minimal Codemagic Keychain access-group
+  entitlement update, with the iOS Native test compile task still skipped on
+  Windows.
 - `backend\.venv\Scripts\ruff.exe check .`
 - `backend\.venv\Scripts\mypy.exe app`
 - `backend\.venv\Scripts\pytest.exe`
@@ -369,9 +385,9 @@ app-hosted iOS encrypted-storage validation update.
 
 ## Next approved task
 
-Commit and push the Codemagic ad-hoc signed validation-copy update, then have
-the owner rerun Codemagic `ios-simulator-unsigned`. If Codemagic passes, update
-memory to mark Phase 3 encrypted-storage proof complete. If it fails, use the
-app-written storage-validation log, launch log, entitlement log and xcodebuild
-output to diagnose the remaining iOS simulator issue. Do not begin Phase 5
-automatically.
+Commit and push the minimal Codemagic Keychain access-group entitlement update,
+then have the owner rerun Codemagic `ios-simulator-unsigned`. If Codemagic
+passes, update memory to mark Phase 3 encrypted-storage proof complete. If it
+fails, use the app-written storage-validation log, launch log, entitlement log
+and xcodebuild output to diagnose the remaining iOS simulator issue. Do not
+begin Phase 5 automatically.

@@ -26,6 +26,7 @@ import platform.Security.errSecSuccess
 import platform.Security.kSecAttrAccessible
 import platform.Security.kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
 import platform.Security.kSecAttrAccount
+import platform.Security.kSecAttrAccessGroup
 import platform.Security.kSecAttrService
 import platform.Security.kSecClass
 import platform.Security.kSecClassGenericPassword
@@ -41,6 +42,7 @@ import platform.posix.memcpy
 class IosKeychainStorageKeyManager(
     private val service: String = "org.bettamind.phase3",
     private val account: String = "sqlcipher-key",
+    private val accessGroup: String? = null,
 ) : StorageKeyManager {
     override fun loadOrCreateDatabaseKey(): StorageKeyMaterial {
         readKey()?.let { return StorageKeyMaterial.fromBytes(it) }
@@ -106,6 +108,9 @@ class IosKeychainStorageKeyManager(
             setValue(kSecAttrService, service.toCfString())
             setValue(kSecAttrAccount, account.toCfString())
             setValue(kSecAttrAccessible, kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly)
+            accessGroup?.let { group ->
+                setValue(kSecAttrAccessGroup, group.toCfString())
+            }
         }
 
     private fun mutableDictionary(): CFMutableDictionaryRef =

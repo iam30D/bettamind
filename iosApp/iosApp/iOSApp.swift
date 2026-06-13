@@ -32,7 +32,10 @@ private enum IosStorageValidationLauncher {
             return
         }
 
-        let result = IosEncryptedStorageAppValidationKt.runIosEncryptedStorageAppValidation()
+        let keychainAccessGroup = ProcessInfo.processInfo.environment["BETTAMIND_IOS_STORAGE_KEYCHAIN_ACCESS_GROUP"]
+        let result = IosEncryptedStorageAppValidationKt.runIosEncryptedStorageAppValidationWithAccessGroup(
+            keychainAccessGroup: keychainAccessGroup
+        )
         let resultURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
             .appendingPathComponent("bettamind-ios-storage-validation.txt")
 

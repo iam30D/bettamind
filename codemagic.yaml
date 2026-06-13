@@ -64,10 +64,6 @@ workflows:
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
           <dict>
-            <key>application-identifier</key>
-            <string>$KEYCHAIN_GROUP</string>
-            <key>com.apple.developer.team-identifier</key>
-            <string>BETTAMINDA</string>
             <key>keychain-access-groups</key>
             <array>
               <string>$KEYCHAIN_GROUP</string>
@@ -91,7 +87,9 @@ workflows:
           RESULT_FILE="$CONTAINER/tmp/bettamind-ios-storage-validation.txt"
           rm -f "$RESULT_FILE"
 
-          SIMCTL_CHILD_BETTAMIND_IOS_STORAGE_VALIDATION=1 xcrun simctl launch \
+          SIMCTL_CHILD_BETTAMIND_IOS_STORAGE_VALIDATION=1 \
+          SIMCTL_CHILD_BETTAMIND_IOS_STORAGE_KEYCHAIN_ACCESS_GROUP="$KEYCHAIN_GROUP" \
+          xcrun simctl launch \
             --terminate-running-process \
             booted \
             "$BETTAMIND_IOS_BUNDLE_ID" 2>&1 | tee ios-storage-validation-launch.log

@@ -5,17 +5,26 @@ import platform.Foundation.NSTemporaryDirectory
 import platform.posix.remove
 
 fun runIosEncryptedStorageAppValidation(): String =
+    runIosEncryptedStorageAppValidationWithAccessGroup(keychainAccessGroup = null)
+
+fun runIosEncryptedStorageAppValidationWithAccessGroup(keychainAccessGroup: String?): String =
     try {
-        IosEncryptedStorageAppValidation().run()
+        IosEncryptedStorageAppValidation(keychainAccessGroup = keychainAccessGroup).run()
         "PASS: iOS Keychain and SQLCipher app-hosted validation completed."
     } catch (throwable: Throwable) {
         "FAIL: ${throwable.message ?: throwable.toString()}${throwable.causeMessage()}"
     }
 
-private class IosEncryptedStorageAppValidation {
+private class IosEncryptedStorageAppValidation(
+    private val keychainAccessGroup: String?,
+) {
     fun run() {
         val service = "org.bettamind.validation.${Random.nextInt()}"
-        val manager = IosKeychainStorageKeyManager(service = service, account = "sqlcipher-key")
+        val manager = IosKeychainStorageKeyManager(
+            service = service,
+            account = "sqlcipher-key",
+            accessGroup = keychainAccessGroup?.takeIf { group -> group.isNotBlank() },
+        )
         val databasePath = temporaryDatabasePath()
         val restoredPath = temporaryDatabasePath()
         val store = IosSqlCipherEncryptedRecordStore(databasePath = databasePath)
