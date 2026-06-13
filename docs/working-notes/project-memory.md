@@ -2,12 +2,13 @@
 
 ## Current phase
 
-iOS SQLCipher completion slice implemented in source after the owner confirmed
+iOS SQLCipher completion slice is being validated after the owner confirmed
 Codemagic passed for the Phase 4 commit and approved continuing the Phase 3
 storage work. Phase 4 remains intentionally in-memory for personal narrative
 content until encrypted storage is fully validated. Phase 3 now has a selected
 iOS SQLCipher route and adapter source, but completion still requires
-Codemagic `ios-simulator-unsigned` validation on macOS.
+Codemagic `ios-simulator-unsigned` validation on macOS after the latest
+Kotlin/Native cinterop source fix.
 
 ## Locked decisions
 
@@ -125,6 +126,16 @@ Codemagic `ios-simulator-unsigned` validation on macOS.
   not find `BettamindSqlCipher.h`. The Gradle cinterop compiler options now add
   `shared/src/nativeInterop/cinterop` before the SQLCipher framework header
   path.
+- Codemagic `ios-simulator-unsigned` for commit `2dffec6` advanced past
+  `:shared:cinteropBettamindSqlCipherIosSimulatorArm64` and failed in
+  `:shared:compileKotlinIosSimulatorArm64` because the iOS SQLCipher adapter
+  used out-pointer allocation types that did not match the generated
+  Kotlin/Native SQLCipher signatures, missed an `ExperimentalForeignApi` opt-in
+  on `requireDone`, and called unavailable `NSNumber.numberWithBool`.
+- `IosSqlCipherEncryptedRecordStore` now uses
+  `CPointerVarOf<CPointer<...>>` for SQLCipher out pointers, marks
+  `requireDone` with the required cinterop opt-in, and keeps iOS backup
+  exclusion through `NSURL.setResourceValue(true, ...)`.
 
 ## Important files
 
@@ -173,9 +184,17 @@ Codemagic `ios-simulator-unsigned` validation on macOS.
   cinterop include-path fix.
 - `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --stacktrace`
   passed after the include-path fix; Windows still skips the iOS cinterop target.
+- `.\gradlew.bat phaseThreeCheck --no-daemon --stacktrace` passed after the
+  Kotlin/Native out-pointer and Foundation API fix.
+- `.\gradlew.bat :shared:compileKotlinIosSimulatorArm64 --no-daemon --stacktrace`
+  completed on Windows after the fix, with iOS Native targets still disabled
+  because cinterop cannot be processed on `mingw_x64`.
 - `backend\.venv\Scripts\ruff.exe check .`
 - `backend\.venv\Scripts\mypy.exe app`
 - `backend\.venv\Scripts\pytest.exe`
+- From `backend/`: `.\.venv\Scripts\ruff.exe check .`
+- From `backend/`: `.\.venv\Scripts\mypy.exe app`
+- From `backend/`: `.\.venv\Scripts\pytest.exe`
 - docs/source placeholder scan found only Codemagic's intentional `events: []`
 
 ## Known blockers and limitations
@@ -206,8 +225,8 @@ Codemagic `ios-simulator-unsigned` validation on macOS.
   Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
   iOS, or Codemagic iOS workflow files.
 - Run Codemagic `ios-simulator-unsigned` for the next pushed iOS SQLCipher
-  commit because it changes shared iOS Kotlin, native cinterop, Gradle iOS
-  configuration, `iosApp` Swift Package linkage and the Codemagic workflow.
+  commit because it changes shared iOS Kotlin and must be proven by macOS
+  Kotlin/Native compilation plus the Xcode simulator build.
 - Provide `brand/source/bettamind-logo-master.svg` if a vector master exists,
   then regenerate assets from that source in a later approved pass.
 - Replace placeholder Android application ID and iOS bundle ID with owner-owned
@@ -217,7 +236,8 @@ Codemagic `ios-simulator-unsigned` validation on macOS.
 
 ## Next approved task
 
-Commit and push the cinterop include-path fix, then have the owner rerun
-Codemagic `ios-simulator-unsigned`. If Codemagic passes, update memory to mark
-Phase 3 encrypted-storage proof complete. If it fails, fix the next macOS native
-compile/link/test issue before continuing. Do not begin Phase 5 automatically.
+Commit and push the Kotlin/Native out-pointer and Foundation API fix, then have
+the owner rerun Codemagic `ios-simulator-unsigned`. If Codemagic passes, update
+memory to mark Phase 3 encrypted-storage proof complete. If it fails, fix the
+next macOS native compile/link/test issue before continuing. Do not begin Phase
+5 automatically.
