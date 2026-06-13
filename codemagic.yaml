@@ -57,11 +57,10 @@ workflows:
           RESULT_FILE="$CONTAINER/tmp/bettamind-ios-storage-validation.txt"
           rm -f "$RESULT_FILE"
 
-          xcrun simctl launch \
+          SIMCTL_CHILD_BETTAMIND_IOS_STORAGE_VALIDATION=1 xcrun simctl launch \
             --terminate-running-process \
-            --env BETTAMIND_IOS_STORAGE_VALIDATION=1 \
             booted \
-            "$BETTAMIND_IOS_BUNDLE_ID" || true
+            "$BETTAMIND_IOS_BUNDLE_ID" 2>&1 | tee ios-storage-validation-launch.log
 
           for _ in $(seq 1 30); do
             if [ -f "$RESULT_FILE" ]; then
@@ -75,6 +74,7 @@ workflows:
           grep -q '^PASS:' "$RESULT_FILE"
     artifacts:
       - xcodebuild-ios-simulator.log
+      - ios-storage-validation-launch.log
       - ios-storage-validation.log
       - "**/build/reports/**"
       - "**/build/test-results/**"

@@ -195,6 +195,14 @@ app-hosted iOS encrypted-storage validation update.
   Kotlin/Native's `kotlin.test.Ignore` annotation constructor accepts no
   message argument. The ignored standalone Keychain test now uses no-arg
   `@Ignore`, with the reason kept in a nearby source comment and project docs.
+- Codemagic `ios-simulator-unsigned` for commit `cc38dee` passed the shared iOS
+  simulator tests, all iOS Kotlin compile tasks, Swift package resolution and
+  the unsigned `xcodebuild` simulator build. The app-hosted validation step then
+  failed before launching Bettamind because this Xcode/simctl version rejects
+  `simctl launch --env` with `Invalid device: --env`.
+- Codemagic now passes the validation flag with the supported
+  `SIMCTL_CHILD_BETTAMIND_IOS_STORAGE_VALIDATION=1 xcrun simctl launch ...`
+  form and stores `ios-storage-validation-launch.log` as an artifact.
 
 ## Important files
 
@@ -292,6 +300,11 @@ app-hosted iOS encrypted-storage validation update.
 - `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --stacktrace`
   completed on Windows after the no-arg iOS `@Ignore` fix, with the iOS Native
   test compile task still skipped on Windows.
+- `.\gradlew.bat phaseThreeCheck --no-daemon --stacktrace` passed after the
+  `SIMCTL_CHILD_` Codemagic validation-launch fix.
+- `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --stacktrace`
+  completed on Windows after the `SIMCTL_CHILD_` Codemagic validation-launch
+  fix, with the iOS Native test compile task still skipped on Windows.
 - `backend\.venv\Scripts\ruff.exe check .`
 - `backend\.venv\Scripts\mypy.exe app`
 - `backend\.venv\Scripts\pytest.exe`
@@ -341,8 +354,8 @@ app-hosted iOS encrypted-storage validation update.
 
 ## Next approved task
 
-Commit and push the no-arg iOS `@Ignore` fix, then have the owner rerun
-Codemagic `ios-simulator-unsigned`. If Codemagic passes, update memory to mark
-Phase 3 encrypted-storage proof complete. If it fails, use the app-written
-storage-validation log and xcodebuild output to diagnose the remaining iOS
-simulator issue. Do not begin Phase 5 automatically.
+Commit and push the `SIMCTL_CHILD_` Codemagic validation-launch fix, then have
+the owner rerun Codemagic `ios-simulator-unsigned`. If Codemagic passes, update
+memory to mark Phase 3 encrypted-storage proof complete. If it fails, use the
+app-written storage-validation log, launch log and xcodebuild output to diagnose
+the remaining iOS simulator issue. Do not begin Phase 5 automatically.
