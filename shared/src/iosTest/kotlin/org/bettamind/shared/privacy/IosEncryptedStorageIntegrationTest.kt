@@ -51,7 +51,9 @@ class IosEncryptedStorageIntegrationTest {
         }
     }
 
-    @Ignore("Real iOS Keychain validation runs in the app-hosted Codemagic simulator step; standalone Kotlin/Native tests do not have app Keychain context.")
+    // Real iOS Keychain validation runs in the app-hosted Codemagic simulator step.
+    // The standalone Kotlin/Native test binary does not have the same Keychain context.
+    @Ignore
     @Test
     fun keychainManagerStoresReplacesAndDeletesDatabaseKey() {
         val service = "org.bettamind.test.${Random.nextInt()}"

@@ -190,6 +190,11 @@ app-hosted iOS encrypted-storage validation update.
   performs the required unsigned `xcodebuild` simulator build. It then installs
   the simulator app, launches it with the storage-validation environment flag
   and requires the app-written result file to begin with `PASS:`.
+- Codemagic `ios-simulator-unsigned` for commit `35779c1` failed before
+  app-hosted validation in `:shared:compileTestKotlinIosSimulatorArm64` because
+  Kotlin/Native's `kotlin.test.Ignore` annotation constructor accepts no
+  message argument. The ignored standalone Keychain test now uses no-arg
+  `@Ignore`, with the reason kept in a nearby source comment and project docs.
 
 ## Important files
 
@@ -282,6 +287,11 @@ app-hosted iOS encrypted-storage validation update.
 - `.\gradlew.bat :shared:compileKotlinIosSimulatorArm64 --no-daemon --stacktrace`
   completed on Windows after the app-hosted validation update, with the iOS
   Native compile task still skipped on Windows.
+- `.\gradlew.bat phaseThreeCheck --no-daemon --stacktrace` passed after the
+  no-arg iOS `@Ignore` fix.
+- `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --stacktrace`
+  completed on Windows after the no-arg iOS `@Ignore` fix, with the iOS Native
+  test compile task still skipped on Windows.
 - `backend\.venv\Scripts\ruff.exe check .`
 - `backend\.venv\Scripts\mypy.exe app`
 - `backend\.venv\Scripts\pytest.exe`
@@ -331,8 +341,8 @@ app-hosted iOS encrypted-storage validation update.
 
 ## Next approved task
 
-Commit and push the app-hosted iOS encrypted-storage validation update, then
-have the owner rerun Codemagic `ios-simulator-unsigned`. If Codemagic passes,
-update memory to mark Phase 3 encrypted-storage proof complete. If it fails,
-use the app-written storage-validation log and xcodebuild output to diagnose
-the remaining iOS simulator issue. Do not begin Phase 5 automatically.
+Commit and push the no-arg iOS `@Ignore` fix, then have the owner rerun
+Codemagic `ios-simulator-unsigned`. If Codemagic passes, update memory to mark
+Phase 3 encrypted-storage proof complete. If it fails, use the app-written
+storage-validation log and xcodebuild output to diagnose the remaining iOS
+simulator issue. Do not begin Phase 5 automatically.
