@@ -15,7 +15,8 @@
 | Global localisation architecture | 2+ | Add Compose resource folders and planning docs only. |
 | Encrypted storage | 3 | Android SQLCipher proof exists; iOS SQLCipher source/linking route uses pinned `SQLCipher.swift` and requires Codemagic validation. |
 | Deterministic product engines | 4 | Not implemented in Phase 1. |
-| Signed knowledge packs | 5 | Not implemented in Phase 1. |
+| Signed knowledge packs | 5 | Shared installer requires Ed25519-labeled signed manifests, SHA-256 payload checksums, rollback/replay checks and revocation policy. |
+| Local knowledge retrieval | 5 | Shared in-memory retriever searches installed packs offline without backend or AI. |
 | On-device AI model manager | 6 | Not implemented in Phase 1. |
 | Safety and support bridge | 8 | Not implemented in Phase 1. |
 | Optional encrypted sync | 9 | Backend skeleton only; no sync implementation. |

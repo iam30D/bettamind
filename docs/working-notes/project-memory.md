@@ -2,13 +2,11 @@
 
 ## Current phase
 
-iOS SQLCipher completion slice is being validated after the owner confirmed
-Codemagic passed for the Phase 4 commit and approved continuing the Phase 3
-storage work. Phase 4 remains intentionally in-memory for personal narrative
-content until encrypted storage is fully validated. Phase 3 now has a selected
-iOS SQLCipher route and adapter source, but completion still requires
-Codemagic `ios-simulator-unsigned` validation on macOS after the latest
-app-hosted iOS encrypted-storage validation update.
+Phase 5 signed knowledge packs and local retrieval is implemented locally and
+awaits commit, push and Codemagic `ios-simulator-unsigned` validation. The owner
+confirmed the previous Codemagic iOS storage validation passed, so Phase 3 is
+now treated as complete. Do not begin Phase 6 until the owner explicitly
+approves it after Phase 5 validation.
 
 ## Locked decisions
 
@@ -41,9 +39,13 @@ app-hosted iOS encrypted-storage validation update.
   process. The standalone Kotlin/Native simulator test binary is not treated as
   the Keychain proof.
 - Phase 4 deterministic growth flow is allowed to run without storage, but
-  narrative persistence remains disabled unless encrypted storage is available.
+  narrative persistence remains disabled until a separate approved pass wires
+  encrypted persistence into the growth flow.
 - Phase 4 adult gate is self-declared and records no exact date of birth or
   identity document.
+- Phase 5 knowledge-pack manifests use SHA-256 payload checksums and an
+  Ed25519-labeled signature verification boundary. Production content packs,
+  signing keys and trust anchors are not committed.
 
 ## Completed work
 
@@ -234,6 +236,22 @@ app-hosted iOS encrypted-storage validation update.
   `ios-storage-validation-keychain-group.log`, and passes it to the app-hosted
   storage validator through
   `BETTAMIND_IOS_STORAGE_KEYCHAIN_ACCESS_GROUP`.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed after the
+  Xcode-signed app-hosted iOS encrypted-storage validation update. Phase 3 is
+  complete.
+- Phase 5 shared knowledge-pack foundation was added under
+  `shared/src/commonMain/kotlin/org/bettamind/shared/knowledge/`.
+- Phase 5 installer requires non-empty signed manifests, the `Ed25519`
+  algorithm label, SHA-256 payload checksum matches, injected signature
+  verification, rollback/replay rejection and revocation policy.
+- Phase 5 local retrieval indexes installed packs in memory and searches them
+  offline without backend, network or AI.
+- Common tests now cover SHA-256 vectors, checksum mismatch, invalid signature,
+  unsupported algorithm, rollback/replay, signing-key revocation and offline
+  retrieval.
+- GitHub Actions mobile checks now run `phaseFiveCheck`.
+- `docs/security/phase-5-signed-knowledge-packs.md` documents the Phase 5
+  trust boundary and non-goals.
 
 ## Important files
 
@@ -250,8 +268,10 @@ app-hosted iOS encrypted-storage validation update.
 - `shared/src/commonMain/composeResources/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/growth/`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/knowledge/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/growth/`
+- `shared/src/commonTest/kotlin/org/bettamind/shared/knowledge/`
 - `shared/src/androidMain/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/iosMain/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/iosTest/kotlin/org/bettamind/shared/privacy/`
@@ -260,6 +280,7 @@ app-hosted iOS encrypted-storage validation update.
 - `iosApp/iosApp/Assets.xcassets/`
 - `iosApp/iosApp.xcodeproj/project.pbxproj`
 - `docs/security/phase-3-encrypted-storage-spike.md`
+- `docs/security/phase-5-signed-knowledge-packs.md`
 - `codemagic.yaml`
 
 ## Commands that passed
@@ -359,18 +380,32 @@ app-hosted iOS encrypted-storage validation update.
 - From `backend/`: `.\.venv\Scripts\mypy.exe app`
 - From `backend/`: `.\.venv\Scripts\pytest.exe`
 - docs/source placeholder scan found only Codemagic's intentional `events: []`
+- `.\gradlew.bat :shared:testDebugUnitTest --no-daemon --stacktrace`
+  passed after the Phase 5 knowledge-pack tests were added.
+- `.\gradlew.bat phaseFiveCheck --no-daemon --stacktrace` passed. On Windows,
+  iOS Native targets remain disabled because SQLCipher cinterop requires macOS.
+- `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --stacktrace`
+  completed on Windows after Phase 5 changes, with the iOS Native compile/test
+  tasks still skipped because cinterop cannot be processed on `mingw_x64`.
+- From `backend/`: `.\.venv\Scripts\ruff.exe check .`
+- From `backend/`: `.\.venv\Scripts\mypy.exe app`
+- From `backend/`: `.\.venv\Scripts\pytest.exe`
+- `git diff --check` reported no whitespace errors, only normal Windows
+  LF-to-CRLF warnings.
 
 ## Known blockers and limitations
 
 - iOS cannot be fully built locally on Windows. Every shared/iOS change still
   requires Codemagic `ios-simulator-unsigned`.
-- Phase 3 remains pending Codemagic validation because iOS SQLCipher cinterop
-  cannot be compiled or executed on Windows, and real iOS Keychain behaviour
-  must be proven from the app-hosted simulator validation path. Kotlin/Native
-  disables the iOS targets on `mingw_x64` once cinterop is present.
-- Phase 4 does not persist narrative content. Storage status intentionally
-  reports encrypted storage unavailable until the platform encrypted store is
-  complete.
+- Phase 5 changed common shared code, so the next pushed commit requires
+  Codemagic `ios-simulator-unsigned`.
+- Phase 4 does not yet persist narrative content. Storage status still reports
+  encrypted storage unavailable until a separate approved pass wires the
+  platform encrypted store into the growth flow. There is no unencrypted
+  fallback.
+- Phase 5 does not include production content packs, production signing keys or
+  owner-approved trust anchors. Release work must provide those before real
+  public packs are accepted.
 - No canonical SVG source logo is present yet. Phase 2 assets are derived from
   the PNG fallback.
 - The source PNG has a baked checkerboard background; generated assets use a
@@ -388,22 +423,19 @@ app-hosted iOS encrypted-storage validation update.
 - Run Codemagic `ios-simulator-unsigned` for pushed commits that change shared
   Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
   iOS, or Codemagic iOS workflow files.
-- Run Codemagic `ios-simulator-unsigned` for the next pushed iOS SQLCipher
-  commit because it changes shared iOS Kotlin, `iosApp` and the Codemagic iOS
-  workflow, and must be proven by macOS Kotlin/Native compilation, the unsigned
-  Xcode simulator build and app-hosted encrypted-storage validation.
+- Run Codemagic `ios-simulator-unsigned` for the next pushed Phase 5 commit
+  because it changes shared Kotlin and the GitHub Actions Gradle check target.
 - Provide `brand/source/bettamind-logo-master.svg` if a vector master exists,
   then regenerate assets from that source in a later approved pass.
 - Replace placeholder Android application ID and iOS bundle ID with owner-owned
   values before release work.
+- Provide owner-approved production knowledge-pack trust anchors and content
+  governance before accepting real public packs.
 - Arrange qualified human review for production translations, especially any
   safety, crisis, legal, privacy or consent copy.
 
 ## Next approved task
 
-Commit and push the Xcode-signed iOS validation-build update, then have the
-owner rerun Codemagic `ios-simulator-unsigned`. If Codemagic passes, update
-memory to mark Phase 3 encrypted-storage proof complete. If it fails, use the
-app-written storage-validation log, launch log, entitlement log, keychain-group
-log and xcodebuild output to diagnose the remaining iOS simulator issue. Do not
-begin Phase 5 automatically.
+Commit and push Phase 5, then have the owner run Codemagic
+`ios-simulator-unsigned`. If Codemagic passes, wait for explicit owner approval
+before Phase 6. Do not begin Phase 6 automatically.

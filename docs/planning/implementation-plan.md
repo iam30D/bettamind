@@ -73,18 +73,14 @@ Acceptance criteria:
 - Wrong-key rejection, key rotation, backup, restore and deletion are tested.
 - No unencrypted fallback storage exists.
 
-Status: iOS SQLCipher completion slice implemented in source and pending
-Codemagic proof. Android SQLCipher storage, Android Keystore wrapping, the
-shared encrypted-storage contract and iOS Keychain key management source exist.
-The selected iOS route is `SQLCipher.swift` pinned to `4.16.0`; Xcode links the
-Swift Package product and Gradle checksum-verifies the same XCFramework for
-Kotlin/Native cinterop. The remaining Keychain proof now runs from the app
-process in Codemagic because the standalone Kotlin/Native simulator test binary
-does not provide the same app-hosted Keychain context. Windows checks pass for
-Android and shared code, but Windows now skips iOS Native targets because
-Kotlin/Native cinterop for iOS requires macOS. Full Phase 3 completion requires
-Codemagic `ios-simulator-unsigned` to pass, including the app-hosted
-encrypted-storage validation. Do not use system SQLite as a substitute fallback.
+Status: completed after owner-confirmed Codemagic `ios-simulator-unsigned`
+validation. Android SQLCipher storage, Android Keystore wrapping, the shared
+encrypted-storage contract, iOS Keychain key management and iOS SQLCipher
+storage source exist. The selected iOS route is `SQLCipher.swift` pinned to
+`4.16.0`; Xcode links the Swift Package product and Gradle checksum-verifies the
+same XCFramework for Kotlin/Native cinterop. The app-hosted Codemagic simulator
+validation proves the real iOS Keychain and SQLCipher route. Do not use system
+SQLite as a substitute fallback.
 
 ## Phase 4: Deterministic Human Growth application
 
@@ -115,6 +111,12 @@ Acceptance criteria:
 - Pack manifests are signed and checksum-verified.
 - Rollback and revocation are handled.
 - Local retrieval works without network.
+
+Status: implemented as a shared offline pack contract. Common code now requires
+Ed25519-labeled signed manifests, SHA-256 payload checksums, injected signature
+verification, rollback/replay rejection, revocation policy and in-memory local
+retrieval. Production signing keys, approved content packs, backend delivery and
+AI/model-pack logic remain out of scope.
 
 ## Phase 6: On-device AI abstraction and model manager
 
