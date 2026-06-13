@@ -2,11 +2,12 @@
 
 ## Current phase
 
-Phase 3 partially implemented and blocked: Android SQLCipher encrypted storage,
-Android Keystore wrapping, the shared storage contract and iOS Keychain key
-management source exist. Do not begin Phase 4. Full Phase 3 completion requires
-an approved iOS native SQLCipher dependency/linking route and Codemagic
-`ios-simulator-unsigned` validation.
+Phase 4 narrow deterministic product slice implemented locally after the owner
+confirmed Codemagic `ios-simulator-unsigned` passed for the Phase 3 spike and
+explicitly approved proceeding. Phase 4 is intentionally in-memory only: no
+personal narrative persistence is enabled until encrypted storage is available
+on the current platform. Phase 3 remains incomplete because iOS SQLCipher native
+database storage is not selected or implemented.
 
 ## Locked decisions
 
@@ -33,6 +34,10 @@ an approved iOS native SQLCipher dependency/linking route and Codemagic
   StrongBox when available.
 - iOS has Keychain database-key source only. Do not use system SQLite as an
   iOS SQLCipher substitute.
+- Phase 4 deterministic growth flow is allowed to run without storage, but
+  narrative persistence remains disabled unless encrypted storage is available.
+- Phase 4 adult gate is self-declared and records no exact date of birth or
+  identity document.
 
 ## Completed work
 
@@ -87,6 +92,18 @@ an approved iOS native SQLCipher dependency/linking route and Codemagic
   GitHub Actions now invokes `phaseThreeCheck`.
 - `docs/security/phase-3-encrypted-storage-spike.md` documents the Android
   proof, iOS proof boundary and no-fallback rule.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed for commit
+  `06125cc` and approved proceeding to Phase 4.
+- Phase 4 deterministic growth engine was added under
+  `shared/src/commonMain/kotlin/org/bettamind/shared/growth/`.
+- Common tests for the Phase 4 flow cover locked step order, unknown/minor
+  blocking, adult-only entry, no narrative-storage fallback and completion.
+- Compose app panels now expose the deterministic Today, Reflect, Grow and
+  Support Phase 4 flow with adult gating and encrypted-storage availability
+  status.
+- Compose resources now include Phase 4 source English strings plus draft
+  fallback entries in all initial locale packs. Non-English Phase 4 strings are
+  implementation drafts and require human review.
 
 ## Important files
 
@@ -102,7 +119,9 @@ an approved iOS native SQLCipher dependency/linking route and Codemagic
 - `shared/src/commonMain/kotlin/org/bettamind/shared/design/BettamindColorTokens.kt`
 - `shared/src/commonMain/composeResources/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/privacy/`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/growth/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/privacy/`
+- `shared/src/commonTest/kotlin/org/bettamind/shared/growth/`
 - `shared/src/androidMain/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/iosMain/kotlin/org/bettamind/shared/privacy/`
 - `androidApp/src/main/res/`
@@ -122,6 +141,7 @@ an approved iOS native SQLCipher dependency/linking route and Codemagic
 - `.\gradlew.bat :shared:compileKotlinIosSimulatorArm64 --no-daemon --stacktrace`
 - `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --stacktrace`
 - `.\gradlew.bat phaseThreeCheck --no-daemon --stacktrace`
+- `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --rerun-tasks --no-daemon --stacktrace`
 - `backend\.venv\Scripts\ruff.exe check .`
 - `backend\.venv\Scripts\mypy.exe app`
 - `backend\.venv\Scripts\pytest.exe`
@@ -134,20 +154,28 @@ an approved iOS native SQLCipher dependency/linking route and Codemagic
 - Phase 3 remains blocked because iOS SQLCipher native dependency/linking is
   not selected or implemented. Kotlin/Native compilation proves the Keychain
   adapter source only; it does not prove iOS SQLCipher encrypted SQLite.
+- Phase 4 does not persist narrative content. Storage status intentionally
+  reports encrypted storage unavailable until the platform encrypted store is
+  complete.
 - No canonical SVG source logo is present yet. Phase 2 assets are derived from
   the PNG fallback.
 - The source PNG has a baked checkerboard background; generated assets use a
   documented mask to derive transparency.
 - Locale packs are draft implementation foundations and require qualified human
-  review before production use.
-- `java` is not available on global `PATH`; checks used Android Studio's
-  bundled JBR at `C:\Program Files\Android\Android Studio\jbr`.
+  review before production use. Phase 4 non-English strings are draft fallback
+  text and are not production-approved translations.
+- `java` is not available on global `PATH`; current checks used JetBrains'
+  bundled JBR at `C:\Program Files\JetBrains\PyCharm 2025.2.3\jbr`.
+- Local Windows Gradle checks require a non-committed `local.properties` with
+  `sdk.dir=C\:\\Users\\HP\\AppData\\Local\\Android\\Sdk`.
 
 ## Manual owner actions
 
 - Run Codemagic `ios-simulator-unsigned` for pushed commits that change shared
   Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
   iOS, or Codemagic iOS workflow files.
+- Run Codemagic `ios-simulator-unsigned` for the next pushed Phase 4 commit
+  because it changes shared Kotlin and Compose resources.
 - Choose and approve the iOS SQLCipher native dependency/linking route for
   Phase 3 completion, then validate it on Codemagic.
 - Provide `brand/source/bettamind-logo-master.svg` if a vector master exists,
@@ -159,7 +187,8 @@ an approved iOS native SQLCipher dependency/linking route and Codemagic
 
 ## Next approved task
 
-Commit and push the iOS simulator test compile fix, then have the owner rerun
-Codemagic `ios-simulator-unsigned`. Next engineering task is to resolve the iOS
-SQLCipher native dependency/linking blocker. Do not begin Phase 4 until the
-owner explicitly approves a revised scope or the blocker is resolved.
+Commit and push the Phase 4 deterministic in-memory growth slice, then have the
+owner rerun Codemagic `ios-simulator-unsigned`. Do not begin Phase 5
+automatically. Next approved engineering task should either continue within the
+approved Phase 4 scope after iOS validation or resolve the iOS SQLCipher native
+dependency/linking blocker.

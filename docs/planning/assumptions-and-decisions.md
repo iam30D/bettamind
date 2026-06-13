@@ -34,6 +34,10 @@
 - Treat iOS SQLCipher database storage as blocked until a native SQLCipher
   dependency/linking route is selected and validated on Codemagic. System
   SQLite is not an acceptable fallback.
+- Proceed with Phase 4 only as a deterministic in-memory product slice while
+  iOS SQLCipher remains unresolved. Personal narrative persistence stays off
+  unless encrypted storage is available; no unencrypted storage fallback is
+  permitted.
 
 ## Deferred decisions
 
