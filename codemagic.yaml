@@ -49,37 +49,29 @@ workflows:
           xcrun simctl boot "$DEVICE_NAME" || true
           xcrun simctl bootstatus booted -b
 
-          APP_PATH="$(find "$HOME/Library/Developer/Xcode/DerivedData" -path "*/Build/Products/Debug-iphonesimulator/Bettamind.app" -print -quit)"
-          test -d "$APP_PATH"
+          VALIDATION_DERIVED_DATA="$CM_BUILD_DIR/build/ios-storage-validation-derived-data"
+          set -o pipefail
+          xcodebuild \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme iosApp \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -derivedDataPath "$VALIDATION_DERIVED_DATA" \
+            BETTAMIND_IOS_BUNDLE_ID="$BETTAMIND_IOS_BUNDLE_ID" \
+            CODE_SIGNING_ALLOWED=YES \
+            CODE_SIGNING_REQUIRED=YES \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY=- \
+            AD_HOC_CODE_SIGNING_ALLOWED=YES \
+            CODE_SIGN_ENTITLEMENTS=iosApp/StorageValidation.entitlements \
+            build | tee xcodebuild-ios-storage-validation.log
 
-          mkdir -p "$CM_BUILD_DIR/build"
-          VALIDATION_DIR="$(mktemp -d "$CM_BUILD_DIR/build/ios-storage-validation.XXXXXX")"
-          VALIDATION_APP_PATH="$VALIDATION_DIR/Bettamind.app"
-          ditto "$APP_PATH" "$VALIDATION_APP_PATH"
-
-          ENTITLEMENTS_FILE="$VALIDATION_DIR/BettamindValidation.entitlements"
-          KEYCHAIN_GROUP="BETTAMINDA.$BETTAMIND_IOS_BUNDLE_ID"
-          cat > "$ENTITLEMENTS_FILE" <<EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>keychain-access-groups</key>
-            <array>
-              <string>$KEYCHAIN_GROUP</string>
-            </array>
-          </dict>
-          </plist>
-          EOF
-
-          while IFS= read -r -d '' framework; do
-            codesign --force --sign - --timestamp=none "$framework"
-          done < <(find "$VALIDATION_APP_PATH" -type d -name "*.framework" -print0)
-          while IFS= read -r -d '' library; do
-            codesign --force --sign - --timestamp=none "$library"
-          done < <(find "$VALIDATION_APP_PATH" -type f -name "*.dylib" -print0)
-          codesign --force --sign - --timestamp=none --entitlements "$ENTITLEMENTS_FILE" "$VALIDATION_APP_PATH"
-          codesign --display --entitlements :- "$VALIDATION_APP_PATH" > ios-storage-validation-entitlements.log
+          VALIDATION_APP_PATH="$(find "$VALIDATION_DERIVED_DATA" -path "*/Build/Products/Debug-iphonesimulator/Bettamind.app" -print -quit)"
+          test -d "$VALIDATION_APP_PATH"
+          codesign --display --entitlements :- "$VALIDATION_APP_PATH" > ios-storage-validation-entitlements.log 2>ios-storage-validation-codesign-display.log
+          KEYCHAIN_GROUP="$(/usr/libexec/PlistBuddy -c 'Print :keychain-access-groups:0' ios-storage-validation-entitlements.log 2>/dev/null || true)"
+          echo "${KEYCHAIN_GROUP:-<none>}" | tee ios-storage-validation-keychain-group.log
 
           xcrun simctl uninstall booted "$BETTAMIND_IOS_BUNDLE_ID" || true
           xcrun simctl install booted "$VALIDATION_APP_PATH"
@@ -87,12 +79,20 @@ workflows:
           RESULT_FILE="$CONTAINER/tmp/bettamind-ios-storage-validation.txt"
           rm -f "$RESULT_FILE"
 
-          SIMCTL_CHILD_BETTAMIND_IOS_STORAGE_VALIDATION=1 \
-          SIMCTL_CHILD_BETTAMIND_IOS_STORAGE_KEYCHAIN_ACCESS_GROUP="$KEYCHAIN_GROUP" \
-          xcrun simctl launch \
-            --terminate-running-process \
-            booted \
-            "$BETTAMIND_IOS_BUNDLE_ID" 2>&1 | tee ios-storage-validation-launch.log
+          if [ -n "$KEYCHAIN_GROUP" ]; then
+            SIMCTL_CHILD_BETTAMIND_IOS_STORAGE_VALIDATION=1 \
+            SIMCTL_CHILD_BETTAMIND_IOS_STORAGE_KEYCHAIN_ACCESS_GROUP="$KEYCHAIN_GROUP" \
+            xcrun simctl launch \
+              --terminate-running-process \
+              booted \
+              "$BETTAMIND_IOS_BUNDLE_ID" 2>&1 | tee ios-storage-validation-launch.log
+          else
+            SIMCTL_CHILD_BETTAMIND_IOS_STORAGE_VALIDATION=1 \
+            xcrun simctl launch \
+              --terminate-running-process \
+              booted \
+              "$BETTAMIND_IOS_BUNDLE_ID" 2>&1 | tee ios-storage-validation-launch.log
+          fi
 
           for _ in $(seq 1 30); do
             if [ -f "$RESULT_FILE" ]; then
@@ -106,7 +106,10 @@ workflows:
           grep -q '^PASS:' "$RESULT_FILE"
     artifacts:
       - xcodebuild-ios-simulator.log
+      - xcodebuild-ios-storage-validation.log
+      - ios-storage-validation-codesign-display.log
       - ios-storage-validation-entitlements.log
+      - ios-storage-validation-keychain-group.log
       - ios-storage-validation-launch.log
       - ios-storage-validation.log
       - "**/build/reports/**"

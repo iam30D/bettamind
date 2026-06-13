@@ -68,13 +68,13 @@ database behaviour, but it is not treated as the Keychain authority because it
 does not have the same app-hosted Keychain context.
 
 The Codemagic workflow still performs the required unsigned simulator
-`xcodebuild` build. For the Keychain validation only, it copies that app bundle,
-ad-hoc signs the copy with a test-only simulator `keychain-access-groups`
-entitlement and installs the signed copy into the simulator. The app-hosted
-validation receives the same test access group through a launch environment
-variable and passes it explicitly to the iOS Keychain adapter. This does not
-introduce Apple release signing credentials and does not change the unsigned
-build artifact.
+`xcodebuild` build. For the Keychain validation only, it performs a separate
+simulator build with ad-hoc local signing and
+`iosApp/StorageValidation.entitlements`, then installs that validation build
+into the simulator. The app-hosted validation reads the signed
+`keychain-access-groups` value from the validation app and passes it explicitly
+to the iOS Keychain adapter. This does not introduce Apple release signing
+credentials and does not change the unsigned build artifact.
 
 Do not substitute system SQLite as an unencrypted fallback.
 
