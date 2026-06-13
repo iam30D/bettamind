@@ -48,8 +48,10 @@ kotlin {
         }
 
         androidMain.dependencies {
+            implementation(libs.androidx.sqlite)
             implementation(libs.koin.android)
             implementation(libs.kotlinx.coroutines.android)
+            implementation(libs.sqlcipher.android)
         }
     }
 }

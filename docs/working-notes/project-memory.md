@@ -2,9 +2,11 @@
 
 ## Current phase
 
-Phase 2 implemented locally: brand, design system, navigation and localisation
-foundation. Do not begin Phase 3 until the owner explicitly approves it after
-Codemagic iOS validation.
+Phase 3 partially implemented and blocked: Android SQLCipher encrypted storage,
+Android Keystore wrapping, the shared storage contract and iOS Keychain key
+management source exist. Do not begin Phase 4. Full Phase 3 completion requires
+an approved iOS native SQLCipher dependency/linking route and Codemagic
+`ios-simulator-unsigned` validation.
 
 ## Locked decisions
 
@@ -23,6 +25,14 @@ Codemagic iOS validation.
   Hyperlegible is bundled as an accessibility-oriented display option.
 - Initial locale targets remain `en`, `fr`, `es`, `pt`, `ar`, `hi`,
   `zh-Hans`, `ha`, `yo` and `ig`.
+- Phase 3 Android encrypted storage uses `net.zetetic:sqlcipher-android:4.16.0`
+  and `androidx.sqlite:sqlite:2.6.2`.
+- Android encrypted databases and wrapped keys live under
+  `Context.noBackupFilesDir`.
+- Android SQLCipher keys are wrapped with Android Keystore AES-GCM, requesting
+  StrongBox when available.
+- iOS has Keychain database-key source only. Do not use system SQLite as an
+  iOS SQLCipher substitute.
 
 ## Completed work
 
@@ -61,6 +71,18 @@ Codemagic iOS validation.
 - `AGENTS.md` now reminds future passes to ask the owner to run Codemagic
   `ios-simulator-unsigned` after pushed commits that affect shared/iOS/iOS
   workflow surfaces.
+- Phase 3 shared encrypted-storage contract was added under
+  `shared/src/commonMain/kotlin/org/bettamind/shared/privacy/`.
+- Android SQLCipher encrypted record storage and Android Keystore key wrapping
+  were added under `shared/src/androidMain/kotlin/org/bettamind/shared/privacy/`.
+- iOS Keychain database-key management source was added under
+  `shared/src/iosMain/kotlin/org/bettamind/shared/privacy/`.
+- Common storage contract tests cover wrong-key rejection, key rotation,
+  backup/restore and deletion with a test-only fake.
+- `phaseThreeCheck` now runs Phase 1 mobile checks plus Android lint, and
+  GitHub Actions now invokes `phaseThreeCheck`.
+- `docs/security/phase-3-encrypted-storage-spike.md` documents the Android
+  proof, iOS proof boundary and no-fallback rule.
 
 ## Important files
 
@@ -75,9 +97,14 @@ Codemagic iOS validation.
 - `shared/src/commonMain/kotlin/org/bettamind/shared/design/BettamindTheme.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/design/BettamindColorTokens.kt`
 - `shared/src/commonMain/composeResources/`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/privacy/`
+- `shared/src/commonTest/kotlin/org/bettamind/shared/privacy/`
+- `shared/src/androidMain/kotlin/org/bettamind/shared/privacy/`
+- `shared/src/iosMain/kotlin/org/bettamind/shared/privacy/`
 - `androidApp/src/main/res/`
 - `iosApp/iosApp/Assets.xcassets/`
 - `iosApp/iosApp.xcodeproj/project.pbxproj`
+- `docs/security/phase-3-encrypted-storage-spike.md`
 - `codemagic.yaml`
 
 ## Commands that passed
@@ -87,15 +114,21 @@ Codemagic iOS validation.
 - `.\gradlew.bat :shared:testDebugUnitTest --no-daemon --stacktrace`
 - `.\gradlew.bat phaseOneCheck --no-daemon --stacktrace`
 - `.\gradlew.bat :androidApp:lintDebug --no-daemon --stacktrace`
+- `.\gradlew.bat :shared:compileDebugKotlinAndroid --no-daemon --stacktrace`
+- `.\gradlew.bat :shared:compileKotlinIosSimulatorArm64 --no-daemon --stacktrace`
+- `.\gradlew.bat phaseThreeCheck --no-daemon --stacktrace`
 - `backend\.venv\Scripts\ruff.exe check .`
 - `backend\.venv\Scripts\mypy.exe app`
 - `backend\.venv\Scripts\pytest.exe`
-- docs placeholder/citation scan returned no matches
+- docs/source placeholder scan found only Codemagic's intentional `events: []`
 
 ## Known blockers and limitations
 
-- iOS cannot be built locally on Windows. Phase 2 iOS validation must run on
-  Codemagic `ios-simulator-unsigned`.
+- iOS cannot be fully built locally on Windows. Every shared/iOS change still
+  requires Codemagic `ios-simulator-unsigned`.
+- Phase 3 remains blocked because iOS SQLCipher native dependency/linking is
+  not selected or implemented. Kotlin/Native compilation proves the Keychain
+  adapter source only; it does not prove iOS SQLCipher encrypted SQLite.
 - No canonical SVG source logo is present yet. Phase 2 assets are derived from
   the PNG fallback.
 - The source PNG has a baked checkerboard background; generated assets use a
@@ -110,6 +143,8 @@ Codemagic iOS validation.
 - Run Codemagic `ios-simulator-unsigned` for pushed commits that change shared
   Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
   iOS, or Codemagic iOS workflow files.
+- Choose and approve the iOS SQLCipher native dependency/linking route for
+  Phase 3 completion, then validate it on Codemagic.
 - Provide `brand/source/bettamind-logo-master.svg` if a vector master exists,
   then regenerate assets from that source in a later approved pass.
 - Replace placeholder Android application ID and iOS bundle ID with owner-owned
@@ -119,6 +154,8 @@ Codemagic iOS validation.
 
 ## Next approved task
 
-Commit and push the Phase 2 cleanup, then wait for Codemagic iOS validation of
-the Phase 2 shared/iOS/resource commit. Do not start Phase 3 until the owner
-explicitly approves it.
+Commit and push the Phase 3 partial encrypted-storage spike, then have the
+owner run Codemagic `ios-simulator-unsigned`. Next engineering task is to
+resolve the iOS SQLCipher native dependency/linking blocker. Do not begin
+Phase 4 until the owner explicitly approves a revised scope or the blocker is
+resolved.

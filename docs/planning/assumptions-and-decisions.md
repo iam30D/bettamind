@@ -22,13 +22,23 @@
 - Keep placeholder bundle identifiers in configuration only so debug builds can
   compile before the owner confirms legal identifiers.
 - Keep the FastAPI backend optional and independent from mobile startup.
+- Use `net.zetetic:sqlcipher-android:4.16.0` plus
+  `androidx.sqlite:sqlite:2.6.2` for the Phase 3 Android SQLCipher proof.
+- Store Android encrypted databases and wrapped database keys in
+  `Context.noBackupFilesDir`.
+- Wrap the Android SQLCipher database key with Android Keystore AES-GCM,
+  requesting StrongBox when available and falling back to software-backed
+  Android Keystore only when StrongBox is unavailable.
+- Add the iOS Keychain database-key adapter in shared iOS source with
+  `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`.
+- Treat iOS SQLCipher database storage as blocked until a native SQLCipher
+  dependency/linking route is selected and validated on Codemagic. System
+  SQLite is not an acceptable fallback.
 
 ## Deferred decisions
 
 - Final Android application ID.
 - Final iOS bundle identifier.
-- Bettamind colour palette.
-- Platform icons and generated brand assets.
-- SQLCipher implementation details.
+- iOS native SQLCipher package/linking route.
 - Local AI runtime and model pack choices.
 - Signed release and TestFlight configuration.

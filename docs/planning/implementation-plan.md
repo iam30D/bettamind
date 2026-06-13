@@ -59,8 +59,8 @@ Acceptance criteria:
 - Five primary destinations exist: Today, Reflect, Grow, Support and Settings.
 - RTL is validated with Arabic.
 
-Status: implemented locally in Phase 2. Windows checks validate shared and
-Android code; iOS still requires Codemagic macOS validation after push.
+Status: implemented and validated. Windows checks validate shared and Android
+code; the owner confirmed Codemagic iOS validation passed.
 
 ## Phase 3: Encrypted storage and privacy technical spike
 
@@ -72,6 +72,15 @@ Acceptance criteria:
 - Android Keystore and iOS Keychain adapters exist.
 - Wrong-key rejection, key rotation, backup, restore and deletion are tested.
 - No unencrypted fallback storage exists.
+
+Status: partially implemented and blocked. Android SQLCipher storage,
+Android Keystore wrapping, the shared encrypted-storage contract and iOS
+Keychain key management source exist. Windows checks pass, including
+`iosSimulatorArm64` Kotlin compilation. Full Phase 3 completion is blocked
+until an iOS native SQLCipher dependency/linking route is selected, implemented
+and validated through Codemagic `ios-simulator-unsigned`. Do not use system
+SQLite as a substitute fallback. Do not begin Phase 4 until this blocker is
+resolved or the owner explicitly approves a revised Phase 3 scope.
 
 ## Phase 4: Deterministic Human Growth application
 

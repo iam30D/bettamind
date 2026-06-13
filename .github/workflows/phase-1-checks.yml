@@ -1,4 +1,4 @@
-name: Phase 1 Checks
+name: Mobile Checks
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -36,8 +36,8 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
-      - name: Run shared metadata, Android unit tests and Android debug build
-        run: ./gradlew phaseOneCheck --stacktrace
+      - name: Run shared metadata, Android unit tests, Android debug build and lint
+        run: ./gradlew phaseThreeCheck --stacktrace
 
       - name: Upload Gradle reports
         if: always()
