@@ -67,6 +67,12 @@ standalone Kotlin/Native simulator test binary remains useful for SQLCipher
 database behaviour, but it is not treated as the Keychain authority because it
 does not have the same app-hosted Keychain context.
 
+The Codemagic workflow still performs the required unsigned simulator
+`xcodebuild` build. For the Keychain validation only, it copies that app bundle,
+ad-hoc signs the copy with a test-only simulator Keychain entitlement and
+installs the signed copy into the simulator. This does not introduce Apple
+release signing credentials and does not change the unsigned build artifact.
+
 Do not substitute system SQLite as an unencrypted fallback.
 
 ## Tests
