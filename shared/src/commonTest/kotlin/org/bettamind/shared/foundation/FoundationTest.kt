@@ -15,4 +15,18 @@ class FoundationTest {
     fun initialLocalesIncludeRtlArabic() {
         assertTrue(BettamindLocales.initialTargets.any { it.value == "ar" })
     }
+
+    @Test
+    fun initialLocalesMatchPhaseTwoTargets() {
+        assertEquals(
+            listOf("en", "fr", "es", "pt", "ar", "hi", "zh-Hans", "ha", "yo", "ig"),
+            BettamindLocales.initialTargets.map { it.value },
+        )
+    }
+
+    @Test
+    fun arabicIsTheRtlValidationLocale() {
+        assertEquals("ar", BettamindLocales.rtlValidationLocale.value)
+        assertTrue(BettamindLocales.rtlValidationLocale.isRtl)
+    }
 }

@@ -59,6 +59,9 @@ Acceptance criteria:
 - Five primary destinations exist: Today, Reflect, Grow, Support and Settings.
 - RTL is validated with Arabic.
 
+Status: implemented locally in Phase 2. Windows checks validate shared and
+Android code; iOS still requires Codemagic macOS validation after push.
+
 ## Phase 3: Encrypted storage and privacy technical spike
 
 Goal: prove encrypted local storage on Android and iOS.

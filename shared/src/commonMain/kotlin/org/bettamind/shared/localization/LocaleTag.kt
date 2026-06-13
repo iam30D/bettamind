@@ -7,10 +7,18 @@ data class LocaleTag(val value: String) {
     init {
         require(value.isNotBlank()) { "Locale tag cannot be blank." }
     }
+
+    val language: String
+        get() = value.substringBefore('-').lowercase()
+
+    val isRtl: Boolean
+        get() = language in BettamindLocales.rtlLanguages
 }
 
 object BettamindLocales {
     val source = LocaleTag("en")
+    val rtlValidationLocale = LocaleTag("ar")
+    val rtlLanguages = setOf("ar")
     val initialTargets = listOf(
         LocaleTag("en"),
         LocaleTag("fr"),

@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Bettamind</string>
+    <string name="phase_two_status">أساس التصميم والتوطين</string>
+    <string name="destination_today">اليوم</string>
+    <string name="destination_today_description">ستظهر نقطة دخول يومية محلية هنا في مرحلة لاحقة.</string>
+    <string name="destination_reflect">تأمل</string>
+    <string name="destination_reflect_description">ستظهر مساحة تأمل خاصة هنا في مرحلة لاحقة.</string>
+    <string name="destination_grow">النمو</string>
+    <string name="destination_grow_description">ستظهر أدوات نمو موجهة هنا في مرحلة لاحقة.</string>
+    <string name="destination_support">الدعم</string>
+    <string name="destination_support_description">ستظهر موارد الدعم المحفوظة هنا في مرحلة لاحقة.</string>
+    <string name="destination_settings">الإعدادات</string>
+    <string name="destination_settings_description">اضبط أسس العرض في المرحلة 2.</string>
+    <string name="placeholder_status">عنصر نائب فقط. لا يوجد حساب أو مزامنة أو ذكاء اصطناعي أو محرك تخزين نشط.</string>
+    <string name="settings_theme_title">السمة</string>
+    <string name="settings_theme_light">فاتح</string>
+    <string name="settings_theme_dark">داكن</string>
+    <string name="settings_theme_calm">هادئ</string>
+    <string name="settings_theme_high_contrast">تباين عال</string>
+    <string name="settings_font_title">خط سهل القراءة</string>
+    <string name="settings_font_default">Noto Sans مع خطوط احتياطية حسب نظام الكتابة</string>
+    <string name="settings_font_accessible">Atkinson Hyperlegible مع خطوط Noto احتياطية</string>
+    <string name="settings_locale_note">حزم اللغة هي أسس مسودة بانتظار المراجعة قبل استخدامها في الإنتاج.</string>
+</resources>

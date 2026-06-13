@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Bettamind</string>
+    <string name="phase_two_status">Tushen zane da fassarar yanki</string>
+    <string name="destination_today">Yau</string>
+    <string name="destination_today_description">Wurin shiga na yau da kullum a cikin na'ura zai bayyana a nan a mataki na gaba.</string>
+    <string name="destination_reflect">Tunani</string>
+    <string name="destination_reflect_description">Wurin tunani na sirri zai bayyana a nan a mataki na gaba.</string>
+    <string name="destination_grow">Girma</string>
+    <string name="destination_grow_description">Kayan aikin girma masu jagora za su bayyana a nan a mataki na gaba.</string>
+    <string name="destination_support">Tallafi</string>
+    <string name="destination_support_description">Albarkatun tallafi da aka ajiye za su bayyana a nan a mataki na gaba.</string>
+    <string name="destination_settings">Saituna</string>
+    <string name="destination_settings_description">Daidaita tushen nunin mataki na 2.</string>
+    <string name="placeholder_status">Wurin rikon kawai. Babu asusu, aiki tare, AI ko injin ajiya da ke aiki.</string>
+    <string name="settings_theme_title">Jigo</string>
+    <string name="settings_theme_light">Haske</string>
+    <string name="settings_theme_dark">Duhu</string>
+    <string name="settings_theme_calm">Natsuwa</string>
+    <string name="settings_theme_high_contrast">Babban bambanci</string>
+    <string name="settings_font_title">Rubutu mai saukin karatu</string>
+    <string name="settings_font_default">Noto Sans tare da madadin rubutu</string>
+    <string name="settings_font_accessible">Atkinson Hyperlegible tare da madadin Noto</string>
+    <string name="settings_locale_note">Kunshin harshe tushe ne na daftari da ke jiran bita kafin amfani a samarwa.</string>
+</resources>

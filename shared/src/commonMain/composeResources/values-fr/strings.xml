@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Bettamind</string>
+    <string name="phase_two_status">Fondation de design et de localisation</string>
+    <string name="destination_today">Aujourd'hui</string>
+    <string name="destination_today_description">Un point d'entree local quotidien apparaitra ici dans une phase ulterieure.</string>
+    <string name="destination_reflect">Reflechir</string>
+    <string name="destination_reflect_description">Un espace prive de reflection apparaitra ici dans une phase ulterieure.</string>
+    <string name="destination_grow">Grandir</string>
+    <string name="destination_grow_description">Des outils de croissance guides apparaitront ici dans une phase ulterieure.</string>
+    <string name="destination_support">Soutien</string>
+    <string name="destination_support_description">Les ressources de soutien enregistrees apparaitront ici dans une phase ulterieure.</string>
+    <string name="destination_settings">Reglages</string>
+    <string name="destination_settings_description">Ajuster les fondations d'affichage de la phase 2.</string>
+    <string name="placeholder_status">Espace reserve seulement. Aucun compte, synchronisation, IA ou moteur de stockage n'est actif.</string>
+    <string name="settings_theme_title">Theme</string>
+    <string name="settings_theme_light">Clair</string>
+    <string name="settings_theme_dark">Sombre</string>
+    <string name="settings_theme_calm">Calme</string>
+    <string name="settings_theme_high_contrast">Contraste eleve</string>
+    <string name="settings_font_title">Police lisible</string>
+    <string name="settings_font_default">Noto Sans avec polices de secours par script</string>
+    <string name="settings_font_accessible">Atkinson Hyperlegible avec polices de secours Noto</string>
+    <string name="settings_locale_note">Les packs de langue sont des fondations brouillons en attente de revision avant utilisation en production.</string>
+</resources>

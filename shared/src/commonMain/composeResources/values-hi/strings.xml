@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Bettamind</string>
+    <string name="phase_two_status">डिजाइन और स्थानीयकरण आधार</string>
+    <string name="destination_today">आज</string>
+    <string name="destination_today_description">स्थानीय दैनिक प्रवेश बिंदु बाद की अवस्था में यहां दिखाई देगा.</string>
+    <string name="destination_reflect">मनन</string>
+    <string name="destination_reflect_description">निजी मनन स्थान बाद की अवस्था में यहां दिखाई देगा.</string>
+    <string name="destination_grow">विकास</string>
+    <string name="destination_grow_description">मार्गदर्शित विकास उपकरण बाद की अवस्था में यहां दिखाई देंगे.</string>
+    <string name="destination_support">सहायता</string>
+    <string name="destination_support_description">सहेजे गए सहायता संसाधन बाद की अवस्था में यहां दिखाई देंगे.</string>
+    <string name="destination_settings">सेटिंग्स</string>
+    <string name="destination_settings_description">चरण 2 के प्रदर्शन आधार समायोजित करें.</string>
+    <string name="placeholder_status">केवल प्लेसहोल्डर. कोई खाता, सिंक, एआई या स्टोरेज इंजन सक्रिय नहीं है.</string>
+    <string name="settings_theme_title">थीम</string>
+    <string name="settings_theme_light">हल्का</string>
+    <string name="settings_theme_dark">गहरा</string>
+    <string name="settings_theme_calm">शांत</string>
+    <string name="settings_theme_high_contrast">उच्च कंट्रास्ट</string>
+    <string name="settings_font_title">पठनीय फ़ॉन्ट</string>
+    <string name="settings_font_default">स्क्रिप्ट फॉलबैक के साथ Noto Sans</string>
+    <string name="settings_font_accessible">Noto फॉलबैक के साथ Atkinson Hyperlegible</string>
+    <string name="settings_locale_note">भाषा पैक उत्पादन उपयोग से पहले समीक्षा की प्रतीक्षा कर रहे मसौदा आधार हैं.</string>
+</resources>

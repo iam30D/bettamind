@@ -2,7 +2,9 @@
 
 ## Current phase
 
-Phase 1 completed locally: monorepo and cross-platform build foundation.
+Phase 2 implemented locally: brand, design system, navigation and localisation
+foundation. Do not begin Phase 3 until the owner explicitly approves it after
+Codemagic iOS validation.
 
 ## Locked decisions
 
@@ -12,97 +14,107 @@ Phase 1 completed locally: monorepo and cross-platform build foundation.
 - Optional backend: FastAPI.
 - Core mobile use remains offline, account-free, backend-independent and useful
   without AI.
-- No Phase 2 branding assets, finished UI, encryption, AI models or product
-  engines in Phase 1.
+- Phase 2 uses the available PNG fallback at
+  `brand/source/bettamind-logo-master.png`; the preferred SVG source is still
+  absent.
+- Final Phase 2 palette is documented in
+  `docs/design/brand-and-colour-decision.md`.
+- Default UI font is bundled Noto Sans with script fallbacks; Atkinson
+  Hyperlegible is bundled as an accessibility-oriented display option.
+- Initial locale targets remain `en`, `fr`, `es`, `pt`, `ar`, `hi`,
+  `zh-Hans`, `ha`, `yo` and `ig`.
 
 ## Completed work
 
-- Empty GitHub repository cloned into the workspace.
-- Definitive setup prompt and duplicate Phase 0 prompt attachments were read.
-- Baseline repository documentation was created because the cloned repository
-  was empty.
-- Phase 0 planning files were reconstructed from the definitive owner prompt.
-- Kotlin Multiplatform and Compose Multiplatform foundation created.
-- Android application target created with display name Bettamind.
-- iOS targets and minimal `iosApp` Xcode project created.
-- Optional FastAPI backend skeleton created.
-- GitHub Actions and `codemagic.yaml` created.
-- Android command-line tools and SDK packages installed locally under
-  `C:\Users\HP\AppData\Local\Android\Sdk`.
-- Backend virtual environment created under `backend/.venv` and dev
-  dependencies installed there.
-- Backend Ruff, mypy and pytest checks passed after fixing Alembic import
-  ordering and SQLAlchemy session factory typing.
-- GitHub Actions runner failure `./gradlew: Permission denied` was repaired by
-  marking `gradlew` executable in Git and adding a defensive CI `chmod +x`
-  step.
-- Codemagic failure in step `Run shared tests` was repaired by replacing the
-  broad `:shared:allTests` aggregate with the explicit iOS simulator test task
-  `:shared:iosSimulatorArm64Test`. Device target compatibility remains covered
-  by explicit iOS target compilation and the real `xcodebuild` simulator build.
-- Codemagic then exposed a Kotlin/Native compile failure in
-  `LocaleTag.kt`: `@JvmInline` was used in `commonMain`. Replaced the
-  JVM-specific value class with a serializable common `data class`.
-- A PNG source logo is present at `brand/source/bettamind-logo-master.png`; no
-  generated brand assets were created.
+- Empty GitHub repository was cloned into the workspace.
+- Baseline repository documentation and Phase 0 planning files were created.
+- Phase 1 Kotlin Multiplatform, Compose Multiplatform, Android, iOS,
+  optional FastAPI, GitHub Actions and Codemagic foundation was completed.
+- GitHub Actions `gradlew` permission failure was repaired.
+- Codemagic shared-test scope and Kotlin/Native `LocaleTag` compatibility were
+  repaired; owner later confirmed Codemagic passed.
+- Phase 2 source logo was inspected. The source PNG was not overwritten.
+- `scripts/generate_brand_assets.py` now generates repeatable PNG-derived brand
+  assets from the source logo.
+- Android adaptive launcher foreground, background, monochrome and
+  notification icons were generated.
+- iOS `Assets.xcassets` was generated with complete AppIcon, mark and lockup
+  image sets, and the Xcode project now includes the asset catalog.
+- Brand masters were generated under `brand/generated/`.
+- Noto Sans Variable, Noto Sans Arabic, Noto Sans Devanagari, Noto Sans SC and
+  Atkinson Hyperlegible Regular/Bold were bundled with OFL licence files.
+- Compose resources now include source English strings plus draft locale packs
+  for all initial target locales.
+- Shared app shell now has five placeholder primary destinations: Today,
+  Reflect, Grow, Support and Settings.
+- Settings placeholder exposes theme mode and readable-font display controls.
+- Shared design tokens, Material colour schemes and typography foundations were
+  added.
+- Common tests now cover palette contrast, Phase 2 locale targets and Arabic
+  RTL detection.
+- Android backup and data extraction rules exclude app data in line with the
+  offline/private product stance.
 
 ## Important files
 
 - `AGENTS.md`
 - `docs/specification/bettamind-locked-specification.md`
 - `docs/planning/implementation-plan.md`
+- `docs/design/brand-and-colour-decision.md`
+- `docs/design/font-sources.md`
 - `docs/working-notes/project-memory.md`
-- `codemagic.yaml`
-- `androidApp/build.gradle.kts`
-- `shared/build.gradle.kts`
+- `scripts/generate_brand_assets.py`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/App.kt`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/design/BettamindTheme.kt`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/design/BettamindColorTokens.kt`
+- `shared/src/commonMain/composeResources/`
+- `androidApp/src/main/res/`
+- `iosApp/iosApp/Assets.xcassets/`
 - `iosApp/iosApp.xcodeproj/project.pbxproj`
-- `backend/app/main.py`
+- `codemagic.yaml`
 
 ## Commands that passed
 
-- `git clone https://github.com/iam30D/bettamind.git .`
-- `python --version`
-- `.\gradlew.bat --version`
 - `.\gradlew.bat :shared:compileKotlinMetadata --no-daemon --stacktrace`
-- `.\gradlew.bat :shared:testDebugUnitTest --no-daemon --stacktrace`
 - `.\gradlew.bat :androidApp:compileDebugKotlin --no-daemon --stacktrace`
-- `.\gradlew.bat :androidApp:assembleDebug --no-daemon --stacktrace`
+- `.\gradlew.bat :shared:testDebugUnitTest --no-daemon --stacktrace`
 - `.\gradlew.bat phaseOneCheck --no-daemon --stacktrace`
-- `.\gradlew.bat :shared:compileKotlinMetadata --no-daemon --stacktrace` after
-  the `LocaleTag` Kotlin/Native repair
-- `python -m compileall backend`
+- `.\gradlew.bat :androidApp:lintDebug --no-daemon --stacktrace`
 - `backend\.venv\Scripts\ruff.exe check .`
 - `backend\.venv\Scripts\mypy.exe app`
 - `backend\.venv\Scripts\pytest.exe`
-- `git update-index --chmod=+x gradlew`
-- docs unresolved citation placeholder scan
+- docs placeholder/citation scan returned no matches
 
 ## Known blockers and limitations
 
-- The cloned GitHub repository was empty, so Phase 0 planning files had to be
-  reconstructed from the definitive owner prompt.
-- No canonical SVG source logo is present yet under `brand/source/`; Phase 2 can
-  use the present PNG fallback if the owner approves it as canonical.
-- `java` is not available on global `PATH`; checks used Android Studio's bundled
-  JBR at `C:\Program Files\Android\Android Studio\jbr`.
-- iOS cannot be built locally on Windows and must be validated on Codemagic.
-- `:shared:allTests` is not a Windows check because it may include native/iOS
-  test work and should not be used in Codemagic Phase 1; Windows uses
-  `phaseOneCheck`, while Codemagic runs `:shared:iosSimulatorArm64Test`, iOS
-  target compilation and `xcodebuild`.
-- Backend pytest passes with one upstream Starlette/FastAPI deprecation warning
-  about `httpx` test client compatibility; it does not fail the Phase 1 check.
+- iOS cannot be built locally on Windows. Phase 2 iOS validation must run on
+  Codemagic `ios-simulator-unsigned`.
+- No canonical SVG source logo is present yet. Phase 2 assets are derived from
+  the PNG fallback.
+- The source PNG has a baked checkerboard background; generated assets use a
+  documented mask to derive transparency.
+- Android lint passes with 0 errors and 3 warnings: compile/target SDK 35 while
+  Android SDK 36 is available, plus `mipmap-anydpi-v26` being reported as
+  unnecessary even though moving the adaptive icon XML broke resource linking.
+- Locale packs are draft implementation foundations and require qualified human
+  review before production use.
+- Backend pytest still emits one upstream Starlette/FastAPI deprecation warning
+  about `httpx` test client compatibility.
+- `java` is not available on global `PATH`; checks used Android Studio's
+  bundled JBR at `C:\Program Files\Android\Android Studio\jbr`.
 
 ## Manual owner actions
 
-- Confirm whether `brand/source/bettamind-logo-master.png` is the canonical
-  fallback logo for Phase 2 or provide `brand/source/bettamind-logo-master.svg`.
+- Run Codemagic `ios-simulator-unsigned` for the Phase 2 shared/iOS/resource
+  changes after push.
+- Provide `brand/source/bettamind-logo-master.svg` if a vector master exists,
+  then regenerate assets from that source in a later approved pass.
 - Replace placeholder Android application ID and iOS bundle ID with owner-owned
   values before release work.
-- Connect the repository to Codemagic and run the unsigned iOS simulator
-  workflow after Phase 1 is pushed.
+- Arrange qualified human review for production translations, especially any
+  safety, crisis, legal, privacy or consent copy.
 
 ## Next approved task
 
-Rerun Codemagic `ios-simulator-unsigned` and repair any remaining Xcode build
-failure before approving Phase 2.
+Commit and push Phase 2, then wait for Codemagic iOS validation. Do not start
+Phase 3 until the owner explicitly approves it.

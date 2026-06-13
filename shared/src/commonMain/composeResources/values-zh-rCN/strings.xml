@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Bettamind</string>
+    <string name="phase_two_status">设计和本地化基础</string>
+    <string name="destination_today">今天</string>
+    <string name="destination_today_description">本地每日入口将在后续阶段显示在这里。</string>
+    <string name="destination_reflect">反思</string>
+    <string name="destination_reflect_description">私人反思空间将在后续阶段显示在这里。</string>
+    <string name="destination_grow">成长</string>
+    <string name="destination_grow_description">引导式成长工具将在后续阶段显示在这里。</string>
+    <string name="destination_support">支持</string>
+    <string name="destination_support_description">已保存的支持资源将在后续阶段显示在这里。</string>
+    <string name="destination_settings">设置</string>
+    <string name="destination_settings_description">调整第 2 阶段的显示基础。</string>
+    <string name="placeholder_status">仅为占位。当前没有账号、同步、AI 或存储引擎处于活动状态。</string>
+    <string name="settings_theme_title">主题</string>
+    <string name="settings_theme_light">浅色</string>
+    <string name="settings_theme_dark">深色</string>
+    <string name="settings_theme_calm">平静</string>
+    <string name="settings_theme_high_contrast">高对比度</string>
+    <string name="settings_font_title">易读字体</string>
+    <string name="settings_font_default">Noto Sans 及文字脚本后备字体</string>
+    <string name="settings_font_accessible">Atkinson Hyperlegible 及 Noto 后备字体</string>
+    <string name="settings_locale_note">语言包是草稿基础，生产使用前仍需审核。</string>
+</resources>

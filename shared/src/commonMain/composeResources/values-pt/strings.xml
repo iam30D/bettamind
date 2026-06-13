@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Bettamind</string>
+    <string name="phase_two_status">Base de design e localizacao</string>
+    <string name="destination_today">Hoje</string>
+    <string name="destination_today_description">Um ponto de entrada diario local aparecera aqui em uma fase posterior.</string>
+    <string name="destination_reflect">Refletir</string>
+    <string name="destination_reflect_description">Um espaco privado de reflexao aparecera aqui em uma fase posterior.</string>
+    <string name="destination_grow">Crescer</string>
+    <string name="destination_grow_description">Ferramentas guiadas de crescimento aparecerao aqui em uma fase posterior.</string>
+    <string name="destination_support">Apoio</string>
+    <string name="destination_support_description">Recursos de apoio salvos aparecerao aqui em uma fase posterior.</string>
+    <string name="destination_settings">Definicoes</string>
+    <string name="destination_settings_description">Ajuste as bases visuais da fase 2.</string>
+    <string name="placeholder_status">Apenas marcador de posicao. Nenhuma conta, sincronizacao, IA ou motor de armazenamento esta ativo.</string>
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Escuro</string>
+    <string name="settings_theme_calm">Calmo</string>
+    <string name="settings_theme_high_contrast">Alto contraste</string>
+    <string name="settings_font_title">Fonte legivel</string>
+    <string name="settings_font_default">Noto Sans com fontes alternativas por escrita</string>
+    <string name="settings_font_accessible">Atkinson Hyperlegible com fontes Noto alternativas</string>
+    <string name="settings_locale_note">Os pacotes de idioma sao bases em rascunho aguardando revisao antes do uso em producao.</string>
+</resources>

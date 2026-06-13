@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Bettamind</string>
+    <string name="phase_two_status">Base de diseno y localizacion</string>
+    <string name="destination_today">Hoy</string>
+    <string name="destination_today_description">Un punto de entrada diario local aparecera aqui en una fase posterior.</string>
+    <string name="destination_reflect">Reflexionar</string>
+    <string name="destination_reflect_description">Un espacio privado de reflexion aparecera aqui en una fase posterior.</string>
+    <string name="destination_grow">Crecer</string>
+    <string name="destination_grow_description">Las herramientas guiadas de crecimiento apareceran aqui en una fase posterior.</string>
+    <string name="destination_support">Apoyo</string>
+    <string name="destination_support_description">Los recursos de apoyo guardados apareceran aqui en una fase posterior.</string>
+    <string name="destination_settings">Ajustes</string>
+    <string name="destination_settings_description">Ajusta las bases visuales de la fase 2.</string>
+    <string name="placeholder_status">Solo marcador de posicion. No hay cuenta, sincronizacion, IA ni motor de almacenamiento activo.</string>
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Oscuro</string>
+    <string name="settings_theme_calm">Calma</string>
+    <string name="settings_theme_high_contrast">Alto contraste</string>
+    <string name="settings_font_title">Fuente legible</string>
+    <string name="settings_font_default">Noto Sans con fuentes de respaldo por escritura</string>
+    <string name="settings_font_accessible">Atkinson Hyperlegible con fuentes Noto de respaldo</string>
+    <string name="settings_locale_note">Los paquetes de idioma son bases borrador pendientes de revision antes del uso en produccion.</string>
+</resources>

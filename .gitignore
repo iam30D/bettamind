@@ -46,9 +46,8 @@ model-packs/
 backups/
 exports/
 
-# Generated brand previews
-brand/generated/*
-!brand/generated/.gitkeep
+# Generated brand masters are committed after Phase 2.
+brand/generated/tmp/
 
 # Python
 .venv/

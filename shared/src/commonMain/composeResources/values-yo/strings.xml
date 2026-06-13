@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Bettamind</string>
+    <string name="phase_two_status">Ipile oniru ati ibile ede</string>
+    <string name="destination_today">Oni</string>
+    <string name="destination_today_description">Ibi ibere ojo kookan lori ero yoo han nibi ni ipele to nbo.</string>
+    <string name="destination_reflect">Ronu</string>
+    <string name="destination_reflect_description">Aaye ironu ikoko yoo han nibi ni ipele to nbo.</string>
+    <string name="destination_grow">Dagba</string>
+    <string name="destination_grow_description">Awon irinse idagbasoke ti a dari yoo han nibi ni ipele to nbo.</string>
+    <string name="destination_support">Atilenhin</string>
+    <string name="destination_support_description">Awon ohun elo atilenhin ti a fipamo yoo han nibi ni ipele to nbo.</string>
+    <string name="destination_settings">Eto</string>
+    <string name="destination_settings_description">Satunse awon ipile ifihan ipele 2.</string>
+    <string name="placeholder_status">Ami ibi nikan. Ko si akanti, amuṣiṣẹpọ, AI tabi ero ipamo to n sise.</string>
+    <string name="settings_theme_title">Akori</string>
+    <string name="settings_theme_light">Imole</string>
+    <string name="settings_theme_dark">Dudu</string>
+    <string name="settings_theme_calm">Itura</string>
+    <string name="settings_theme_high_contrast">Iyatọ giga</string>
+    <string name="settings_font_title">Fonti ti o rorun lati ka</string>
+    <string name="settings_font_default">Noto Sans pelu awon fonti iranlowo</string>
+    <string name="settings_font_accessible">Atkinson Hyperlegible pelu awon fonti iranlowo Noto</string>
+    <string name="settings_locale_note">Awon apo ede je ipile awokose ti o nduro fun atunyewo ki won to lo ni iṣelọpọ.</string>
+</resources>

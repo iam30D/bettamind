@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Bettamind</string>
+    <string name="phase_two_status">Ntọala imewe na mpaghara asụsụ</string>
+    <string name="destination_today">Taa</string>
+    <string name="destination_today_description">Ebe mbata kwa ụbọchị nke dị na ngwaọrụ ga-apụta ebe a n'ọkwa ọzọ.</string>
+    <string name="destination_reflect">Tụgharịa uche</string>
+    <string name="destination_reflect_description">Oghere ntụgharị uche nzuzo ga-apụta ebe a n'ọkwa ọzọ.</string>
+    <string name="destination_grow">Too</string>
+    <string name="destination_grow_description">Ngwa uto a na-eduzi ga-apụta ebe a n'ọkwa ọzọ.</string>
+    <string name="destination_support">Nkwado</string>
+    <string name="destination_support_description">Akụrụngwa nkwado echekwara ga-apụta ebe a n'ọkwa ọzọ.</string>
+    <string name="destination_settings">Ntọala</string>
+    <string name="destination_settings_description">Hazie ntọala ngosi nke ọkwa 2.</string>
+    <string name="placeholder_status">Ọ bụ naanị ihe nnọchi ebe. Enweghị akaụntụ, mmekọrịta, AI ma ọ bụ injin nchekwa na-arụ ọrụ.</string>
+    <string name="settings_theme_title">Isiokwu</string>
+    <string name="settings_theme_light">Ìhè</string>
+    <string name="settings_theme_dark">Ọchịchịrị</string>
+    <string name="settings_theme_calm">Jụụ</string>
+    <string name="settings_theme_high_contrast">Nnukwu ọdịiche</string>
+    <string name="settings_font_title">Font dị mfe ịgụ</string>
+    <string name="settings_font_default">Noto Sans nwere font ndabere maka usoro edemede</string>
+    <string name="settings_font_accessible">Atkinson Hyperlegible nwere font ndabere Noto</string>
+    <string name="settings_locale_note">Ngwugwu asụsụ bụ ntọala drafụ na-eche nyocha tupu eji ya na mmepụta.</string>
+</resources>
