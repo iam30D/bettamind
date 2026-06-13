@@ -43,6 +43,8 @@ SQLCipher before replacing the current database.
 
 `IosKeychainStorageKeyManager` adds the iOS Keychain adapter source for storing
 the SQLCipher database key with `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`.
+It fails closed with OSStatus details when Security.framework operations fail
+and does not write key material to fallback storage.
 
 The selected iOS SQLCipher route is the official `SQLCipher.swift` Swift Package
 pinned to `4.16.0`, matching the Android SQLCipher dependency. The Xcode project
@@ -59,6 +61,11 @@ database bytes as ciphertext.
 Because Kotlin/Native cinterop for iOS requires Apple's native toolchain, Windows
 cannot compile or execute the iOS SQLCipher adapter. Codemagic macOS validation
 is the required proof for this part of Phase 3.
+
+The real Keychain proof must run from an app-hosted iOS simulator process. The
+standalone Kotlin/Native simulator test binary remains useful for SQLCipher
+database behaviour, but it is not treated as the Keychain authority because it
+does not have the same app-hosted Keychain context.
 
 Do not substitute system SQLite as an unencrypted fallback.
 
@@ -78,4 +85,8 @@ Android compilation verifies the SQLCipher and Keystore adapter APIs on Windows.
 After the iOS SQLCipher cinterop was added, Windows skips the iOS Native targets
 because cinterop cross-compilation is unsupported on `mingw_x64`. Codemagic
 `ios-simulator-unsigned` must run `:shared:iosSimulatorArm64Test`,
-compile all iOS targets and build the unsigned simulator app with `xcodebuild`.
+compile all iOS targets, build the unsigned simulator app with `xcodebuild`,
+install the simulator app and launch it with
+`BETTAMIND_IOS_STORAGE_VALIDATION=1`. The app-hosted validation writes
+`bettamind-ios-storage-validation.txt` and the workflow requires a `PASS:`
+result.

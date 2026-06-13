@@ -8,7 +8,7 @@ storage work. Phase 4 remains intentionally in-memory for personal narrative
 content until encrypted storage is fully validated. Phase 3 now has a selected
 iOS SQLCipher route and adapter source, but completion still requires
 Codemagic `ios-simulator-unsigned` validation on macOS after the latest
-iOS Keychain query-construction fix.
+app-hosted iOS encrypted-storage validation update.
 
 ## Locked decisions
 
@@ -37,6 +37,9 @@ iOS Keychain query-construction fix.
   `4.16.0`, with Gradle checksum-verifying the same XCFramework for
   Kotlin/Native cinterop. Do not use system SQLite as an iOS SQLCipher
   substitute.
+- Real iOS Keychain behaviour must be validated from an app-hosted simulator
+  process. The standalone Kotlin/Native simulator test binary is not treated as
+  the Keychain proof.
 - Phase 4 deterministic growth flow is allowed to run without storage, but
   narrative persistence remains disabled unless encrypted storage is available.
 - Phase 4 adult gate is self-declared and records no exact date of birth or
@@ -166,6 +169,27 @@ iOS Keychain query-construction fix.
 - The iOS Keychain integration test now wraps Keychain operations with a
   stricter diagnostic helper so any remaining simulator failure reports the
   underlying OSStatus cause instead of an opaque `StoreUnavailable`.
+- Codemagic `ios-simulator-unsigned` for commit `064f77c` still failed in
+  `:shared:iosSimulatorArm64Test` at the real Keychain manager test. The
+  failure was isolated to the standalone Kotlin/Native simulator test process,
+  not to SQLCipher compilation or SQLCipher database behaviour.
+- `IosKeychainStorageKeyManager` no longer adds
+  `kSecUseDataProtectionKeychain` to iOS queries. It keeps
+  `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`, CoreFoundation type
+  dictionary callbacks and fail-closed OSStatus reporting.
+- `runIosEncryptedStorageAppValidation()` was added under `iosMain` to exercise
+  the real iOS Keychain manager together with the real SQLCipher record store
+  from an app-hosted process.
+- `iosApp` now runs that validation only when
+  `BETTAMIND_IOS_STORAGE_VALIDATION=1` is supplied. It writes
+  `bettamind-ios-storage-validation.txt` into the app temporary directory and
+  exits with success only after a PASS result.
+- The raw Kotlin/Native Keychain integration test is now explicitly ignored
+  with a reason pointing to the app-hosted Codemagic validation path.
+- Codemagic still runs `:shared:iosSimulatorArm64Test`, compiles iOS targets and
+  performs the required unsigned `xcodebuild` simulator build. It then installs
+  the simulator app, launches it with the storage-validation environment flag
+  and requires the app-written result file to begin with `PASS:`.
 
 ## Important files
 
@@ -253,6 +277,11 @@ iOS Keychain query-construction fix.
   completed on Windows after the Keychain test diagnostic helper was added,
   with iOS Native targets still disabled because cinterop cannot be processed
   on `mingw_x64`.
+- `.\gradlew.bat phaseThreeCheck --no-daemon --stacktrace` passed after the
+  app-hosted iOS encrypted-storage validation route was added.
+- `.\gradlew.bat :shared:compileKotlinIosSimulatorArm64 --no-daemon --stacktrace`
+  completed on Windows after the app-hosted validation update, with the iOS
+  Native compile task still skipped on Windows.
 - `backend\.venv\Scripts\ruff.exe check .`
 - `backend\.venv\Scripts\mypy.exe app`
 - `backend\.venv\Scripts\pytest.exe`
@@ -266,8 +295,9 @@ iOS Keychain query-construction fix.
 - iOS cannot be fully built locally on Windows. Every shared/iOS change still
   requires Codemagic `ios-simulator-unsigned`.
 - Phase 3 remains pending Codemagic validation because iOS SQLCipher cinterop
-  cannot be compiled or executed on Windows. Kotlin/Native disables the iOS
-  targets on `mingw_x64` once cinterop is present.
+  cannot be compiled or executed on Windows, and real iOS Keychain behaviour
+  must be proven from the app-hosted simulator validation path. Kotlin/Native
+  disables the iOS targets on `mingw_x64` once cinterop is present.
 - Phase 4 does not persist narrative content. Storage status intentionally
   reports encrypted storage unavailable until the platform encrypted store is
   complete.
@@ -289,8 +319,9 @@ iOS Keychain query-construction fix.
   Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
   iOS, or Codemagic iOS workflow files.
 - Run Codemagic `ios-simulator-unsigned` for the next pushed iOS SQLCipher
-  commit because it changes shared iOS Kotlin and must be proven by macOS
-  Kotlin/Native compilation plus the Xcode simulator build.
+  commit because it changes shared iOS Kotlin, `iosApp` and the Codemagic iOS
+  workflow, and must be proven by macOS Kotlin/Native compilation, the unsigned
+  Xcode simulator build and app-hosted encrypted-storage validation.
 - Provide `brand/source/bettamind-logo-master.svg` if a vector master exists,
   then regenerate assets from that source in a later approved pass.
 - Replace placeholder Android application ID and iOS bundle ID with owner-owned
@@ -300,9 +331,8 @@ iOS Keychain query-construction fix.
 
 ## Next approved task
 
-Commit and push the iOS Keychain query-construction fix, then have the owner
-rerun Codemagic `ios-simulator-unsigned`. If Codemagic passes, update memory to
-mark Phase 3 encrypted-storage proof complete. If it still fails with a
-Keychain OSStatus, use that status to decide whether the Kotlin/Native
-standalone simulator test binary needs test-only entitlements. Do not begin
-Phase 5 automatically.
+Commit and push the app-hosted iOS encrypted-storage validation update, then
+have the owner rerun Codemagic `ios-simulator-unsigned`. If Codemagic passes,
+update memory to mark Phase 3 encrypted-storage proof complete. If it fails,
+use the app-written storage-validation log and xcodebuild output to diagnose
+the remaining iOS simulator issue. Do not begin Phase 5 automatically.

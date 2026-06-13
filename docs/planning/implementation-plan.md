@@ -78,11 +78,13 @@ Codemagic proof. Android SQLCipher storage, Android Keystore wrapping, the
 shared encrypted-storage contract and iOS Keychain key management source exist.
 The selected iOS route is `SQLCipher.swift` pinned to `4.16.0`; Xcode links the
 Swift Package product and Gradle checksum-verifies the same XCFramework for
-Kotlin/Native cinterop. Windows checks pass for Android and shared code, but
-Windows now skips iOS Native targets because Kotlin/Native cinterop for iOS
-requires macOS. Full Phase 3 completion requires Codemagic
-`ios-simulator-unsigned` to pass. Do not use system SQLite as a substitute
-fallback.
+Kotlin/Native cinterop. The remaining Keychain proof now runs from the app
+process in Codemagic because the standalone Kotlin/Native simulator test binary
+does not provide the same app-hosted Keychain context. Windows checks pass for
+Android and shared code, but Windows now skips iOS Native targets because
+Kotlin/Native cinterop for iOS requires macOS. Full Phase 3 completion requires
+Codemagic `ios-simulator-unsigned` to pass, including the app-hosted
+encrypted-storage validation. Do not use system SQLite as a substitute fallback.
 
 ## Phase 4: Deterministic Human Growth application
 

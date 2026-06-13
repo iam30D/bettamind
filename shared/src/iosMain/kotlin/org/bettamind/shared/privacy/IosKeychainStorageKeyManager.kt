@@ -33,7 +33,6 @@ import platform.Security.kSecMatchLimit
 import platform.Security.kSecMatchLimitOne
 import platform.Security.kSecRandomDefault
 import platform.Security.kSecReturnData
-import platform.Security.kSecUseDataProtectionKeychain
 import platform.Security.kSecValueData
 import platform.darwin.OSStatus
 import platform.posix.memcpy
@@ -107,7 +106,6 @@ class IosKeychainStorageKeyManager(
             setValue(kSecAttrService, service.toCfString())
             setValue(kSecAttrAccount, account.toCfString())
             setValue(kSecAttrAccessible, kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly)
-            setValue(kSecUseDataProtectionKeychain, kCFBooleanTrue)
         }
 
     private fun mutableDictionary(): CFMutableDictionaryRef =
