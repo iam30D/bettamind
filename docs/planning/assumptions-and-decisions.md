@@ -31,18 +31,20 @@
   Android Keystore only when StrongBox is unavailable.
 - Add the iOS Keychain database-key adapter in shared iOS source with
   `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`.
-- Treat iOS SQLCipher database storage as blocked until a native SQLCipher
-  dependency/linking route is selected and validated on Codemagic. System
-  SQLite is not an acceptable fallback.
-- Proceed with Phase 4 only as a deterministic in-memory product slice while
-  iOS SQLCipher remains unresolved. Personal narrative persistence stays off
-  unless encrypted storage is available; no unencrypted storage fallback is
-  permitted.
+- Treat iOS SQLCipher database storage as incomplete until the selected native
+  SQLCipher dependency/linking route is validated on Codemagic. System SQLite
+  is not an acceptable fallback.
+- Proceed with Phase 4 only as a deterministic in-memory product slice until
+  iOS SQLCipher is validated. Personal narrative persistence stays off unless
+  encrypted storage is available; no unencrypted storage fallback is permitted.
+- Select the official `SQLCipher.swift` Swift Package pinned to `4.16.0` for
+  iOS SQLCipher. Xcode links the package product, while Gradle downloads and
+  checksum-verifies the same XCFramework for Kotlin/Native cinterop and iOS
+  simulator tests on Codemagic.
 
 ## Deferred decisions
 
 - Final Android application ID.
 - Final iOS bundle identifier.
-- iOS native SQLCipher package/linking route.
 - Local AI runtime and model pack choices.
 - Signed release and TestFlight configuration.

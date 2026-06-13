@@ -1,0 +1,3 @@
+headers = BettamindSqlCipher.h
+package = org.bettamind.shared.privacy.sqlcipher
+compilerOpts = -DSQLITE_HAS_CODEC

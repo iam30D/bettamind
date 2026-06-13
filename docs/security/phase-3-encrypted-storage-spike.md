@@ -44,11 +44,21 @@ SQLCipher before replacing the current database.
 `IosKeychainStorageKeyManager` adds the iOS Keychain adapter source for storing
 the SQLCipher database key with `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`.
 
-iOS SQLCipher database linking still requires a native SQLCipher build or
-package integration on macOS. The SQLCipher source tree checked during this
-phase did not expose a simple `Package.swift` or podspec at the repository root,
-so the iOS SQLCipher storage adapter must be completed and validated through
-Codemagic once the native dependency route is selected.
+The selected iOS SQLCipher route is the official `SQLCipher.swift` Swift Package
+pinned to `4.16.0`, matching the Android SQLCipher dependency. The Xcode project
+links the `SQLCipher` package product for the app build. Gradle downloads the
+same pinned `SQLCipher.xcframework.zip`, verifies its SHA-256 checksum, and uses
+the framework headers for Kotlin/Native cinterop.
+
+`IosSqlCipherEncryptedRecordStore` opens only through SQLCipher C APIs exposed
+by the package. It verifies `PRAGMA cipher_version`, uses `sqlite3_key` before
+schema access, rotates keys with `sqlite3_rekey`, stores the database under
+Application Support with backup exclusion, and exports/restores raw SQLCipher
+database bytes as ciphertext.
+
+Because Kotlin/Native cinterop for iOS requires Apple's native toolchain, Windows
+cannot compile or execute the iOS SQLCipher adapter. Codemagic macOS validation
+is the required proof for this part of Phase 3.
 
 Do not substitute system SQLite as an unencrypted fallback.
 
@@ -65,6 +75,7 @@ fake:
 The fake exists only in `commonTest` and is not production storage.
 
 Android compilation verifies the SQLCipher and Keystore adapter APIs on Windows.
-Kotlin/Native `iosSimulatorArm64` compilation verifies the iOS Keychain adapter
-source on Windows. Xcode validation and the future iOS SQLCipher native link
-must run on Codemagic.
+After the iOS SQLCipher cinterop was added, Windows skips the iOS Native targets
+because cinterop cross-compilation is unsupported on `mingw_x64`. Codemagic
+`ios-simulator-unsigned` must run `:shared:iosSimulatorArm64Test`,
+compile all iOS targets and build the unsigned simulator app with `xcodebuild`.

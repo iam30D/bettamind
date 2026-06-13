@@ -73,16 +73,16 @@ Acceptance criteria:
 - Wrong-key rejection, key rotation, backup, restore and deletion are tested.
 - No unencrypted fallback storage exists.
 
-Status: partially implemented and blocked. Android SQLCipher storage,
-Android Keystore wrapping, the shared encrypted-storage contract and iOS
-Keychain key management source exist. Windows checks pass, including
-`iosSimulatorArm64` Kotlin compilation, and the owner confirmed Codemagic
-`ios-simulator-unsigned` passed for the Phase 3 spike. Full Phase 3 completion
-is still blocked until an iOS native SQLCipher dependency/linking route is
-selected, implemented and validated through Codemagic. Do not use system SQLite
-as a substitute fallback. The owner explicitly approved proceeding to a narrow
-Phase 4 scope that does not persist narrative content until encrypted storage is
-available.
+Status: iOS SQLCipher completion slice implemented in source and pending
+Codemagic proof. Android SQLCipher storage, Android Keystore wrapping, the
+shared encrypted-storage contract and iOS Keychain key management source exist.
+The selected iOS route is `SQLCipher.swift` pinned to `4.16.0`; Xcode links the
+Swift Package product and Gradle checksum-verifies the same XCFramework for
+Kotlin/Native cinterop. Windows checks pass for Android and shared code, but
+Windows now skips iOS Native targets because Kotlin/Native cinterop for iOS
+requires macOS. Full Phase 3 completion requires Codemagic
+`ios-simulator-unsigned` to pass. Do not use system SQLite as a substitute
+fallback.
 
 ## Phase 4: Deterministic Human Growth application
 
@@ -95,12 +95,14 @@ Acceptance criteria:
 - Core flows work offline and account-free.
 - Adult age assurance gates personal features before narrative storage.
 
-Status: narrow implementation completed locally. Shared code now includes a
+Status: narrow implementation completed locally and validated by owner-reported
+Codemagic pass. Shared code now includes a
 deterministic in-memory growth sequence, adult gate, encrypted-storage
 availability status and Compose panels for Today, Reflect, Grow and Support.
 Persistent narrative storage remains disabled because iOS SQLCipher storage is
-not implemented; there is no unencrypted fallback. Draft locale resources were
-added for the Phase 4 strings and require human review before production use.
+not yet Codemagic-validated; there is no unencrypted fallback. Draft locale
+resources were added for the Phase 4 strings and require human review before
+production use.
 
 ## Phase 5: Signed knowledge packs and local retrieval
 

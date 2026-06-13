@@ -24,6 +24,12 @@ workflows:
       - name: Compile Kotlin iOS targets
         script: |
           ./gradlew :shared:compileKotlinIosX64 :shared:compileKotlinIosSimulatorArm64 :shared:compileKotlinIosArm64 --stacktrace
+      - name: Resolve iOS Swift packages
+        script: |
+          xcodebuild \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme iosApp \
+            -resolvePackageDependencies
       - name: Build unsigned iOS simulator app with xcodebuild
         script: |
           set -o pipefail

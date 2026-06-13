@@ -13,7 +13,7 @@
 | No finished UI or branding assets | 2 | Phase 1 uses only a minimal foundation screen. |
 | Logo pipeline | 2 | Document and keep placeholders only. |
 | Global localisation architecture | 2+ | Add Compose resource folders and planning docs only. |
-| Encrypted storage | 3 | Android SQLCipher proof and iOS Keychain source added; iOS SQLCipher native link remains blocked. |
+| Encrypted storage | 3 | Android SQLCipher proof exists; iOS SQLCipher source/linking route uses pinned `SQLCipher.swift` and requires Codemagic validation. |
 | Deterministic product engines | 4 | Not implemented in Phase 1. |
 | Signed knowledge packs | 5 | Not implemented in Phase 1. |
 | On-device AI model manager | 6 | Not implemented in Phase 1. |

@@ -2,12 +2,12 @@
 
 ## Current phase
 
-Phase 4 narrow deterministic product slice implemented locally after the owner
-confirmed Codemagic `ios-simulator-unsigned` passed for the Phase 3 spike and
-explicitly approved proceeding. Phase 4 is intentionally in-memory only: no
-personal narrative persistence is enabled until encrypted storage is available
-on the current platform. Phase 3 remains incomplete because iOS SQLCipher native
-database storage is not selected or implemented.
+iOS SQLCipher completion slice implemented in source after the owner confirmed
+Codemagic passed for the Phase 4 commit and approved continuing the Phase 3
+storage work. Phase 4 remains intentionally in-memory for personal narrative
+content until encrypted storage is fully validated. Phase 3 now has a selected
+iOS SQLCipher route and adapter source, but completion still requires
+Codemagic `ios-simulator-unsigned` validation on macOS.
 
 ## Locked decisions
 
@@ -32,8 +32,10 @@ database storage is not selected or implemented.
   `Context.noBackupFilesDir`.
 - Android SQLCipher keys are wrapped with Android Keystore AES-GCM, requesting
   StrongBox when available.
-- iOS has Keychain database-key source only. Do not use system SQLite as an
-  iOS SQLCipher substitute.
+- iOS SQLCipher route: official `SQLCipher.swift` Swift Package pinned to
+  `4.16.0`, with Gradle checksum-verifying the same XCFramework for
+  Kotlin/Native cinterop. Do not use system SQLite as an iOS SQLCipher
+  substitute.
 - Phase 4 deterministic growth flow is allowed to run without storage, but
   narrative persistence remains disabled unless encrypted storage is available.
 - Phase 4 adult gate is self-declared and records no exact date of birth or
@@ -104,6 +106,20 @@ database storage is not selected or implemented.
 - Compose resources now include Phase 4 source English strings plus draft
   fallback entries in all initial locale packs. Non-English Phase 4 strings are
   implementation drafts and require human review.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed for commit
+  `536dd62`, then approved the iOS SQLCipher completion slice.
+- Gradle now has `prepareSqlCipherIos`, which downloads
+  `SQLCipher.xcframework.zip` for `SQLCipher.swift` `4.16.0`, verifies SHA-256
+  `510fd00fa51fb017909a159bb1cc233b012e8ce18dc9c2f09014fe47f557c1a6`, and
+  supplies headers/framework paths to Kotlin/Native cinterop.
+- `shared/src/nativeInterop/cinterop/BettamindSqlCipher.def` and header wrapper
+  expose SQLCipher `sqlite3.h` APIs to Kotlin/Native.
+- `IosSqlCipherEncryptedRecordStore` was added under
+  `shared/src/iosMain/kotlin/org/bettamind/shared/privacy/`.
+- iOS integration tests were added under `shared/src/iosTest/kotlin/` for real
+  SQLCipher store behaviour and Keychain key-manager replacement/deletion.
+- `iosApp.xcodeproj` now links the pinned `SQLCipher.swift` package product,
+  and Codemagic now resolves Swift packages before `xcodebuild`.
 
 ## Important files
 
@@ -124,6 +140,8 @@ database storage is not selected or implemented.
 - `shared/src/commonTest/kotlin/org/bettamind/shared/growth/`
 - `shared/src/androidMain/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/iosMain/kotlin/org/bettamind/shared/privacy/`
+- `shared/src/iosTest/kotlin/org/bettamind/shared/privacy/`
+- `shared/src/nativeInterop/cinterop/`
 - `androidApp/src/main/res/`
 - `iosApp/iosApp/Assets.xcassets/`
 - `iosApp/iosApp.xcodeproj/project.pbxproj`
@@ -142,6 +160,10 @@ database storage is not selected or implemented.
 - `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --stacktrace`
 - `.\gradlew.bat phaseThreeCheck --no-daemon --stacktrace`
 - `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --rerun-tasks --no-daemon --stacktrace`
+- `.\gradlew.bat :shared:compileKotlinIosSimulatorArm64 --no-daemon --stacktrace`
+  now succeeds on Windows by skipping disabled iOS cinterop targets.
+- `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --stacktrace`
+  now succeeds on Windows by skipping disabled iOS cinterop targets.
 - `backend\.venv\Scripts\ruff.exe check .`
 - `backend\.venv\Scripts\mypy.exe app`
 - `backend\.venv\Scripts\pytest.exe`
@@ -151,9 +173,9 @@ database storage is not selected or implemented.
 
 - iOS cannot be fully built locally on Windows. Every shared/iOS change still
   requires Codemagic `ios-simulator-unsigned`.
-- Phase 3 remains blocked because iOS SQLCipher native dependency/linking is
-  not selected or implemented. Kotlin/Native compilation proves the Keychain
-  adapter source only; it does not prove iOS SQLCipher encrypted SQLite.
+- Phase 3 remains pending Codemagic validation because iOS SQLCipher cinterop
+  cannot be compiled or executed on Windows. Kotlin/Native disables the iOS
+  targets on `mingw_x64` once cinterop is present.
 - Phase 4 does not persist narrative content. Storage status intentionally
   reports encrypted storage unavailable until the platform encrypted store is
   complete.
@@ -174,10 +196,9 @@ database storage is not selected or implemented.
 - Run Codemagic `ios-simulator-unsigned` for pushed commits that change shared
   Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
   iOS, or Codemagic iOS workflow files.
-- Run Codemagic `ios-simulator-unsigned` for the next pushed Phase 4 commit
-  because it changes shared Kotlin and Compose resources.
-- Choose and approve the iOS SQLCipher native dependency/linking route for
-  Phase 3 completion, then validate it on Codemagic.
+- Run Codemagic `ios-simulator-unsigned` for the next pushed iOS SQLCipher
+  commit because it changes shared iOS Kotlin, native cinterop, Gradle iOS
+  configuration, `iosApp` Swift Package linkage and the Codemagic workflow.
 - Provide `brand/source/bettamind-logo-master.svg` if a vector master exists,
   then regenerate assets from that source in a later approved pass.
 - Replace placeholder Android application ID and iOS bundle ID with owner-owned
@@ -187,8 +208,7 @@ database storage is not selected or implemented.
 
 ## Next approved task
 
-Commit and push the Phase 4 deterministic in-memory growth slice, then have the
-owner rerun Codemagic `ios-simulator-unsigned`. Do not begin Phase 5
-automatically. Next approved engineering task should either continue within the
-approved Phase 4 scope after iOS validation or resolve the iOS SQLCipher native
-dependency/linking blocker.
+Commit and push the iOS SQLCipher completion slice, then have the owner rerun
+Codemagic `ios-simulator-unsigned`. If Codemagic passes, update memory to mark
+Phase 3 encrypted-storage proof complete. If it fails, fix the macOS native
+compile/link/test issue before continuing. Do not begin Phase 5 automatically.

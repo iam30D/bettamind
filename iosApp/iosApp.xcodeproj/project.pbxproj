@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
         A10000000000000000000010 /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000020 /* iOSApp.swift */; };
         A10000000000000000000011 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000025 /* Assets.xcassets */; };
+        A10000000000000000000012 /* SQLCipher in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000081 /* SQLCipher */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,7 @@
             isa = PBXFrameworksBuildPhase;
             buildActionMask = 2147483647;
             files = (
+                A10000000000000000000012 /* SQLCipher in Frameworks */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
@@ -84,6 +86,9 @@
             dependencies = (
             );
             name = iosApp;
+            packageProductDependencies = (
+                A10000000000000000000081 /* SQLCipher */,
+            );
             productName = Bettamind;
             productReference = A10000000000000000000022 /* Bettamind.app */;
             productType = "com.apple.product-type.application";
@@ -112,6 +117,9 @@
                 Base,
             );
             mainGroup = A10000000000000000000040;
+            packageReferences = (
+                A10000000000000000000080 /* XCRemoteSwiftPackageReference "SQLCipher.swift" */,
+            );
             productRefGroup = A10000000000000000000043 /* Products */;
             projectDirPath = "";
             projectRoot = "";
@@ -164,6 +172,25 @@
             runOnlyForDeploymentPostprocessing = 0;
         };
 /* End PBXSourcesBuildPhase section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+        A10000000000000000000080 /* XCRemoteSwiftPackageReference "SQLCipher.swift" */ = {
+            isa = XCRemoteSwiftPackageReference;
+            repositoryURL = "https://github.com/sqlcipher/SQLCipher.swift.git";
+            requirement = {
+                kind = exactVersion;
+                version = 4.16.0;
+            };
+        };
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+        A10000000000000000000081 /* SQLCipher */ = {
+            isa = XCSwiftPackageProductDependency;
+            package = A10000000000000000000080 /* XCRemoteSwiftPackageReference "SQLCipher.swift" */;
+            productName = SQLCipher;
+        };
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCBuildConfiguration section */
         A10000000000000000000061 /* Debug */ = {
