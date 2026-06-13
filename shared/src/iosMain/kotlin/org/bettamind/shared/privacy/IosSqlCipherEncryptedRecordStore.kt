@@ -4,16 +4,17 @@ import cnames.structs.sqlite3
 import cnames.structs.sqlite3_stmt
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
-import kotlinx.cinterop.CPointerVarOf
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.alloc
+import kotlinx.cinterop.allocPointerTo
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.ptr
 import kotlinx.cinterop.readBytes
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.toKString
 import kotlinx.cinterop.usePinned
+import kotlinx.cinterop.value
 import org.bettamind.shared.privacy.sqlcipher.SQLITE_DONE
 import org.bettamind.shared.privacy.sqlcipher.SQLITE_OK
 import org.bettamind.shared.privacy.sqlcipher.SQLITE_OPEN_CREATE
@@ -185,7 +186,7 @@ class IosSqlCipherEncryptedRecordStore(
         database ?: throw EncryptedStorageException.StoreUnavailable()
 
     private fun openDatabase(path: String, key: StorageKeyMaterial): CPointer<sqlite3> = memScoped {
-        val databasePointer = alloc<CPointerVarOf<CPointer<sqlite3>>>()
+        val databasePointer = allocPointerTo<sqlite3>()
         val openResult = sqlite3_open_v2(
             path,
             databasePointer.ptr,
@@ -273,7 +274,7 @@ class IosSqlCipherEncryptedRecordStore(
 
         fun assertSqlCipherAvailable() {
             memScoped {
-                val databasePointer = alloc<CPointerVarOf<CPointer<sqlite3>>>()
+                val databasePointer = allocPointerTo<sqlite3>()
                 val openResult = sqlite3_open_v2(
                     ":memory:",
                     databasePointer.ptr,
@@ -311,7 +312,7 @@ private fun CPointer<sqlite3>.withStatement(
     sql: String,
     block: (CPointer<sqlite3_stmt>) -> Unit,
 ) = memScoped {
-    val statementPointer = alloc<CPointerVarOf<CPointer<sqlite3_stmt>>>()
+    val statementPointer = allocPointerTo<sqlite3_stmt>()
     requireOk(sqlite3_prepare_v2(this@withStatement, sql, -1, statementPointer.ptr, null), this@withStatement)
     val statement = statementPointer.value ?: throw EncryptedStorageException.StoreUnavailable()
     try {
@@ -336,7 +337,7 @@ private fun CPointer<sqlite3>.queryText(sql: String): String? {
 
 @OptIn(ExperimentalForeignApi::class)
 private fun execute(database: CPointer<sqlite3>, sql: String) = memScoped {
-    val errorMessage = alloc<CPointerVarOf<CPointer<ByteVar>>>()
+    val errorMessage = allocPointerTo<ByteVar>()
     val result = sqlite3_exec(database, sql, null, null, errorMessage.ptr)
     if (result != SQLITE_OK) {
         errorMessage.value?.let { sqlite3_free(it) }

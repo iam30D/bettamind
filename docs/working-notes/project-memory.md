@@ -8,7 +8,7 @@ storage work. Phase 4 remains intentionally in-memory for personal narrative
 content until encrypted storage is fully validated. Phase 3 now has a selected
 iOS SQLCipher route and adapter source, but completion still requires
 Codemagic `ios-simulator-unsigned` validation on macOS after the latest
-Kotlin/Native cinterop source fix.
+Kotlin/Native cinterop pointer-helper fix.
 
 ## Locked decisions
 
@@ -136,6 +136,15 @@ Kotlin/Native cinterop source fix.
   `CPointerVarOf<CPointer<...>>` for SQLCipher out pointers, marks
   `requireDone` with the required cinterop opt-in, and keeps iOS backup
   exclusion through `NSURL.setResourceValue(true, ...)`.
+- Codemagic `ios-simulator-unsigned` for commit `31d5274` still failed in
+  `:shared:compileKotlinIosSimulatorArm64`; the remaining errors showed the
+  `CPointerVarOf<CPointer<...>>` allocation itself did not expose `ptr` or
+  `value` under Kotlin/Native's typed cinterop API.
+- A temporary local Kotlin/Native compiler probe confirmed the correct
+  out-pointer pattern is `allocPointerTo<T>()` with explicit
+  `kotlinx.cinterop.ptr` and `kotlinx.cinterop.value` imports. The iOS
+  SQLCipher store now uses that pattern for `sqlite3**`, `sqlite3_stmt**` and
+  `char**` SQLCipher out parameters.
 
 ## Important files
 
@@ -189,6 +198,15 @@ Kotlin/Native cinterop source fix.
 - `.\gradlew.bat :shared:compileKotlinIosSimulatorArm64 --no-daemon --stacktrace`
   completed on Windows after the fix, with iOS Native targets still disabled
   because cinterop cannot be processed on `mingw_x64`.
+- `.\gradlew.bat phaseThreeCheck --no-daemon --stacktrace` passed after the
+  `allocPointerTo` cinterop pointer-helper fix.
+- `.\gradlew.bat :shared:compileKotlinIosSimulatorArm64 --no-daemon --stacktrace`
+  completed on Windows after the pointer-helper fix, with iOS Native targets
+  still disabled because cinterop cannot be processed on `mingw_x64`.
+- Temporary Kotlin/Native compiler probe:
+  `kotlinc-native.bat .codex-scratch\CInteropPointerProbe.kt -target mingw_x64 -produce library -o .codex-scratch\probe`
+  passed with `allocPointerTo<T>()`, `ptr` and `value`; the scratch files were
+  removed and were not committed.
 - `backend\.venv\Scripts\ruff.exe check .`
 - `backend\.venv\Scripts\mypy.exe app`
 - `backend\.venv\Scripts\pytest.exe`
@@ -236,8 +254,8 @@ Kotlin/Native cinterop source fix.
 
 ## Next approved task
 
-Commit and push the Kotlin/Native out-pointer and Foundation API fix, then have
-the owner rerun Codemagic `ios-simulator-unsigned`. If Codemagic passes, update
-memory to mark Phase 3 encrypted-storage proof complete. If it fails, fix the
-next macOS native compile/link/test issue before continuing. Do not begin Phase
-5 automatically.
+Commit and push the Kotlin/Native `allocPointerTo` pointer-helper fix, then
+have the owner rerun Codemagic `ios-simulator-unsigned`. If Codemagic passes,
+update memory to mark Phase 3 encrypted-storage proof complete. If it fails,
+fix the next macOS native compile/link/test issue before continuing. Do not
+begin Phase 5 automatically.
