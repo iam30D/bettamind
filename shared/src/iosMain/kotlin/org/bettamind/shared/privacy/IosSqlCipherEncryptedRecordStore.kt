@@ -59,6 +59,7 @@ import platform.posix.remove
 import platform.posix.rename
 import platform.posix.rewind
 import platform.posix.time
+import platform.posix.size_t
 
 @OptIn(ExperimentalForeignApi::class)
 class IosSqlCipherEncryptedRecordStore(
@@ -411,8 +412,10 @@ private fun readFile(path: String): ByteArray {
         val output = ByteArray(size.toInt())
         if (output.isNotEmpty()) {
             output.usePinned { pinned ->
-                val read = fread(pinned.addressOf(0), 1.convert(), output.size.convert(), file)
-                if (read != output.size.convert()) {
+                val elementSize: size_t = 1.convert()
+                val expectedByteCount: size_t = output.size.convert()
+                val read = fread(pinned.addressOf(0), elementSize, expectedByteCount, file)
+                if (read != expectedByteCount) {
                     throw EncryptedStorageException.StoreUnavailable()
                 }
             }
@@ -429,8 +432,10 @@ private fun writeFile(path: String, bytes: ByteArray) {
     try {
         if (bytes.isNotEmpty()) {
             bytes.usePinned { pinned ->
-                val written = fwrite(pinned.addressOf(0), 1.convert(), bytes.size.convert(), file)
-                if (written != bytes.size.convert()) {
+                val elementSize: size_t = 1.convert()
+                val expectedByteCount: size_t = bytes.size.convert()
+                val written = fwrite(pinned.addressOf(0), elementSize, expectedByteCount, file)
+                if (written != expectedByteCount) {
                     throw EncryptedStorageException.StoreUnavailable()
                 }
             }

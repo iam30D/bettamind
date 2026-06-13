@@ -8,7 +8,7 @@ storage work. Phase 4 remains intentionally in-memory for personal narrative
 content until encrypted storage is fully validated. Phase 3 now has a selected
 iOS SQLCipher route and adapter source, but completion still requires
 Codemagic `ios-simulator-unsigned` validation on macOS after the latest
-Kotlin/Native cinterop pointer-helper fix.
+Kotlin/Native iOS file-size conversion fix.
 
 ## Locked decisions
 
@@ -145,6 +145,14 @@ Kotlin/Native cinterop pointer-helper fix.
   `kotlinx.cinterop.ptr` and `kotlinx.cinterop.value` imports. The iOS
   SQLCipher store now uses that pattern for `sqlite3**`, `sqlite3_stmt**` and
   `char**` SQLCipher out parameters.
+- Codemagic `ios-simulator-unsigned` for commit `270ec88` advanced past the
+  SQLCipher out-pointer errors and failed in
+  `:shared:compileKotlinIosSimulatorArm64` at the iOS backup file read path:
+  `output.size.convert()` had no concrete target type inside an equality
+  comparison, so Kotlin/Native attempted to convert `Int` to `Any`.
+- `IosSqlCipherEncryptedRecordStore` now converts `fread` and `fwrite` byte
+  counts into explicit `platform.posix.size_t` variables before calling and
+  comparing POSIX results.
 
 ## Important files
 
@@ -207,6 +215,15 @@ Kotlin/Native cinterop pointer-helper fix.
   `kotlinc-native.bat .codex-scratch\CInteropPointerProbe.kt -target mingw_x64 -produce library -o .codex-scratch\probe`
   passed with `allocPointerTo<T>()`, `ptr` and `value`; the scratch files were
   removed and were not committed.
+- `.\gradlew.bat phaseThreeCheck --no-daemon --stacktrace` passed after the
+  explicit iOS `size_t` conversion fix.
+- Temporary Kotlin/Native compiler probe:
+  `kotlinc-native.bat .codex-scratch\CInteropPointerProbe.kt -target mingw_x64 -produce library -o .codex-scratch\probe`
+  passed with explicit `size_t` conversion; the scratch files were removed and
+  were not committed.
+- `.\gradlew.bat :shared:compileKotlinIosSimulatorArm64 --no-daemon --stacktrace`
+  completed on Windows after the `size_t` fix, with iOS Native targets still
+  disabled because cinterop cannot be processed on `mingw_x64`.
 - `backend\.venv\Scripts\ruff.exe check .`
 - `backend\.venv\Scripts\mypy.exe app`
 - `backend\.venv\Scripts\pytest.exe`
@@ -254,8 +271,8 @@ Kotlin/Native cinterop pointer-helper fix.
 
 ## Next approved task
 
-Commit and push the Kotlin/Native `allocPointerTo` pointer-helper fix, then
-have the owner rerun Codemagic `ios-simulator-unsigned`. If Codemagic passes,
-update memory to mark Phase 3 encrypted-storage proof complete. If it fails,
-fix the next macOS native compile/link/test issue before continuing. Do not
-begin Phase 5 automatically.
+Commit and push the explicit iOS `size_t` conversion fix, then have the owner
+rerun Codemagic `ios-simulator-unsigned`. If Codemagic passes, update memory to
+mark Phase 3 encrypted-storage proof complete. If it fails, fix the next macOS
+native compile/link/test issue before continuing. Do not begin Phase 5
+automatically.
