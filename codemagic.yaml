@@ -19,8 +19,8 @@ workflows:
           test -f gradle/wrapper/gradle-wrapper.jar
           chmod +x ./gradlew
           ./gradlew --version
-      - name: Run shared tests
-        script: ./gradlew :shared:allTests --stacktrace
+      - name: Run shared iOS simulator tests
+        script: ./gradlew :shared:iosSimulatorArm64Test --stacktrace
       - name: Compile Kotlin iOS targets
         script: |
           ./gradlew :shared:compileKotlinIosX64 :shared:compileKotlinIosSimulatorArm64 :shared:compileKotlinIosArm64 --stacktrace

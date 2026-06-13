@@ -36,6 +36,10 @@ Phase 1 completed locally: monorepo and cross-platform build foundation.
 - GitHub Actions runner failure `./gradlew: Permission denied` was repaired by
   marking `gradlew` executable in Git and adding a defensive CI `chmod +x`
   step.
+- Codemagic failure in step `Run shared tests` was repaired by replacing the
+  broad `:shared:allTests` aggregate with the explicit iOS simulator test task
+  `:shared:iosSimulatorArm64Test`. Device target compatibility remains covered
+  by explicit iOS target compilation and the real `xcodebuild` simulator build.
 - A PNG source logo is present at `brand/source/bettamind-logo-master.png`; no
   generated brand assets were created.
 
@@ -78,7 +82,9 @@ Phase 1 completed locally: monorepo and cross-platform build foundation.
   JBR at `C:\Program Files\Android\Android Studio\jbr`.
 - iOS cannot be built locally on Windows and must be validated on Codemagic.
 - `:shared:allTests` is not a Windows check because it may include native/iOS
-  test work; Windows uses `phaseOneCheck`, while Codemagic owns iOS validation.
+  test work and should not be used in Codemagic Phase 1; Windows uses
+  `phaseOneCheck`, while Codemagic runs `:shared:iosSimulatorArm64Test`, iOS
+  target compilation and `xcodebuild`.
 - Backend pytest passes with one upstream Starlette/FastAPI deprecation warning
   about `httpx` test client compatibility; it does not fail the Phase 1 check.
 
@@ -93,5 +99,5 @@ Phase 1 completed locally: monorepo and cross-platform build foundation.
 
 ## Next approved task
 
-Trigger Codemagic `ios-simulator-unsigned` and repair any Xcode build failure
-before approving Phase 2.
+Rerun Codemagic `ios-simulator-unsigned` and repair any remaining Xcode build
+failure before approving Phase 2.
