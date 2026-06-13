@@ -79,6 +79,10 @@ an approved iOS native SQLCipher dependency/linking route and Codemagic
   `shared/src/iosMain/kotlin/org/bettamind/shared/privacy/`.
 - Common storage contract tests cover wrong-key rejection, key rotation,
   backup/restore and deletion with a test-only fake.
+- Codemagic `:shared:iosSimulatorArm64Test` initially failed because
+  `EncryptedStorageContractTest` used JVM-only `toSortedMap()` in common test
+  code. The test now uses common Kotlin key sorting and unsigned byte
+  formatting.
 - `phaseThreeCheck` now runs Phase 1 mobile checks plus Android lint, and
   GitHub Actions now invokes `phaseThreeCheck`.
 - `docs/security/phase-3-encrypted-storage-spike.md` documents the Android
@@ -116,6 +120,7 @@ an approved iOS native SQLCipher dependency/linking route and Codemagic
 - `.\gradlew.bat :androidApp:lintDebug --no-daemon --stacktrace`
 - `.\gradlew.bat :shared:compileDebugKotlinAndroid --no-daemon --stacktrace`
 - `.\gradlew.bat :shared:compileKotlinIosSimulatorArm64 --no-daemon --stacktrace`
+- `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --stacktrace`
 - `.\gradlew.bat phaseThreeCheck --no-daemon --stacktrace`
 - `backend\.venv\Scripts\ruff.exe check .`
 - `backend\.venv\Scripts\mypy.exe app`
@@ -154,8 +159,7 @@ an approved iOS native SQLCipher dependency/linking route and Codemagic
 
 ## Next approved task
 
-Commit and push the Phase 3 partial encrypted-storage spike, then have the
-owner run Codemagic `ios-simulator-unsigned`. Next engineering task is to
-resolve the iOS SQLCipher native dependency/linking blocker. Do not begin
-Phase 4 until the owner explicitly approves a revised scope or the blocker is
-resolved.
+Commit and push the iOS simulator test compile fix, then have the owner rerun
+Codemagic `ios-simulator-unsigned`. Next engineering task is to resolve the iOS
+SQLCipher native dependency/linking blocker. Do not begin Phase 4 until the
+owner explicitly approves a revised scope or the blocker is resolved.

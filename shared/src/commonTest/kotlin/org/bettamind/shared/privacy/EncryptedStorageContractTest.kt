@@ -113,10 +113,14 @@ private class ContractOnlyEncryptedRecordStore(
         val payload = buildString {
             append(acceptedKey)
             append('\n')
-            records.toSortedMap().forEach { (key, value) ->
-                append(key)
+            records.keys.sorted().forEach { recordName ->
+                val value = records[recordName] ?: error("Missing record for $recordName.")
+                append(recordName)
                 append('=')
-                append(value.joinToString(",") { it.toUByte().toString() })
+                append(value.joinToString(",") { byte ->
+                    val unsigned = byte.toInt()
+                    if (unsigned < 0) (unsigned + 256).toString() else unsigned.toString()
+                })
                 append('\n')
             }
         }.encodeToByteArray()
