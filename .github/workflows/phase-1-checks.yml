@@ -1,5 +1,8 @@
 name: Phase 1 Checks
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   pull_request:
   push:
@@ -29,6 +32,9 @@ jobs:
 
       - name: Validate Gradle wrapper
         uses: gradle/actions/wrapper-validation@v4
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
 
       - name: Run shared metadata, Android unit tests and Android debug build
         run: ./gradlew phaseOneCheck --stacktrace

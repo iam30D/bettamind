@@ -33,6 +33,9 @@ Phase 1 completed locally: monorepo and cross-platform build foundation.
   dependencies installed there.
 - Backend Ruff, mypy and pytest checks passed after fixing Alembic import
   ordering and SQLAlchemy session factory typing.
+- GitHub Actions runner failure `./gradlew: Permission denied` was repaired by
+  marking `gradlew` executable in Git and adding a defensive CI `chmod +x`
+  step.
 - A PNG source logo is present at `brand/source/bettamind-logo-master.png`; no
   generated brand assets were created.
 
@@ -62,6 +65,7 @@ Phase 1 completed locally: monorepo and cross-platform build foundation.
 - `backend\.venv\Scripts\ruff.exe check .`
 - `backend\.venv\Scripts\mypy.exe app`
 - `backend\.venv\Scripts\pytest.exe`
+- `git update-index --chmod=+x gradlew`
 - docs unresolved citation placeholder scan
 
 ## Known blockers and limitations
