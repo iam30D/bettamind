@@ -1,0 +1,57 @@
+workflows:
+  ios-simulator-unsigned:
+    name: iOS Simulator Unsigned Validation
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      xcode: 16.4
+      vars:
+        BETTAMIND_ANDROID_APPLICATION_ID: dev.bettamind.placeholder
+        BETTAMIND_IOS_BUNDLE_ID: dev.bettamind.placeholder
+    scripts:
+      - name: Show tool versions
+        script: |
+          sw_vers
+          xcodebuild -version
+          java -version
+      - name: Validate Gradle wrapper
+        script: |
+          test -f gradle/wrapper/gradle-wrapper.jar
+          chmod +x ./gradlew
+          ./gradlew --version
+      - name: Run shared tests
+        script: ./gradlew :shared:allTests --stacktrace
+      - name: Compile Kotlin iOS targets
+        script: |
+          ./gradlew :shared:compileKotlinIosX64 :shared:compileKotlinIosSimulatorArm64 :shared:compileKotlinIosArm64 --stacktrace
+      - name: Build unsigned iOS simulator app with xcodebuild
+        script: |
+          set -o pipefail
+          xcodebuild \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme iosApp \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            BETTAMIND_IOS_BUNDLE_ID="$BETTAMIND_IOS_BUNDLE_ID" \
+            CODE_SIGNING_ALLOWED=NO \
+            build | tee xcodebuild-ios-simulator.log
+    artifacts:
+      - xcodebuild-ios-simulator.log
+      - "**/build/reports/**"
+      - "**/build/test-results/**"
+      - "$HOME/Library/Logs/DiagnosticReports/*.crash"
+
+  ios-signed-release-placeholder:
+    name: Disabled Signed iOS Release Placeholder
+    instance_type: mac_mini_m2
+    max_build_duration: 10
+    environment:
+      xcode: 16.4
+    triggering:
+      events: []
+    scripts:
+      - name: Signing intentionally disabled
+        script: |
+          echo "Signed iOS release is intentionally disabled in Phase 1."
+          echo "Configure Codemagic secure signing credentials only in a later approved phase."

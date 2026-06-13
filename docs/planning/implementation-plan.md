@@ -1,0 +1,162 @@
+# Implementation Plan
+
+## Phase 0: Audit and locked plan
+
+Goal: establish the repository contract and phase sequence without production
+code.
+
+Acceptance criteria:
+
+- Repository audit, traceability, assumptions, implementation plan and risk
+  register exist.
+- System context, module boundaries and architecture decisions exist.
+- Brand and localisation plans exist.
+- Project memory is current.
+
+Status: completed as a prerequisite for Phase 1 because the cloned repository
+was empty.
+
+## Phase 1: Monorepo and cross-platform build foundation
+
+Goal: create the production-quality foundation for Android, iOS, shared Kotlin,
+optional backend and CI.
+
+Acceptance criteria:
+
+- Kotlin Multiplatform and Compose Multiplatform project exists.
+- Gradle wrapper metadata and version catalogue exist.
+- Shared module declares Android, `iosX64`, `iosArm64` and
+  `iosSimulatorArm64` targets.
+- Android app target displays Bettamind and starts without backend.
+- iOS target is hosted by a valid minimal `iosApp` Xcode project.
+- Codemagic has an unsigned simulator workflow that runs `xcodebuild`.
+- Optional FastAPI skeleton exists with health endpoint and test scaffold.
+- Windows checks are run where available.
+- Project memory is updated.
+
+Out of scope:
+
+- finished UI;
+- final brand assets;
+- encryption implementation;
+- AI implementation or model downloads;
+- deterministic product engines;
+- signed iOS release.
+
+## Phase 2: Brand, design system, navigation and localisation foundation
+
+Goal: inspect the canonical logo, choose one accessible palette, generate
+platform assets, bundle fonts, implement themes, five placeholder destinations,
+accessibility foundations and locale packs.
+
+Acceptance criteria:
+
+- Source logo remains unchanged.
+- One final accessible palette is documented.
+- Android and iOS brand assets are generated from the approved source.
+- Noto Sans Variable and Atkinson Hyperlegible are locally bundled with
+  licences.
+- Five primary destinations exist: Today, Reflect, Grow, Support and Settings.
+- RTL is validated with Arabic.
+
+## Phase 3: Encrypted storage and privacy technical spike
+
+Goal: prove encrypted local storage on Android and iOS.
+
+Acceptance criteria:
+
+- SQLCipher-backed SQLite works on Android and iOS.
+- Android Keystore and iOS Keychain adapters exist.
+- Wrong-key rejection, key rotation, backup, restore and deletion are tested.
+- No unencrypted fallback storage exists.
+
+## Phase 4: Deterministic Human Growth application
+
+Goal: complete core app flows without AI.
+
+Acceptance criteria:
+
+- Awareness, choice, action, consequence, reflection, repair and growth flows
+  exist.
+- Core flows work offline and account-free.
+- Adult age assurance gates personal features before narrative storage.
+
+## Phase 5: Signed knowledge packs and local retrieval
+
+Goal: add offline signed content packs and local search.
+
+Acceptance criteria:
+
+- Pack manifests are signed and checksum-verified.
+- Rollback and revocation are handled.
+- Local retrieval works without network.
+
+## Phase 6: On-device AI abstraction and model manager
+
+Goal: add optional AI interfaces, capability checks and removable model packs.
+
+Acceptance criteria:
+
+- LiteRT-LM adapter sits behind a replaceable shared interface.
+- Model packs are optional, signed, checksum-verified, resumable and removable.
+- No model weights are committed.
+
+## Phase 7: AI-assisted response modes
+
+Goal: add optional AI-assisted modes after deterministic flows are stable.
+
+Acceptance criteria:
+
+- Quick Guidance, Guided Reflection, Deep Exploration and Action-Only modes
+  exist.
+- Deterministic fallback remains available.
+- Safety does not rely solely on AI.
+
+## Phase 8: Safety and support bridge
+
+Goal: implement layered safety and consent-based encrypted third-party support.
+
+Acceptance criteria:
+
+- Risk levels are deterministic and tested.
+- Export preview shows included and excluded data.
+- Sharing is user-controlled and minimum-data.
+
+## Phase 9: Optional backend and encrypted sync
+
+Goal: add ciphertext-only sync and signed pack delivery.
+
+Acceptance criteria:
+
+- Backend never receives plaintext journal content.
+- Sync is off by default and optional.
+- Revocation records and manifests are versioned.
+
+## Phase 10: Global localisation and accessibility completion
+
+Goal: complete target locale packs and accessibility validation.
+
+Acceptance criteria:
+
+- Target locales are complete and reviewed where required.
+- RTL, large text, screen readers and script fallback are tested.
+- Low-literacy mode is validated.
+
+## Phase 11: Optional offline speech
+
+Goal: add optional offline speech-to-text and text-to-speech packs.
+
+Acceptance criteria:
+
+- Speech packs are optional, licensed, removable and locally validated.
+- OS offline voices are preferred before local voice packs.
+
+## Phase 12: Performance, red-team and release readiness
+
+Goal: harden for real release.
+
+Acceptance criteria:
+
+- Low-resource devices, battery, thermal and memory behaviour are tested.
+- Threat model and red-team findings are resolved or accepted.
+- Store metadata, rollback and TestFlight gates are complete.

@@ -1,0 +1,20 @@
+plugins {
+    alias(libs.plugins.androidApplication) apply false
+    alias(libs.plugins.androidLibrary) apply false
+    alias(libs.plugins.composeMultiplatform) apply false
+    alias(libs.plugins.kotlinAndroid) apply false
+    alias(libs.plugins.kotlinCompose) apply false
+    alias(libs.plugins.kotlinMultiplatform) apply false
+    alias(libs.plugins.kotlinSerialization) apply false
+}
+
+allprojects {
+    group = "org.bettamind"
+    version = "0.1.0-phase1"
+}
+
+tasks.register("phaseOneCheck") {
+    group = "verification"
+    description = "Runs the Phase 1 mobile checks that are available without Xcode."
+    dependsOn(":shared:compileKotlinMetadata", ":shared:testDebugUnitTest", ":androidApp:assembleDebug")
+}

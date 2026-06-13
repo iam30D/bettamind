@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: bettamind
+      POSTGRES_USER: bettamind
+      POSTGRES_PASSWORD: bettamind
+    ports:
+      - "5432:5432"
+    volumes:
+      - bettamind-postgres:/var/lib/postgresql/data
+
+  api:
+    build: .
+    environment:
+      BETTAMIND_DATABASE_URL: postgresql+psycopg://bettamind:bettamind@postgres:5432/bettamind
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
+volumes:
+  bettamind-postgres:
