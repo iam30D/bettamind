@@ -40,6 +40,9 @@ Phase 1 completed locally: monorepo and cross-platform build foundation.
   broad `:shared:allTests` aggregate with the explicit iOS simulator test task
   `:shared:iosSimulatorArm64Test`. Device target compatibility remains covered
   by explicit iOS target compilation and the real `xcodebuild` simulator build.
+- Codemagic then exposed a Kotlin/Native compile failure in
+  `LocaleTag.kt`: `@JvmInline` was used in `commonMain`. Replaced the
+  JVM-specific value class with a serializable common `data class`.
 - A PNG source logo is present at `brand/source/bettamind-logo-master.png`; no
   generated brand assets were created.
 
@@ -65,6 +68,8 @@ Phase 1 completed locally: monorepo and cross-platform build foundation.
 - `.\gradlew.bat :androidApp:compileDebugKotlin --no-daemon --stacktrace`
 - `.\gradlew.bat :androidApp:assembleDebug --no-daemon --stacktrace`
 - `.\gradlew.bat phaseOneCheck --no-daemon --stacktrace`
+- `.\gradlew.bat :shared:compileKotlinMetadata --no-daemon --stacktrace` after
+  the `LocaleTag` Kotlin/Native repair
 - `python -m compileall backend`
 - `backend\.venv\Scripts\ruff.exe check .`
 - `backend\.venv\Scripts\mypy.exe app`

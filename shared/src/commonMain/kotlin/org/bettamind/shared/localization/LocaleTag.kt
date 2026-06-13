@@ -3,8 +3,7 @@ package org.bettamind.shared.localization
 import kotlinx.serialization.Serializable
 
 @Serializable
-@JvmInline
-value class LocaleTag(val value: String) {
+data class LocaleTag(val value: String) {
     init {
         require(value.isNotBlank()) { "Locale tag cannot be blank." }
     }
