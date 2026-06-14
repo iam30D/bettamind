@@ -1,5 +1,6 @@
 package org.bettamind.shared.knowledge
 
+import org.bettamind.shared.security.sha256Hex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

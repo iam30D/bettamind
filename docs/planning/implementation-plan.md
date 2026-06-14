@@ -116,7 +116,8 @@ Status: implemented as a shared offline pack contract. Common code now requires
 Ed25519-labeled signed manifests, SHA-256 payload checksums, injected signature
 verification, rollback/replay rejection, revocation policy and in-memory local
 retrieval. Production signing keys, approved content packs, backend delivery and
-AI/model-pack logic remain out of scope.
+AI/model-pack logic remain out of scope. Owner later confirmed Codemagic
+`ios-simulator-unsigned` passed for the pushed Phase 5 commit.
 
 ## Phase 6: On-device AI abstraction and model manager
 
@@ -127,6 +128,15 @@ Acceptance criteria:
 - LiteRT-LM adapter sits behind a replaceable shared interface.
 - Model packs are optional, signed, checksum-verified, resumable and removable.
 - No model weights are committed.
+
+Status: implemented as a shared optional AI/model-pack foundation. `LocalAiRuntime`
+remains the replaceable interface, `LiteRtLmRuntimeAdapter` delegates to a
+platform bridge without adding LiteRT or model files, and
+`UnavailableLocalAiRuntime` preserves no-AI core operation. `ModelPackManager`
+requires signed Ed25519-labeled manifests, SHA-256 artifact checksums,
+monotonic versions, revocation policy, resumable chunk offsets and removable
+installed packs. No model weights, downloads, cloud AI or Phase 7 response modes
+were added.
 
 ## Phase 7: AI-assisted response modes
 

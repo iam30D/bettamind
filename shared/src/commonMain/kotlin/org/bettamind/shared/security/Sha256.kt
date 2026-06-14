@@ -1,6 +1,6 @@
-package org.bettamind.shared.knowledge
+package org.bettamind.shared.security
 
-internal fun ByteArray.sha256Hex(): String {
+fun ByteArray.sha256Hex(): String {
     val hash = sha256()
     val hex = CharArray(hash.size * 2)
     val alphabet = "0123456789abcdef"

@@ -41,10 +41,17 @@
   iOS SQLCipher. Xcode links the package product, while Gradle downloads and
   checksum-verifies the same XCFramework for Kotlin/Native cinterop and iOS
   simulator tests on Codemagic.
+- Keep Phase 6 AI runtime support behind `LocalAiRuntime`; the LiteRT-LM path is
+  represented by a shared adapter plus platform bridge and does not add a
+  concrete LiteRT dependency or model weights.
+- Keep Phase 6 model-pack installation source-agnostic. The shared model
+  manager accepts externally supplied chunks, verifies signed manifests and
+  checksums, and does not download models automatically.
 
 ## Deferred decisions
 
 - Final Android application ID.
 - Final iOS bundle identifier.
-- Local AI runtime and model pack choices.
+- Production local AI runtime build, model choices, model licences, trust
+  anchors and delivery channels.
 - Signed release and TestFlight configuration.

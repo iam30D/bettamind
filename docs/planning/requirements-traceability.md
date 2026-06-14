@@ -17,7 +17,8 @@
 | Deterministic product engines | 4 | Not implemented in Phase 1. |
 | Signed knowledge packs | 5 | Shared installer requires Ed25519-labeled signed manifests, SHA-256 payload checksums, rollback/replay checks and revocation policy. |
 | Local knowledge retrieval | 5 | Shared in-memory retriever searches installed packs offline without backend or AI. |
-| On-device AI model manager | 6 | Not implemented in Phase 1. |
+| On-device AI runtime abstraction | 6 | `LocalAiRuntime` remains replaceable; `LiteRtLmRuntimeAdapter` delegates to a platform bridge and `UnavailableLocalAiRuntime` keeps AI optional. |
+| On-device AI model manager | 6 | Shared `ModelPackManager` verifies signed, checksum-checked, resumable and removable model packs without committing model weights. |
 | Safety and support bridge | 8 | Not implemented in Phase 1. |
 | Optional encrypted sync | 9 | Backend skeleton only; no sync implementation. |
 

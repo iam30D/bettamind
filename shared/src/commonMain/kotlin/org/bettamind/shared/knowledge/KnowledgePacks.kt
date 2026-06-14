@@ -3,8 +3,11 @@ package org.bettamind.shared.knowledge
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.bettamind.shared.security.ManifestSignatureVerifier
+import org.bettamind.shared.security.sha256Hex
 
 const val Ed25519SignatureAlgorithm = "Ed25519"
+typealias KnowledgePackSignatureVerifier = ManifestSignatureVerifier
 
 @Serializable
 data class KnowledgePackManifest(
@@ -63,14 +66,6 @@ enum class KnowledgePackRejectionReason {
 class KnowledgePackRejectedException(
     val reason: KnowledgePackRejectionReason,
 ) : IllegalArgumentException(reason.name)
-
-interface KnowledgePackSignatureVerifier {
-    fun verify(
-        signedBytes: ByteArray,
-        signature: String,
-        signingKeyId: String,
-    ): Boolean
-}
 
 object KnowledgePackCodec {
     val json: Json = Json {

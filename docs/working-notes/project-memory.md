@@ -2,11 +2,11 @@
 
 ## Current phase
 
-Phase 5 signed knowledge packs and local retrieval is implemented locally and
+Phase 6 on-device AI abstraction and model manager is implemented locally and
 awaits commit, push and Codemagic `ios-simulator-unsigned` validation. The owner
-confirmed the previous Codemagic iOS storage validation passed, so Phase 3 is
-now treated as complete. Do not begin Phase 6 until the owner explicitly
-approves it after Phase 5 validation.
+confirmed Codemagic passed for the Phase 5 commit, then approved proceeding to
+Phase 6. Do not begin Phase 7 until the owner explicitly approves it after
+Phase 6 validation.
 
 ## Locked decisions
 
@@ -46,6 +46,11 @@ approves it after Phase 5 validation.
 - Phase 5 knowledge-pack manifests use SHA-256 payload checksums and an
   Ed25519-labeled signature verification boundary. Production content packs,
   signing keys and trust anchors are not committed.
+- Phase 6 AI remains optional. `LocalAiRuntime` is the shared replaceable
+  interface, `LiteRtLmRuntimeAdapter` delegates to a platform bridge, and no
+  LiteRT dependency or model weights are committed.
+- Phase 6 model-pack installation is source-agnostic and accepts externally
+  supplied signed chunks only. No automatic model download exists.
 
 ## Completed work
 
@@ -252,6 +257,27 @@ approves it after Phase 5 validation.
 - GitHub Actions mobile checks now run `phaseFiveCheck`.
 - `docs/security/phase-5-signed-knowledge-packs.md` documents the Phase 5
   trust boundary and non-goals.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed for commit
+  `333f320` and approved proceeding to Phase 6.
+- Common SHA-256 and manifest signature verification primitives now live under
+  `shared/src/commonMain/kotlin/org/bettamind/shared/security/`.
+- `UnavailableLocalAiRuntime` was added to preserve no-AI core operation.
+- `LiteRtLmRuntimeAdapter` and `LiteRtLmBridge` were added under
+  `shared/src/commonMain/kotlin/org/bettamind/shared/ai/` so a future platform
+  LiteRT-LM implementation sits behind the replaceable `LocalAiRuntime`
+  interface.
+- `ModelPackManager` was added under `shared/src/commonMain/kotlin/org/bettamind/shared/ai/`
+  for optional model packs with signed Ed25519-labeled manifests, SHA-256
+  artifact checksums, resumable chunk offsets, rollback/replay rejection,
+  revocation policy and removable installed packs.
+- No model weights, model downloads, cloud AI or Phase 7 response modes were
+  added.
+- Common tests now cover unavailable AI, LiteRT-LM adapter delegation, signed
+  chunked model-pack installation, resume, offset rejection, checksum rejection,
+  rollback/revocation and removal.
+- GitHub Actions mobile checks now run `phaseSixCheck`.
+- `docs/security/phase-6-ai-model-manager.md` documents the Phase 6 trust
+  boundary and non-goals.
 
 ## Important files
 
@@ -269,9 +295,12 @@ approves it after Phase 5 validation.
 - `shared/src/commonMain/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/growth/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/knowledge/`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/ai/`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/security/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/growth/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/knowledge/`
+- `shared/src/commonTest/kotlin/org/bettamind/shared/ai/`
 - `shared/src/androidMain/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/iosMain/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/iosTest/kotlin/org/bettamind/shared/privacy/`
@@ -281,6 +310,7 @@ approves it after Phase 5 validation.
 - `iosApp/iosApp.xcodeproj/project.pbxproj`
 - `docs/security/phase-3-encrypted-storage-spike.md`
 - `docs/security/phase-5-signed-knowledge-packs.md`
+- `docs/security/phase-6-ai-model-manager.md`
 - `codemagic.yaml`
 
 ## Commands that passed
@@ -379,6 +409,8 @@ approves it after Phase 5 validation.
 - From `backend/`: `.\.venv\Scripts\ruff.exe check .`
 - From `backend/`: `.\.venv\Scripts\mypy.exe app`
 - From `backend/`: `.\.venv\Scripts\pytest.exe`
+- `git ls-files | rg "\.(tflite|litertlm|gguf|onnx|bin|safetensors|model|mlmodel|task)$"`
+  found no tracked model-weight artifacts.
 - docs/source placeholder scan found only Codemagic's intentional `events: []`
 - `.\gradlew.bat :shared:testDebugUnitTest --no-daemon --stacktrace`
   passed after the Phase 5 knowledge-pack tests were added.
@@ -392,12 +424,22 @@ approves it after Phase 5 validation.
 - From `backend/`: `.\.venv\Scripts\pytest.exe`
 - `git diff --check` reported no whitespace errors, only normal Windows
   LF-to-CRLF warnings.
+- `.\gradlew.bat :shared:testDebugUnitTest --no-daemon --stacktrace`
+  passed after the Phase 6 AI/model-pack tests and shared security refactor.
+- `.\gradlew.bat phaseSixCheck --no-daemon --stacktrace` passed. On Windows,
+  iOS Native targets remain disabled because SQLCipher cinterop requires macOS.
+- `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --stacktrace`
+  completed on Windows after Phase 6 changes, with the iOS Native compile/test
+  tasks still skipped because cinterop cannot be processed on `mingw_x64`.
+- From `backend/`: `.\.venv\Scripts\ruff.exe check .`
+- From `backend/`: `.\.venv\Scripts\mypy.exe app`
+- From `backend/`: `.\.venv\Scripts\pytest.exe`
 
 ## Known blockers and limitations
 
 - iOS cannot be fully built locally on Windows. Every shared/iOS change still
   requires Codemagic `ios-simulator-unsigned`.
-- Phase 5 changed common shared code, so the next pushed commit requires
+- Phase 6 changed common shared code, so the next pushed commit requires
   Codemagic `ios-simulator-unsigned`.
 - Phase 4 does not yet persist narrative content. Storage status still reports
   encrypted storage unavailable until a separate approved pass wires the
@@ -406,6 +448,9 @@ approves it after Phase 5 validation.
 - Phase 5 does not include production content packs, production signing keys or
   owner-approved trust anchors. Release work must provide those before real
   public packs are accepted.
+- Phase 6 does not include production model packs, model weights, LiteRT native
+  dependency, model licences, production signing keys or owner-approved model
+  trust anchors.
 - No canonical SVG source logo is present yet. Phase 2 assets are derived from
   the PNG fallback.
 - The source PNG has a baked checkerboard background; generated assets use a
@@ -423,7 +468,7 @@ approves it after Phase 5 validation.
 - Run Codemagic `ios-simulator-unsigned` for pushed commits that change shared
   Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
   iOS, or Codemagic iOS workflow files.
-- Run Codemagic `ios-simulator-unsigned` for the next pushed Phase 5 commit
+- Run Codemagic `ios-simulator-unsigned` for the next pushed Phase 6 commit
   because it changes shared Kotlin and the GitHub Actions Gradle check target.
 - Provide `brand/source/bettamind-logo-master.svg` if a vector master exists,
   then regenerate assets from that source in a later approved pass.
@@ -431,11 +476,13 @@ approves it after Phase 5 validation.
   values before release work.
 - Provide owner-approved production knowledge-pack trust anchors and content
   governance before accepting real public packs.
+- Provide owner-approved production model choices, licences, trust anchors and
+  delivery governance before accepting real model packs.
 - Arrange qualified human review for production translations, especially any
   safety, crisis, legal, privacy or consent copy.
 
 ## Next approved task
 
-Commit and push Phase 5, then have the owner run Codemagic
+Commit and push Phase 6, then have the owner run Codemagic
 `ios-simulator-unsigned`. If Codemagic passes, wait for explicit owner approval
-before Phase 6. Do not begin Phase 6 automatically.
+before Phase 7. Do not begin Phase 7 automatically.
