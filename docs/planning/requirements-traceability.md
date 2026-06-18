@@ -31,8 +31,13 @@ Date updated: 2026-06-18
 | Deterministic daily tools | 6.6 | Shared daily foundation exists for check-ins, breathing/grounding, timers, reminders, private calendar handoff, worksheets and local trend summaries. |
 | Encrypted product-record persistence | 6.6 | Daily records are serialized through `EncryptedDailyRecordRepository`, which writes only to the shared `EncryptedRecordStore` contract and has no unencrypted fallback. |
 | Harmful-intent and dangerous-capability safeguards | 6.7 | Shared deterministic harm-safety policy handles pre-generation, post-generation, no-model fallback, memory/export/sync/notification/support decisions, daily tools, relational overlap and app-lock step-up rules. |
-| Safety and support bridge | 8 | Not implemented; should reuse Phase 6.5 and Phase 6.7 policy outcomes. |
-| Optional encrypted sync | 9 | Backend skeleton only; no sync implementation. |
+| Roadmap reconciliation after Phase 6X | 6X | Phase 7 through Phase 12 objectives are preserved and amended in `implementation-plan.md`, `roadmap-amendment-phase-6x.md` and `phase-7-to-12-continuation-plan.md`; no production code changed. |
+| AI-assisted growth modes | 7 | Planned only; must keep AI optional/local, preserve no-model fallback, require app-lock step-up for sensitive context, require consent before daily-tool context, enforce relational and harm-safety pre/post-generation checks, use structured schemas and avoid cloud AI. |
+| Safety and support bridge | 8 | Planned only; should reuse Phase 6.5, Phase 6.6 and Phase 6.7 outcomes for self-harm, violence intent, dangerous-capability refusal, voluntary support, no automatic contact, minimum support summaries and step-up sharing. |
+| Optional encrypted sync | 9 | Backend skeleton only; future sync must remain optional, disabled by default, ciphertext-only and protected by app-lock reauthentication, with daily, relational and harm-safety export exclusions. |
+| Global localisation and accessibility | 10 | Planned only; must include app-lock, relational, harm-safety, daily-tool and support surfaces, with RTL, screen-reader, large-text, reduced-motion, low-literacy and qualified human-review gates. |
+| Optional offline speech | 11 | Planned only; text-only use must remain complete, microphone use optional, raw audio not retained by default and spoken input/output routed through the same relational and harm-safety policies as text. |
+| Performance, red-team and release readiness | 12 | Planned only; must include app-lock, encryption, relational, harm, reminder, notification, timer, calendar, export, sync, low-resource, Android physical-device, Codemagic/Xcode, TestFlight and store-readiness gates. |
 
 ## Phase 6X Audit Acceptance Criteria
 
@@ -40,6 +45,8 @@ Date updated: 2026-06-18
 - Existing app, storage, AI, growth, safety and daily-tool functions inventoried.
 - Phase 6.4 implementation status reflected after app privacy-lock work.
 - Phase 6.5 implementation status reflected after relational-boundary work.
-- Roadmap amendment created without editing active implementation plan.
+- Phase 6.6 implementation status reflected after deterministic daily-tool work.
+- Phase 6.7 implementation status reflected after harmful-intent safeguard work.
+- Roadmap amendment and active implementation plan reconciled after Phase 6X.
 - Risk register and project memory updated.
 - No production source code edited.

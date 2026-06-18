@@ -2,15 +2,15 @@
 
 ## Current phase
 
-Phase 6.7 Harmful Intent and Dangerous Capability Safeguards is implemented in
-this phase. Phases 0 through 6, Phase 6.4, Phase 6.5 and Phase 6.6 are treated
+Roadmap reconciliation after Phase 6X is complete as a docs-only planning pass.
+Phases 0 through 6, Phase 6.4, Phase 6.5, Phase 6.6 and Phase 6.7 are treated
 as implemented and stable, with owner-confirmed Codemagic
-`ios-simulator-unsigned` validation for the Phase 6.6 commit. Phase 6.7 Windows
-checks passed locally. Because this phase changes shared Kotlin, Compose
-resources, Gradle configuration and GitHub Actions, the pushed Phase 6.7 commit
-requires Codemagic `ios-simulator-unsigned` validation. Do not begin roadmap
-reconciliation, Phase 7 or later work until the owner confirms Codemagic passed
-and explicitly approves the next implementation prompt.
+`ios-simulator-unsigned` validation through the Phase 6.7 commit. The active
+roadmap now preserves the original Phase 7 through Phase 12 objectives while
+adding the privacy-lock, relational-boundary, daily-tool and harm-safety
+acceptance gates created in Phase 6.4 through Phase 6.7. Do not begin Phase 7
+or later work until the owner explicitly approves the next implementation
+prompt.
 
 ## Locked decisions
 
@@ -55,8 +55,9 @@ and explicitly approves the next implementation prompt.
   LiteRT dependency or model weights are committed.
 - Phase 6 model-pack installation is source-agnostic and accepts externally
   supplied signed chunks only. No automatic model download exists.
-- Phase 6X inserts three proposed phases before Phase 7: Phase 6.4 App Privacy
-  Lock, Phase 6.5 Relational Boundaries and Phase 6.6 Deterministic Daily Tools.
+- Phase 6X inserted four completed phases before Phase 7: Phase 6.4 App
+  Privacy Lock, Phase 6.5 Relational Boundaries, Phase 6.6 Deterministic Daily
+  Tools and Phase 6.7 Harmful Intent and Dangerous Capability Safeguards.
 - Phase 6.4 must be a real storage-key/privacy-lock implementation, not only a
   visual lock screen.
 - Phase 6.5 must exist before Phase 7 AI response modes.
@@ -88,6 +89,10 @@ and explicitly approves the next implementation prompt.
 - Bettamind PIN/passphrase production storage must use the approved Argon2id
   KDF. Phase 6.4 adds the KDF boundary and tests but does not substitute a
   weaker production fallback.
+- The active continuation plan is
+  `docs/planning/phase-7-to-12-continuation-plan.md`. It preserves the original
+  Phase 7 through Phase 12 objectives and adds required Phase 6.4 through Phase
+  6.7 integration gates. Phase 7 is not started by this reconciliation.
 
 ## Completed work
 
@@ -420,6 +425,17 @@ and explicitly approves the next implementation prompt.
 - `phaseSixSevenCheck` was added and GitHub Actions mobile checks now run it.
 - AGENTS, locked specification, implementation plan, roadmap amendment,
   requirements traceability and risk register were updated for Phase 6.7.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed after the Phase
+  6.7 commit.
+- Roadmap reconciliation after Phase 6X completed as a docs-only planning pass;
+  no production source code was changed and Phase 7 was not started.
+- `docs/planning/phase-7-to-12-continuation-plan.md` was created to preserve
+  original Phase 7 through Phase 12 objectives while adding Phase 6.4, Phase
+  6.5, Phase 6.6 and Phase 6.7 integration gates.
+- `docs/planning/implementation-plan.md`,
+  `docs/planning/roadmap-amendment-phase-6x.md`,
+  `docs/planning/requirements-traceability.md` and
+  `docs/planning/risk-register.md` were reconciled for the remaining roadmap.
 
 ## Important files
 
@@ -430,6 +446,7 @@ and explicitly approves the next implementation prompt.
 - `docs/planning/phase-6x-integration-audit.md`
 - `docs/planning/phase-6x-integration-plan.md`
 - `docs/planning/roadmap-amendment-phase-6x.md`
+- `docs/planning/phase-7-to-12-continuation-plan.md`
 - `docs/planning/requirements-traceability.md`
 - `docs/planning/risk-register.md`
 - `docs/design/brand-and-colour-decision.md`
@@ -628,14 +645,16 @@ and explicitly approves the next implementation prompt.
 - From `backend/`: `.\.venv\Scripts\ruff.exe check .`
 - From `backend/`: `.\.venv\Scripts\mypy.exe app`
 - From `backend/`: `.\.venv\Scripts\pytest.exe`
+- Roadmap reconciliation docs-only checks:
+  `git diff --check` passed with normal Windows LF-to-CRLF warnings;
+  `git diff --name-only -- shared androidApp iosApp backend` produced no
+  output; `git diff --exit-code --
+  docs\planning\archive\implementation-plan-before-phase-6x.md` passed.
 
 ## Known blockers and limitations
 
 - iOS cannot be fully built locally on Windows. Every shared/iOS change still
   requires Codemagic `ios-simulator-unsigned`.
-- Phase 6.7 changed shared Kotlin, Compose resources, Gradle configuration and
-  GitHub Actions, so the pushed commit requires Codemagic
-  `ios-simulator-unsigned`.
 - Windows cannot validate the iOS `LocalAuthentication` adapter or SwiftUI
   inactive-scene shield.
 - The local Windows
@@ -659,6 +678,10 @@ and explicitly approves the next implementation prompt.
 - Phase 6.7 harmful-intent safeguards are a deterministic heuristic foundation.
   They need owner, safety, legal and localization review before production use
   and before Phase 7 response-mode prompts rely on them.
+- Phase 7 remains unstarted. Before Phase 7 implementation, the owner should
+  confirm the reconciled continuation plan, review relational and harm-safety
+  categories, and choose either an initial on-device model/runtime strategy or
+  an unavailable-runtime/no-model-first implementation path.
 - Phase 4 does not yet persist narrative content. Storage status still reports
   encrypted storage unavailable until a separate approved pass wires the
   platform encrypted store into the growth flow. There is no unencrypted
@@ -686,7 +709,8 @@ and explicitly approves the next implementation prompt.
 - Run Codemagic `ios-simulator-unsigned` for pushed commits that change shared
   Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
   iOS, or Codemagic iOS workflow files.
-- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 6.7 commit.
+- Review the reconciled Phase 7 through Phase 12 continuation plan before
+  approving Phase 7.
 - Review Phase 6.5 relational-boundary categories and fallback copy before
   production localization or Phase 7 AI response-mode prompts.
 - Review Phase 6.6 daily-tool copy, reminder defaults, quiet-hours defaults
@@ -710,6 +734,7 @@ and explicitly approves the next implementation prompt.
 
 ## Next approved task
 
-Commit and push Phase 6.7, then have the owner run Codemagic
-`ios-simulator-unsigned`. If Codemagic passes, wait for explicit owner approval
-before roadmap reconciliation. Do not begin Phase 7 automatically.
+Wait for explicit owner approval of the Phase 7 implementation prompt. The
+recommended prompt summary is in
+`docs/planning/phase-7-to-12-continuation-plan.md`. Do not begin Phase 7
+automatically.

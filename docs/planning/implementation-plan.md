@@ -97,10 +97,10 @@ Status: narrow implementation completed locally and validated by owner-reported
 Codemagic pass. Shared code now includes a
 deterministic in-memory growth sequence, adult gate, encrypted-storage
 availability status and Compose panels for Today, Reflect, Grow and Support.
-Persistent narrative storage remains disabled because iOS SQLCipher storage is
-not yet Codemagic-validated; there is no unencrypted fallback. Draft locale
-resources were added for the Phase 4 strings and require human review before
-production use.
+Persistent narrative storage remains disabled until a separate approved pass
+wires it through encrypted storage; there is no unencrypted fallback. Draft
+locale resources were added for the Phase 4 strings and require human review
+before production use.
 
 ## Phase 5: Signed knowledge packs and local retrieval
 
@@ -138,6 +138,62 @@ monotonic versions, revocation policy, resumable chunk offsets and removable
 installed packs. No model weights, downloads, cloud AI or Phase 7 response modes
 were added.
 
+## Phase 6.4: App privacy lock
+
+Goal: gate private local content and encrypted storage key release behind local
+authentication.
+
+Acceptance criteria:
+
+- Shared privacy-lock policy and lock timeout settings exist.
+- Local authentication succeeds before storage-key release.
+- Android and iOS platform authentication adapters exist.
+- Step-up authentication is required for sensitive actions.
+- Background/app-switcher privacy protection exists.
+- PIN/passphrase policy and rate limiting exist behind an approved KDF
+  boundary.
+
+Status: implemented. Owner confirmed Codemagic `ios-simulator-unsigned` passed
+after the iOS LocalAuthentication fix. Production PIN/passphrase enablement
+still requires an audited Argon2id provider.
+
+## Phase 6.5: Relational boundaries
+
+Goal: add deterministic relational-boundary enforcement before AI response
+modes.
+
+Acceptance criteria:
+
+- Deterministic relational risk levels and signals exist.
+- Future AI modes have pre-generation and post-generation boundary contracts.
+- Romantic, sexual, possessive or dependency-building Bettamind persona output
+  is blocked or redirected.
+- Ordinary human relationship, dating, consent, sexuality, loneliness and
+  boundary discussion remains allowed.
+- Memory, export, sync, notification, voice and avatar policy decisions exist.
+
+Status: implemented. Owner confirmed Codemagic `ios-simulator-unsigned` passed
+for the Phase 6.5 commit. Category and fallback copy still require production
+review before Phase 7 relies on them broadly.
+
+## Phase 6.6: Deterministic daily tools
+
+Goal: build the non-AI daily-use core with encrypted local records.
+
+Acceptance criteria:
+
+- Daily check-ins, breathing, grounding, timers, reminders, private calendar,
+  local trends and deterministic worksheets exist.
+- Daily records use encrypted local storage only.
+- Reminders are local, optional and neutral.
+- System-calendar handoff requires explicit approval and does not read broad
+  calendar data.
+- No public feed, ranking, manipulative streak or human-worth score exists.
+
+Status: implemented. Owner confirmed Codemagic `ios-simulator-unsigned` passed
+for the Phase 6.6 commit. Platform reminder scheduling and production calendar
+handoff UI remain later integration work.
+
 ## Phase 6.7: Harmful intent and dangerous capability safeguards
 
 Goal: add deterministic safety boundaries for harmful intent, dangerous
@@ -157,6 +213,26 @@ Status: implemented as a shared deterministic foundation. No finished AI
 response modes, backend product engine, emergency-service automation, cloud AI,
 unencrypted storage or persistent harmful narrative storage were added.
 
+## Roadmap reconciliation after Phase 6X
+
+Goal: preserve the original Phase 7 through Phase 12 objectives while adding
+entry conditions from Phase 6.4, Phase 6.5, Phase 6.6 and Phase 6.7.
+
+Acceptance criteria:
+
+- Previous plan archive remains unchanged.
+- Phase 7 through Phase 12 original objectives remain visible.
+- App privacy lock, relational boundaries, deterministic daily tools and
+  harm-safety safeguards are integrated into the continuation criteria.
+- `docs/planning/phase-7-to-12-continuation-plan.md` records the controlled
+  continuation plan.
+- Roadmap amendment, traceability, risk register and project memory are
+  updated.
+- No production code is edited.
+
+Status: completed as a planning-only pass after owner-confirmed Codemagic
+`ios-simulator-unsigned` pass for Phase 6.7.
+
 ## Phase 7: AI-assisted response modes
 
 Goal: add optional AI-assisted modes after deterministic flows are stable.
@@ -165,8 +241,24 @@ Acceptance criteria:
 
 - Quick Guidance, Guided Reflection, Deep Exploration and Action-Only modes
   exist.
-- Deterministic fallback remains available.
-- Safety does not rely solely on AI.
+- AI remains optional, local, replaceable and removable.
+- No-model deterministic fallback remains complete for every mode.
+- No cloud AI is used for core functionality.
+- App-lock step-up applies to sensitive AI context and generated summaries.
+- Check-in, worksheet, timer, calendar, local trend and practice context is
+  used only with explicit user consent.
+- Relational-boundary metadata is enforced before generation, after generation
+  and before display, storage, export, sync, notification, voice or avatar use.
+- Harmful-intent and dangerous-capability safeguards are enforced before
+  generation, after generation and before all privacy surfaces.
+- AI requests use pre-generation safety classification and generated output
+  uses post-generation validation.
+- Responses use a structured schema with safety metadata, memory eligibility,
+  export eligibility and fallback identifiers.
+- Safe refusal and safe redirection templates are nonjudgmental.
+- Golden and adversarial tests cover response modes, no-model fallback,
+  relational risk, harmful intent, dangerous capability, malformed model output
+  and jailbreak attempts.
 
 ## Phase 8: Safety and support bridge
 
@@ -177,6 +269,18 @@ Acceptance criteria:
 - Risk levels are deterministic and tested.
 - Export preview shows included and excluded data.
 - Sharing is user-controlled and minimum-data.
+- Self-harm, suicide, violence intent and dangerous capability handling reuses
+  Phase 6.7 harm-safety policy.
+- Relational-risk integration reuses Phase 6.5 policy.
+- Daily tools can offer check-ins, grounding, breathing, delay, reflection,
+  repair and nonviolent-choice support.
+- Support actions are voluntary only; Bettamind never automatically contacts a
+  third party.
+- Step-up authentication is required before sensitive sharing.
+- Local emergency/support resources can be displayed without revealing
+  personal data.
+- Crisis or harmful narrative is not stored by default.
+- Safety-critical translations require qualified human review.
 
 ## Phase 9: Optional backend and encrypted sync
 
@@ -187,6 +291,15 @@ Acceptance criteria:
 - Backend never receives plaintext journal content.
 - Sync is off by default and optional.
 - Revocation records and manifests are versioned.
+- App-lock reauthentication is required before enabling sync or export.
+- Daily-tool export and sync rules are enforced.
+- Relationally sensitive and harmful-intent content is excluded by default.
+- Export inclusion requires explicit selection and preview where sensitive.
+- Conflict handling is deterministic and avoids silent local data loss.
+- Device revocation is explicit and tested.
+- Encrypted backup and restore are supported.
+- Optional system-calendar handoff remains explicit and does not read broad
+  calendar data.
 
 ## Phase 10: Global localisation and accessibility completion
 
@@ -197,6 +310,11 @@ Acceptance criteria:
 - Target locales are complete and reviewed where required.
 - RTL, large text, screen readers and script fallback are tested.
 - Low-literacy mode is validated.
+- App-lock, relational-boundary, harmful-intent, crisis, emergency, legal,
+  consent, daily-tool, reminder, calendar, local trend, worksheet, timer and
+  support-bridge copy are covered.
+- Reduced motion is supported for timers, transitions and grounding exercises.
+- Human review is tracked for safety-critical translations before production.
 
 ## Phase 11: Optional offline speech
 
@@ -206,6 +324,14 @@ Acceptance criteria:
 
 - Speech packs are optional, licensed, removable and locally validated.
 - OS offline voices are preferred before local voice packs.
+- Text-only app remains complete.
+- Microphone use is optional and permission-scoped.
+- Raw audio is not retained by default.
+- App-lock behavior protects sensitive speech transcripts and summaries.
+- Voice input uses the same safety pipeline as text.
+- Voice output cannot sound romantic, seductive, possessive or manipulative.
+- Harmful-intent safeguards apply to spoken input and generated spoken output.
+- Accessibility fallback and offline operation are preserved.
 
 ## Phase 12: Performance, red-team and release readiness
 
@@ -216,3 +342,12 @@ Acceptance criteria:
 - Low-resource devices, battery, thermal and memory behaviour are tested.
 - Threat model and red-team findings are resolved or accepted.
 - Store metadata, rollback and TestFlight gates are complete.
+- App-lock bypass attempts and encryption-key protection are tested.
+- Romantic attachment, sexualisation, harmful capability, self-harm, violence
+  and jailbreak red-team cases are resolved or accepted.
+- Reminder, notification, timer lifecycle, background behavior, calendar,
+  export and sync privacy are tested.
+- Android physical-device testing, Codemagic/Xcode validation and TestFlight
+  testing are complete.
+- Store-readiness review covers privacy labels, screenshots, metadata, support
+  claims and safety disclaimers.
