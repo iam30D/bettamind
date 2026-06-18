@@ -38,6 +38,19 @@
     <string name="daily_worksheet_title">Decision worksheets</string>
     <string name="daily_worksheet_description">Values-to-action, problem-solving, repair and difficult-conversation prompts are deterministic templates.</string>
     <string name="daily_record_storage_note">There is no unencrypted fallback, cloud sync, public ranking, streak or human-worth score.</string>
+    <string name="ai_growth_modes_title">AI-assisted growth modes</string>
+    <string name="ai_growth_modes_description">Quick Guidance, Guided Reflection, Deep Exploration and Action-Only can use a local model when available, but every mode keeps a deterministic no-model path.</string>
+    <string name="ai_growth_quick_guidance_title">Quick Guidance</string>
+    <string name="ai_growth_quick_guidance_description">Offers a short next-step frame after safety and boundary checks.</string>
+    <string name="ai_growth_guided_reflection_title">Guided Reflection</string>
+    <string name="ai_growth_guided_reflection_description">Helps organise awareness, choice and consequence without claiming therapy or diagnosis.</string>
+    <string name="ai_growth_deep_exploration_title">Deep Exploration</string>
+    <string name="ai_growth_deep_exploration_description">Looks for values, patterns and repair paths when a local model is available and safe to use.</string>
+    <string name="ai_growth_action_only_title">Action-Only</string>
+    <string name="ai_growth_action_only_description">Keeps the response focused on one practical action and avoids extended interpretation.</string>
+    <string name="ai_growth_no_model_note">No model is required. If a local model is unavailable, Bettamind uses deterministic fallback keys.</string>
+    <string name="ai_growth_safety_note">Relational and harm-safety checks run before generation and after generated output.</string>
+    <string name="ai_growth_privacy_note">Daily context is used only after explicit consent, and sensitive AI context requires local step-up authentication.</string>
     <string name="growth_age_gate_title">Adult access</string>
     <string name="growth_age_gate_description">Personal growth features need local adult confirmation before use.</string>
     <string name="growth_age_confirm_adult">I am 18 or older</string>
@@ -93,6 +106,7 @@
     <string name="relational_boundary_memory_note">Romantic, sexual, exclusivity or dependency signals are not eligible for permanent memory by default.</string>
     <string name="relational_boundary_notification_note">Reminder copy stays neutral and cannot imply Bettamind misses, needs or chooses the user.</string>
     <string name="phase_six_seven_status">Harmful-intent safeguards foundation</string>
+    <string name="phase_seven_status">Optional AI growth modes foundation</string>
     <string name="harm_safety_title">Harm safety</string>
     <string name="harm_safety_description">Bettamind uses deterministic safeguards before and after AI so unsafe requests can be redirected without shame.</string>
     <string name="harm_safety_capability_note">Actionable harmful details are refused, while high-level prevention, emergency response, grounding and nonviolent repair remain available.</string>

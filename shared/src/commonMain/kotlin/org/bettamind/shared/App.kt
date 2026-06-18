@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import org.bettamind.shared.ai.AiGrowthMode
 import org.bettamind.shared.daily.BreathingExerciseCatalog
 import org.bettamind.shared.growth.AdultGateState
 import org.bettamind.shared.growth.DeterministicGrowthEngine
@@ -155,7 +156,7 @@ private fun AppHeader() {
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                text = stringResource(Res.string.phase_six_seven_status),
+                text = stringResource(Res.string.phase_seven_status),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -266,7 +267,10 @@ private fun GrowthDestinationContent(
             }
 
             BettamindDestination.Reflect -> StepMapPanel(growthState)
-            BettamindDestination.Grow -> GrowthSummaryPanel(growthState)
+            BettamindDestination.Grow -> {
+                AiGrowthModesFoundationPanel()
+                GrowthSummaryPanel(growthState)
+            }
             BettamindDestination.Support -> SupportPanel()
             BettamindDestination.Settings -> Unit
         }
@@ -312,6 +316,36 @@ private fun DailyToolsFoundationPanel() {
         )
         Text(
             text = stringResource(Res.string.daily_record_storage_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun AiGrowthModesFoundationPanel() {
+    StatusBlock(
+        title = Res.string.ai_growth_modes_title,
+        body = Res.string.ai_growth_modes_description,
+    ) {
+        AiGrowthMode.entries.forEach { mode ->
+            StatusLine(
+                title = mode.title(),
+                body = mode.description(),
+            )
+        }
+        Text(
+            text = stringResource(Res.string.ai_growth_no_model_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = stringResource(Res.string.ai_growth_safety_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = stringResource(Res.string.ai_growth_privacy_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -782,6 +816,20 @@ private fun PrivacyLockTimeout.label(): StringResource = when (this) {
     PrivacyLockTimeout.OneMinute -> Res.string.privacy_lock_timeout_one_minute
     PrivacyLockTimeout.FiveMinutes -> Res.string.privacy_lock_timeout_five_minutes
     PrivacyLockTimeout.FifteenMinutes -> Res.string.privacy_lock_timeout_fifteen_minutes
+}
+
+private fun AiGrowthMode.title(): StringResource = when (this) {
+    AiGrowthMode.QuickGuidance -> Res.string.ai_growth_quick_guidance_title
+    AiGrowthMode.GuidedReflection -> Res.string.ai_growth_guided_reflection_title
+    AiGrowthMode.DeepExploration -> Res.string.ai_growth_deep_exploration_title
+    AiGrowthMode.ActionOnly -> Res.string.ai_growth_action_only_title
+}
+
+private fun AiGrowthMode.description(): StringResource = when (this) {
+    AiGrowthMode.QuickGuidance -> Res.string.ai_growth_quick_guidance_description
+    AiGrowthMode.GuidedReflection -> Res.string.ai_growth_guided_reflection_description
+    AiGrowthMode.DeepExploration -> Res.string.ai_growth_deep_exploration_description
+    AiGrowthMode.ActionOnly -> Res.string.ai_growth_action_only_description
 }
 
 @Composable

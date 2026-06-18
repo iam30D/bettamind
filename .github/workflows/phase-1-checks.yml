@@ -37,7 +37,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run shared metadata, Android unit tests, Android debug build and lint
-        run: ./gradlew phaseSixSevenCheck --stacktrace
+        run: ./gradlew phaseSevenCheck --stacktrace
 
       - name: Upload Gradle reports
         if: always()

@@ -2,15 +2,14 @@
 
 ## Current phase
 
-Roadmap reconciliation after Phase 6X is complete as a docs-only planning pass.
-Phases 0 through 6, Phase 6.4, Phase 6.5, Phase 6.6 and Phase 6.7 are treated
-as implemented and stable, with owner-confirmed Codemagic
-`ios-simulator-unsigned` validation through the Phase 6.7 commit. The active
-roadmap now preserves the original Phase 7 through Phase 12 objectives while
-adding the privacy-lock, relational-boundary, daily-tool and harm-safety
-acceptance gates created in Phase 6.4 through Phase 6.7. Do not begin Phase 7
-or later work until the owner explicitly approves the next implementation
-prompt.
+Phase 7 AI-assisted growth modes is implemented locally. Phases 0 through 6,
+Phase 6.4, Phase 6.5, Phase 6.6 and Phase 6.7 are treated as implemented and
+stable, with owner-confirmed Codemagic `ios-simulator-unsigned` validation
+through the Phase 6.7 commit. Phase 7 changes shared Kotlin, Compose
+resources, Gradle configuration and GitHub Actions, so the pushed Phase 7
+commit requires Codemagic `ios-simulator-unsigned` validation. Do not begin
+Phase 8 or later work until the owner confirms Codemagic passed and explicitly
+approves the next implementation prompt.
 
 ## Locked decisions
 
@@ -92,7 +91,17 @@ prompt.
 - The active continuation plan is
   `docs/planning/phase-7-to-12-continuation-plan.md`. It preserves the original
   Phase 7 through Phase 12 objectives and adds required Phase 6.4 through Phase
-  6.7 integration gates. Phase 7 is not started by this reconciliation.
+  6.7 integration gates. Phase 8 is not started.
+- Phase 7 AI-assisted growth modes are optional, local and replaceable behind
+  `LocalAiRuntime`. No cloud AI, model downloads, model weights, backend
+  dependency, speech, support bridge or sync implementation exists.
+- Phase 7 keeps deterministic no-model fallback for Quick Guidance, Guided
+  Reflection, Deep Exploration and Action-Only. Daily-tool context may enter a
+  model prompt only when requested and explicitly consented.
+- Phase 7 AI output must pass relational-boundary and harm-safety validation
+  before display, memory/export/sync/notification eligibility, voice or avatar
+  use. Permanent memory remains proposal-only, automatic writes are disabled
+  and separate approval is required.
 
 ## Completed work
 
@@ -436,6 +445,25 @@ prompt.
   `docs/planning/roadmap-amendment-phase-6x.md`,
   `docs/planning/requirements-traceability.md` and
   `docs/planning/risk-register.md` were reconciled for the remaining roadmap.
+- Phase 7 shared AI growth-mode orchestration was added under
+  `shared/src/commonMain/kotlin/org/bettamind/shared/ai/AiGrowthModes.kt`.
+- `AiGrowthModeEngine` adds Quick Guidance, Guided Reflection, Deep
+  Exploration and Action-Only, with pre-generation harm and relational
+  classification, consent-filtered daily context, structured JSON model output
+  parsing, post-generation validation and deterministic fallback localization
+  keys.
+- Common tests in
+  `shared/src/commonTest/kotlin/org/bettamind/shared/ai/AiGrowthModesTest.kt`
+  cover no-model fallback, consent filtering, app-lock step-up metadata,
+  dangerous capability refusal before generation, relational redirection before
+  generation, unsafe generated output blocking, malformed output fallback,
+  memory/export eligibility and local runtime failure fallback.
+- The shared Compose Grow surface now exposes a small Phase 7 foundation panel
+  for the four modes. All user-facing Phase 7 strings live in Compose resource
+  files; non-English entries are draft fallback copy pending human review.
+- `phaseSevenCheck` was added and GitHub Actions mobile checks now run it.
+- Implementation plan, continuation plan, requirements traceability and risk
+  register were updated for Phase 7.
 
 ## Important files
 
@@ -463,6 +491,7 @@ prompt.
 - `shared/src/commonMain/kotlin/org/bettamind/shared/daily/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/knowledge/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/ai/`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/ai/AiGrowthModes.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/safety/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/security/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/privacy/`
@@ -470,6 +499,7 @@ prompt.
 - `shared/src/commonTest/kotlin/org/bettamind/shared/daily/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/knowledge/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/ai/`
+- `shared/src/commonTest/kotlin/org/bettamind/shared/ai/AiGrowthModesTest.kt`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/safety/`
 - `shared/src/androidMain/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/iosMain/kotlin/org/bettamind/shared/privacy/`
@@ -486,6 +516,7 @@ prompt.
 - `docs/safety/harmful-intent-and-dangerous-capability-policy.md`
 - `docs/product/phase-6-6-deterministic-daily-tools.md`
 - `codemagic.yaml`
+- `.github/workflows/phase-1-checks.yml`
 
 ## Commands that passed
 
@@ -650,11 +681,35 @@ prompt.
   `git diff --name-only -- shared androidApp iosApp backend` produced no
   output; `git diff --exit-code --
   docs\planning\archive\implementation-plan-before-phase-6x.md` passed.
+- `.\gradlew.bat :shared:compileKotlinMetadata --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed after Phase 7 changes.
+- `.\gradlew.bat :shared:compileDebugKotlinAndroid --rerun-tasks --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed after Phase 7 changes.
+- `.\gradlew.bat :shared:testDebugUnitTest --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed after the Phase 7 AI growth-mode tests were added.
+- `.\gradlew.bat phaseSevenCheck --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed after Phase 7 changes.
+- `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  completed on Windows after Phase 7 changes, with iOS Native compile/test
+  tasks still skipped because SQLCipher cinterop cannot be processed on
+  `mingw_x64`.
+- From `backend/`: `.\.venv\Scripts\ruff.exe check .`
+- From `backend/`: `.\.venv\Scripts\mypy.exe app`
+- From `backend/`: `.\.venv\Scripts\pytest.exe`
+- `git diff --check` reported no whitespace errors, only normal Windows
+  LF-to-CRLF warnings.
+- `git ls-files | rg "\.(tflite|litertlm|gguf|onnx|bin|safetensors|model|mlmodel|task)$"`
+  found no tracked model-weight artifacts.
+- `rg -l "ai_growth_modes_title" shared\src\commonMain\composeResources | Measure-Object`
+  reported 10 resource files with the Phase 7 string key.
 
 ## Known blockers and limitations
 
 - iOS cannot be fully built locally on Windows. Every shared/iOS change still
   requires Codemagic `ios-simulator-unsigned`.
+- Phase 7 changed shared Kotlin, Compose resources, Gradle configuration and
+  GitHub Actions, so the pushed commit requires Codemagic
+  `ios-simulator-unsigned`.
 - Windows cannot validate the iOS `LocalAuthentication` adapter or SwiftUI
   inactive-scene shield.
 - The local Windows
@@ -678,10 +733,10 @@ prompt.
 - Phase 6.7 harmful-intent safeguards are a deterministic heuristic foundation.
   They need owner, safety, legal and localization review before production use
   and before Phase 7 response-mode prompts rely on them.
-- Phase 7 remains unstarted. Before Phase 7 implementation, the owner should
-  confirm the reconciled continuation plan, review relational and harm-safety
-  categories, and choose either an initial on-device model/runtime strategy or
-  an unavailable-runtime/no-model-first implementation path.
+- Phase 7 is implemented against the existing `LocalAiRuntime` boundary and
+  unavailable-runtime/no-model path. Production model choices, model licences,
+  model trust anchors, delivery governance and prompt/output review remain
+  future owner/release work.
 - Phase 4 does not yet persist narrative content. Storage status still reports
   encrypted storage unavailable until a separate approved pass wires the
   platform encrypted store into the growth flow. There is no unencrypted
@@ -697,8 +752,9 @@ prompt.
 - The source PNG has a baked checkerboard background; generated assets use a
   documented mask to derive transparency.
 - Locale packs are draft implementation foundations and require qualified human
-  review before production use. Phase 4 and Phase 6.6 non-English strings are
-  draft fallback text and are not production-approved translations.
+  review before production use. Phase 4, Phase 6.6 and Phase 7 non-English
+  strings are draft fallback text and are not production-approved
+  translations.
 - `java` is not available on global `PATH`; current checks used JetBrains'
   bundled JBR at `C:\Program Files\JetBrains\PyCharm 2025.2.3\jbr`.
 - Local Windows Gradle checks require a non-committed `local.properties` with
@@ -709,8 +765,7 @@ prompt.
 - Run Codemagic `ios-simulator-unsigned` for pushed commits that change shared
   Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
   iOS, or Codemagic iOS workflow files.
-- Review the reconciled Phase 7 through Phase 12 continuation plan before
-  approving Phase 7.
+- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 7 commit.
 - Review Phase 6.5 relational-boundary categories and fallback copy before
   production localization or Phase 7 AI response-mode prompts.
 - Review Phase 6.6 daily-tool copy, reminder defaults, quiet-hours defaults
@@ -728,13 +783,15 @@ prompt.
   governance before accepting real public packs.
 - Provide owner-approved production model choices, licences, trust anchors and
   delivery governance before accepting real model packs.
+- Review Phase 7 AI-growth fallback identifiers, prompt boundaries, model
+  schema and production model-output governance before enabling a real local
+  model broadly.
 - Arrange qualified human review for production translations, especially any
   safety, crisis, legal, privacy, consent, relational-boundary or daily-tool
   copy.
 
 ## Next approved task
 
-Wait for explicit owner approval of the Phase 7 implementation prompt. The
-recommended prompt summary is in
-`docs/planning/phase-7-to-12-continuation-plan.md`. Do not begin Phase 7
-automatically.
+Commit and push Phase 7, then have the owner run Codemagic
+`ios-simulator-unsigned`. If Codemagic passes, wait for explicit owner approval
+before Phase 8. Do not begin Phase 8 automatically.

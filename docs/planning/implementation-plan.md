@@ -260,6 +260,19 @@ Acceptance criteria:
   relational risk, harmful intent, dangerous capability, malformed model output
   and jailbreak attempts.
 
+Status: implemented as a shared optional local AI growth-mode foundation.
+`AiGrowthModeEngine` adds Quick Guidance, Guided Reflection, Deep Exploration
+and Action-Only orchestration behind `LocalAiRuntime`. The no-model path is
+complete through deterministic fallback localization keys. Daily-tool context
+is included in model prompts only when explicitly requested and consented.
+Relational and harm-safety policies run before generation and after generated
+output before display, memory, export, sync, notification, voice or avatar
+eligibility decisions. Responses use a structured JSON schema with safety
+metadata, memory/export eligibility and fallback identifiers. Permanent memory
+is proposal-only, disabled for automatic writes and requires separate approval.
+No cloud AI, model downloads, model weights, backend dependency, speech,
+support bridge or sync implementation was added.
+
 ## Phase 8: Safety and support bridge
 
 Goal: implement layered safety and consent-based encrypted third-party support.

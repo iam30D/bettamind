@@ -10,9 +10,12 @@ objectives while adding entry conditions and acceptance criteria from the
 completed privacy-lock, relational-boundary, deterministic daily-tool and
 harm-safety foundations.
 
-This plan does not implement Phase 7 and does not replace the archived
+This plan is a roadmap control document and does not replace the archived
 pre-Phase-6X plan at
 `docs/planning/archive/implementation-plan-before-phase-6x.md`.
+
+Status update: Phase 7 is now implemented as an optional local AI growth-mode
+foundation after owner approval. Phase 8 and later phases are not started.
 
 ## Completed Preconditions
 
@@ -90,6 +93,10 @@ Required tests:
 - Harm-safety pre/post-generation tests.
 - Memory/export eligibility tests.
 - Golden and adversarial response tests.
+
+Status: completed for the shared Phase 7 foundation. Production model choices,
+model licences, trust anchors, human review and Codemagic validation remain
+owner/release gates.
 
 ## Phase 8: Safety And Support Bridge
 
@@ -263,34 +270,36 @@ Required tests:
 - Low-resource and physical-device checks.
 - Codemagic/Xcode and TestFlight validation gates.
 
-## Phase 7 Entry Requirements
+## Phase 8 Entry Requirements
 
-Before Phase 7 begins:
+Before Phase 8 begins:
 
-- Owner confirms this reconciliation plan.
-- Owner confirms Phase 7 will implement AI response modes only, not Phase 8
-  support bridge, Phase 9 sync, Phase 10 localisation completion, Phase 11
-  speech or Phase 12 release readiness.
-- Owner reviews Phase 6.5 relational categories and fallback copy.
-- Owner reviews Phase 6.7 harm-safety categories and fallback identifiers.
-- Owner confirms the initial on-device AI model/runtime strategy or authorises
-  implementation against the existing unavailable-runtime fallback first.
-- Production model licences, trust anchors and delivery governance are not
-  assumed unless supplied.
+- Owner confirms Phase 7 Codemagic `ios-simulator-unsigned` validation passed.
+- Owner confirms Phase 8 will implement the safety and support bridge only, not
+  Phase 9 sync, Phase 10 localisation completion, Phase 11 speech or Phase 12
+  release readiness.
+- Owner reviews Phase 6.5 relational categories, Phase 6.7 harm-safety
+  categories and Phase 7 AI-growth fallback identifiers before support flows
+  rely on them broadly.
+- Owner confirms local emergency/support resource scope and copy-review
+  expectations.
 - Codemagic remains the required iOS validation path after shared/iOS-affecting
   changes.
 
-## Exact Recommended Phase 7 Prompt Summary
+## Exact Recommended Phase 8 Prompt Summary
 
-Implement Phase 7 only: optional AI-assisted growth modes. Preserve offline,
-account-free, backend-optional and no-model operation. Add Quick Guidance,
-Guided Reflection, Deep Exploration and Action-Only modes behind the existing
-local AI runtime abstraction, with deterministic no-model fallback. Enforce
-app-lock step-up for sensitive AI context, require explicit consent before
-including check-in, worksheet, timer, calendar, local trend or practice context,
-call relational-boundary and harm-safety policies before generation, validate
-all generated output before display/storage/export/sync/notification, use a
-structured response schema with memory/export eligibility, add golden and
-adversarial tests, update docs and project memory, run Windows checks, commit
-and push, then stop. Do not implement Phase 8, backend sync, speech, release
-hardening, cloud AI, model downloads, model weights or production localisation.
+Implement Phase 8 only: safety and support bridge. Preserve offline,
+account-free, backend-optional and no-model operation. Reuse Phase 6.5
+relational boundaries, Phase 6.6 daily tools, Phase 6.7 harm-safety safeguards
+and Phase 7 AI-growth metadata. Add deterministic self-harm, suicide, violence
+intent and dangerous-capability support pathways; voluntary support actions;
+minimum-necessary support summaries; local emergency/support resource display;
+explicit preview and app-lock step-up before sensitive sharing; no automatic
+third-party contact; no claim that help was contacted unless the user completed
+that action. Add tests for self-harm, violence, dangerous capability,
+relational overlap, daily-tool crisis integration, no-auto-contact,
+minimum-detail summaries, step-up sharing, localisation review flags and
+accessibility. Update docs and project memory, run Windows checks, commit and
+push, then stop. Do not implement Phase 9 sync, Phase 10 localisation
+completion, Phase 11 speech, Phase 12 release readiness, cloud AI, model
+downloads, model weights or backend-mandatory behavior.
