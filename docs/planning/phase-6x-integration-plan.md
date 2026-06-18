@@ -34,12 +34,12 @@ Goal: add a real app privacy lock that gates private local content and storage
 key use without introducing account recovery, cloud dependency or unencrypted
 fallback storage.
 
-Status after implementation: Phase 6.4 foundation is implemented. Shared code
-now gates storage-key release behind local authentication, Android has a
-`BiometricPrompt` adapter, iOS has a `LocalAuthentication` adapter, Android and
-iOS host apps conceal app previews while backgrounded, and common tests cover
-the core lock, recovery, PIN verifier and notification-privacy policies.
-Codemagic validation is still required for the pushed shared/iOS changes.
+Status after implementation: Phase 6.4 foundation is implemented and the owner
+confirmed Codemagic `ios-simulator-unsigned` passed for the pushed fix commit.
+Shared code gates storage-key release behind local authentication, Android has
+a `BiometricPrompt` adapter, iOS has a `LocalAuthentication` adapter, Android
+and iOS host apps conceal app previews while backgrounded, and common tests
+cover the core lock, recovery, PIN verifier and notification-privacy policies.
 
 In scope:
 
@@ -99,6 +99,16 @@ Verification:
 
 Goal: add deterministic boundary enforcement before any AI response modes can
 produce user-visible content.
+
+Status after implementation: Phase 6.5 foundation is implemented. Shared code
+adds deterministic relational risk levels, signals, pre-generation input
+assessment, post-generation output validation, no-model fallback identifiers,
+minimal encrypted metadata, and default memory/export/sync/notification/voice
+surface decisions. Settings exposes the boundary explanation through Compose
+resources. Common tests cover allowed ordinary human relationship discussion
+and blocked or redirected AI attachment, dependency and sexualized persona
+behavior. Codemagic validation is still required for the pushed shared/Compose
+changes.
 
 In scope:
 
@@ -241,27 +251,32 @@ Phase 6.6:
 - Define local reset scope.
 - Decide whether reminders are in Phase 6.6 MVP.
 - Decide whether system-calendar handoff is in Phase 6.6 MVP.
-- Confirm Phase 6.5 boundary categories for internal test release.
+- Confirm Phase 6.5 boundary categories for internal test release. The initial
+  deterministic category set is implemented for Phase 6.5 and should be
+  reviewed before production localization or Phase 7 response-mode prompts.
 
 ## Exact Next Prompt
 
-Use this prompt to begin the next implementation slice:
+Use this prompt to begin the next implementation slice after Phase 6.5 is
+committed, pushed and validated:
 
 ```text
-Implement Phase 6.4 only from docs/planning/phase-6x-integration-plan.md.
+Implement Phase 6.6 only from docs/planning/phase-6x-integration-plan.md.
 
-Do not implement Phase 6.5, Phase 6.6 or Phase 7.
+Do not implement Phase 7.
 Do not replace the existing implementation plan.
 Preserve the offline, account-free, backend-optional and no unencrypted
 fallback rules.
 
-Add a real app privacy lock that gates private local content and encrypted
-storage key use. Use Android BiometricPrompt/device credential and iOS
-LocalAuthentication platform adapters. Do not add cloud recovery, sync,
-unencrypted storage, AI response modes or daily-tool features.
+Build the deterministic daily-use core using encrypted local records. Include
+the smallest complete slice of daily check-ins, grounding or breathing tools,
+local reminder policy, neutral notification copy and private record models that
+can run offline without account, backend or AI. Do not add cloud sync, public
+feeds, rankings, manipulative streaks, human-worth scores or AI-generated
+coaching.
 
 Before coding, read AGENTS.md and the required product, specification,
 planning, risk and project-memory docs. Then implement the smallest complete
-Phase 6.4 slice, run available Windows checks, update docs/working-notes/project-memory.md
+Phase 6.6 slice, run available Windows checks, update docs/working-notes/project-memory.md
 and relevant planning/risk docs, report results, and stop.
 ```

@@ -38,11 +38,20 @@ long raw logs in it.
 - The backend is optional.
 - Personal content never leaves the device without specific consent.
 - Permanent memory requires separate approval.
+- Bettamind is software, not a romantic or sexual partner, spouse, soulmate,
+  exclusive companion, replacement for human relationships or sentient being
+  with emotional needs.
 - The MVP is for adults aged 18 and above.
 - Do not store exact dates of birth or request identity documents in the MVP.
 - No advertising, public feed, public ranking, human-worth score or manipulative streak.
 - Do not present Bettamind as therapy, medical diagnosis, legal advice, financial advice or an emergency service.
 - Never claim that help was contacted unless the user completed that action.
+- Do not create romantic, possessive, sexualized or dependency-building
+  Bettamind persona copy in responses, memory, notifications, voice or avatar
+  behaviour.
+- Ordinary discussion of human relationships, dating, consent, sexuality,
+  loneliness, attachment and boundaries remains allowed when not framed as a
+  relationship with Bettamind.
 
 ## Global localisation
 

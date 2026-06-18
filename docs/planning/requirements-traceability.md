@@ -26,8 +26,8 @@ Date updated: 2026-06-18
 | Authentication-bound storage key release | 6.4 | `VaultKeyReleaseService` calls the platform storage key manager only after successful local authentication; Android and iOS platform authentication adapters exist. |
 | Bettamind PIN/passphrase fallback | 6.4 | Shared policy, verifier and rate limiter implemented behind a KDF interface; production Argon2id provider remains a release-hardening dependency. |
 | Background/app-switcher privacy protection | 6.4 | Android sets `FLAG_SECURE`; iOS covers inactive app content with a neutral system-background privacy shield. |
-| Relational boundaries before AI response modes | 6.5 | Missing; Phase 6X audit recommends deterministic policy contracts before Phase 7. |
-| Memory/export/sync/notification/voice boundary rules | 6.5+ | Missing; should be defined before those surfaces use AI or personal content. |
+| Relational boundaries before AI response modes | 6.5 | Shared deterministic policy contracts, pre-generation assessment, post-generation validation, fallback identifiers and tests exist under `shared/src/commonMain/kotlin/org/bettamind/shared/safety/`. |
+| Memory/export/sync/notification/voice boundary rules | 6.5+ | Phase 6.5 policy metadata and surface decisions define default exclusions for relationally sensitive memory, export, sync, notification and voice/avatar use. |
 | Deterministic daily tools | 6.6 | Missing beyond the Phase 4 growth-flow skeleton; check-ins, timers, reminders, calendar, worksheets and trend summaries are planned. |
 | Encrypted product-record persistence | 6.6 | Storage primitive exists, but daily-tool product records are not wired yet. |
 | Safety and support bridge | 8 | Not implemented; should reuse Phase 6.5 policy outcomes. |
@@ -38,6 +38,7 @@ Date updated: 2026-06-18
 - Current implementation plan archived unchanged.
 - Existing app, storage, AI, growth, safety and daily-tool functions inventoried.
 - Phase 6.4 implementation status reflected after app privacy-lock work.
+- Phase 6.5 implementation status reflected after relational-boundary work.
 - Roadmap amendment created without editing active implementation plan.
 - Risk register and project memory updated.
 - No production source code edited.

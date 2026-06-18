@@ -72,4 +72,8 @@
     <string name="privacy_lock_reauth_note">Reauthentication is still required before export, sync, professional sharing, recovery data, security changes, PIN changes, deleting local data or highly sensitive records.</string>
     <string name="privacy_lock_urgent_support">A locked screen may offer static urgent-support information without revealing personal data.</string>
     <string name="privacy_lock_notification_neutral">Bettamind has a private reminder.</string>
+    <string name="relational_boundary_title">Relationship boundaries</string>
+    <string name="relational_boundary_description">Bettamind can support human relationships, dating, consent and loneliness, but it is software, not a romantic or sexual partner.</string>
+    <string name="relational_boundary_memory_note">Romantic, sexual, exclusivity or dependency signals are not eligible for permanent memory by default.</string>
+    <string name="relational_boundary_notification_note">Reminder copy stays neutral and cannot imply Bettamind misses, needs or chooses the user.</string>
 </resources>

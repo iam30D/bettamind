@@ -55,6 +55,24 @@ Never create unencrypted fallback storage.
 - Model packs must be signed, checksum-verified, versioned and removable.
 - Never commit or automatically download model weights.
 
+## Relational boundary requirements
+
+- Bettamind may be warm, compassionate, respectful and attentive.
+- Bettamind must not present itself as a romantic or sexual partner, spouse,
+  soulmate, exclusive companion, replacement for human relationships or
+  sentient being with emotional needs.
+- Future AI response modes must call deterministic relational-boundary checks
+  before generation and after generation.
+- Future generated output must be blocked before display, storage, export,
+  sync, notification, voice or avatar use if it reciprocates romantic or sexual
+  attachment, claims jealousy, longing, dependency, secrecy, exclusivity,
+  emergency-service contact or clinical diagnosis.
+- Ordinary discussion of human relationships, dating, consent, sexuality,
+  loneliness, attachment, rejection, communication and boundaries remains
+  allowed when it is not framed as a relationship with Bettamind.
+- Romantic, sexual, exclusivity, dependency and perceived-mutual-AI signals are
+  not eligible for permanent memory by default.
+
 ## Localisation requirements
 
 - Use BCP 47 locale identifiers.

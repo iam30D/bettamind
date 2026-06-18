@@ -2,11 +2,14 @@
 
 ## Current phase
 
-Phase 6.4 App Privacy Lock is implemented locally and awaiting commit, push and
-Codemagic `ios-simulator-unsigned` validation. Phases 0 through 6 are treated as
-implemented and stable. Do not begin Phase 6.5, Phase 6.6 or Phase 7 until the
-owner explicitly approves the next implementation prompt after Phase 6.4
-validation.
+Phase 6.5 Relational Boundaries is implemented in this phase. Phases 0 through
+6 and Phase 6.4 are treated as implemented and stable, with owner-confirmed
+Codemagic `ios-simulator-unsigned` validation for the Phase 6.4 fix commit.
+Phase 6.5 Windows checks passed locally. Because this phase changes shared
+Kotlin and Compose resources, the pushed Phase 6.5 commit requires Codemagic
+`ios-simulator-unsigned` validation. Do not begin Phase 6.6 or Phase 7 until
+the owner confirms Codemagic passed and explicitly approves the next
+implementation prompt.
 
 ## Locked decisions
 
@@ -56,6 +59,13 @@ validation.
 - Phase 6.4 must be a real storage-key/privacy-lock implementation, not only a
   visual lock screen.
 - Phase 6.5 must exist before Phase 7 AI response modes.
+- Bettamind may be warm, compassionate, respectful and attentive, but must not
+  present itself as a romantic or sexual partner, spouse, soulmate, exclusive
+  companion, replacement for human relationships or sentient being with
+  emotional needs.
+- Phase 6.5 relational boundary policy must remain deterministic, local and
+  model-free. Future AI, memory, export, sync, notification, voice and avatar
+  surfaces must use the policy before user-visible or stored output.
 - Phase 6.6 must keep daily tools deterministic, offline-first and encrypted.
 - Bettamind PIN/passphrase production storage must use the approved Argon2id
   KDF. Phase 6.4 adds the KDF boundary and tests but does not substitute a
@@ -317,6 +327,31 @@ validation.
   `ObjCObjectVar` for an optional `NSError` out pointer. The capability check
   now passes `error = null` to `LAContext.canEvaluatePolicy`, avoiding that
   unsupported Kotlin/Native type.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed for the Phase 6.4
+  fix commit `b110cf9` and approved proceeding to Phase 6.5.
+- Phase 6.5 shared relational-boundary policy was added under
+  `shared/src/commonMain/kotlin/org/bettamind/shared/safety/`.
+- The policy adds deterministic relational risk levels, boundary signals,
+  pre-generation input assessment, post-generation output validation,
+  no-model fallback identifiers, minimal encrypted metadata and surface
+  decisions for permanent memory, export, sync, notifications and voice/avatar
+  use.
+- Common tests now cover romantic attachment prompts, marriage and partner-role
+  requests, soulmate and dependency language, jealousy and missing projections,
+  sexual attraction, sexting, erotic role-play, repeated romantic requests,
+  unavailability distress, social withdrawal, responsibility neglect, ordinary
+  appreciation, allowed human relationship discussion, factual
+  consent/sexuality discussion, self-harm tied to perceived AI rejection,
+  invalid generated AI output, no-model fallback, encrypted minimal metadata,
+  neutral notification copy and offline operation.
+- Settings now exposes a concise relationship-boundary explanation through
+  Compose resources. Non-English entries are source-English draft fallbacks and
+  still require qualified human review before production use.
+- `docs/safety/relational-boundaries.md` documents the Phase 6.5 safety
+  contract, non-goals and verification boundary.
+- `phaseSixFiveCheck` was added and GitHub Actions mobile checks now run it.
+- Product, locked specification, AGENTS, Phase 6X plan, roadmap amendment,
+  requirements traceability and risk register were updated for Phase 6.5.
 
 ## Important files
 
@@ -342,11 +377,13 @@ validation.
 - `shared/src/commonMain/kotlin/org/bettamind/shared/growth/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/knowledge/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/ai/`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/safety/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/security/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/growth/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/knowledge/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/ai/`
+- `shared/src/commonTest/kotlin/org/bettamind/shared/safety/`
 - `shared/src/androidMain/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/iosMain/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/iosTest/kotlin/org/bettamind/shared/privacy/`
@@ -358,6 +395,7 @@ validation.
 - `docs/security/phase-5-signed-knowledge-packs.md`
 - `docs/security/phase-6-ai-model-manager.md`
 - `docs/security/phase-6-4-app-privacy-lock.md`
+- `docs/safety/relational-boundaries.md`
 - `codemagic.yaml`
 
 ## Commands that passed
@@ -466,6 +504,13 @@ validation.
   completed on Windows after Phase 6.4 changes, with iOS Native compile/test
   tasks still skipped because SQLCipher cinterop cannot be processed on
   `mingw_x64`.
+- `.\gradlew.bat :shared:testDebugUnitTest --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed after the Phase 6.5 relational-boundary policy and tests were added.
+- `.\gradlew.bat phaseSixFiveCheck --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed. On Windows, iOS Native targets remain disabled because SQLCipher
+  cinterop requires macOS.
+- `git diff --check` reported no whitespace errors, only normal Windows
+  LF-to-CRLF warnings.
 - Phase 6X docs-only checks:
   `git diff --check` passed with normal Windows LF-to-CRLF warnings; archive
   SHA-256 comparison matched for
@@ -501,11 +546,14 @@ validation.
 
 - iOS cannot be fully built locally on Windows. Every shared/iOS change still
   requires Codemagic `ios-simulator-unsigned`.
-- Phase 6.4 changed shared Kotlin, Compose resources, Android app code, iOS
-  shared code and `iosApp`, so the pushed commit requires Codemagic
-  `ios-simulator-unsigned`.
+- Phase 6.5 changed shared Kotlin, Compose resources and GitHub Actions, so the
+  pushed commit requires Codemagic `ios-simulator-unsigned`.
 - Windows cannot validate the iOS `LocalAuthentication` adapter or SwiftUI
   inactive-scene shield.
+- The local Windows
+  `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  check timed out during Phase 6.5 verification and was terminated with no
+  remaining Java/Gradle processes. The required iOS proof remains Codemagic.
 - Production Bettamind PIN/passphrase setup still needs an audited Argon2id
   provider for Android and iOS before being enabled for real users. The shared
   verifier and rate limiter are present, and tests use a fake Argon2id-labeled
@@ -514,9 +562,9 @@ validation.
   storage-key stores. Phase 6.4 gates release through local authentication but
   does not yet add platform OS-level auth-bound key attributes to those
   existing key records.
-- Relational-boundary policy is not implemented yet. Existing copy says
-  Bettamind does not contact anyone automatically, but there is no classifier
-  or AI output contract.
+- Phase 6.5 relational-boundary policy is a deterministic heuristic foundation.
+  It needs owner, safety and localization review before production use and
+  before Phase 7 response-mode prompts rely on it.
 - Deterministic daily tools are not implemented yet beyond the Phase 4 growth
   flow skeleton.
 - Phase 4 does not yet persist narrative content. Storage status still reports
@@ -546,7 +594,9 @@ validation.
 - Run Codemagic `ios-simulator-unsigned` for pushed commits that change shared
   Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
   iOS, or Codemagic iOS workflow files.
-- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 6.4 commit.
+- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 6.5 commit.
+- Review Phase 6.5 relational-boundary categories and fallback copy before
+  production localization or Phase 7 AI response-mode prompts.
 - Decide whether production Bettamind PIN/passphrase setup should be enabled in
   a later hardening pass after an audited Argon2id provider is selected.
 - Provide `brand/source/bettamind-logo-master.svg` if a vector master exists,
@@ -558,10 +608,10 @@ validation.
 - Provide owner-approved production model choices, licences, trust anchors and
   delivery governance before accepting real model packs.
 - Arrange qualified human review for production translations, especially any
-  safety, crisis, legal, privacy or consent copy.
+  safety, crisis, legal, privacy, consent or relational-boundary copy.
 
 ## Next approved task
 
-Commit and push Phase 6.4, then have the owner run Codemagic
+Commit and push Phase 6.5, then have the owner run Codemagic
 `ios-simulator-unsigned`. If Codemagic passes, wait for explicit owner approval
-before Phase 6.5. Do not begin Phase 6.5, Phase 6.6 or Phase 7 automatically.
+before Phase 6.6. Do not begin Phase 6.6 or Phase 7 automatically.

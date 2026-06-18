@@ -613,6 +613,7 @@ private fun SettingsPanel(
             privacyLockTimeout = privacyLockTimeout,
             onPrivacyLockTimeoutChange = onPrivacyLockTimeoutChange,
         )
+        RelationalBoundarySettingsPanel()
     }
 }
 
@@ -662,6 +663,25 @@ private fun PrivacyLockSettingsPanel(
         )
         Text(
             text = stringResource(Res.string.privacy_lock_urgent_support),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun RelationalBoundarySettingsPanel() {
+    StatusBlock(
+        title = Res.string.relational_boundary_title,
+        body = Res.string.relational_boundary_description,
+    ) {
+        Text(
+            text = stringResource(Res.string.relational_boundary_memory_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = stringResource(Res.string.relational_boundary_notification_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

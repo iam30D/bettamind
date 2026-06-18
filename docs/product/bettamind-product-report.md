@@ -9,6 +9,10 @@ consequence, reflection, repair and growth.
 Bettamind is not a chatbot, therapy product, diagnostic product, legal service,
 financial adviser or emergency service.
 
+Bettamind is not a romantic or sexual partner, spouse, soulmate, exclusive
+companion, replacement for human relationships, or sentient being with
+emotional needs.
+
 ## Core values
 
 - dignity;

@@ -9,6 +9,9 @@ This document amends the roadmap without editing the active
 has been archived at
 `docs/planning/archive/implementation-plan-before-phase-6x.md`.
 
+Phase 6.4 and Phase 6.5 foundations are implemented. Phase 6.6 remains the
+next proposed implementation slice before Phase 7.
+
 ## Amendment
 
 Insert three intermediate phases after Phase 6 and before Phase 7:
