@@ -92,4 +92,9 @@
     <string name="relational_boundary_description">Bettamind can support human relationships, dating, consent and loneliness, but it is software, not a romantic or sexual partner.</string>
     <string name="relational_boundary_memory_note">Romantic, sexual, exclusivity or dependency signals are not eligible for permanent memory by default.</string>
     <string name="relational_boundary_notification_note">Reminder copy stays neutral and cannot imply Bettamind misses, needs or chooses the user.</string>
+    <string name="phase_six_seven_status">Harmful-intent safeguards foundation</string>
+    <string name="harm_safety_title">Harm safety</string>
+    <string name="harm_safety_description">Bettamind uses deterministic safeguards before and after AI so unsafe requests can be redirected without shame.</string>
+    <string name="harm_safety_capability_note">Actionable harmful details are refused, while high-level prevention, emergency response, grounding and nonviolent repair remain available.</string>
+    <string name="harm_safety_privacy_note">Sensitive safety content is excluded from memory, export, sync and notifications by default; sharing requires explicit preview and local authentication.</string>
 </resources>

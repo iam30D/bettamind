@@ -58,6 +58,11 @@ long raw logs in it.
 - Reminder and calendar features must be local, optional and privacy-safe by
   default. Reminder previews stay neutral, and system-calendar handoff requires
   explicit user approval without broad calendar reading.
+- Harmful-intent and dangerous-capability safeguards must be deterministic,
+  local and model-free. Refuse actionable harmful details, preserve
+  nonjudgmental support, avoid assuming guilt for ambiguous intent, never
+  auto-contact a third party and exclude harmful-intent narrative from memory,
+  export, sync and notifications by default.
 
 ## Global localisation
 

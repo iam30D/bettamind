@@ -9,26 +9,27 @@ This document amends the roadmap without editing the active
 has been archived at
 `docs/planning/archive/implementation-plan-before-phase-6x.md`.
 
-Phase 6.4, Phase 6.5 and Phase 6.6 foundations are implemented. The next
-proposed slice is roadmap reconciliation before any Phase 7 response-mode
-implementation.
+Phase 6.4, Phase 6.5, Phase 6.6 and Phase 6.7 foundations are implemented.
+The next proposed slice is roadmap reconciliation before any Phase 7
+response-mode implementation.
 
 ## Amendment
 
-Insert three intermediate phases after Phase 6 and before Phase 7:
+Insert four intermediate phases after Phase 6 and before Phase 7:
 
 | Phase | Name | Purpose |
 | --- | --- | --- |
 | 6.4 | App Privacy Lock | Gate private local content and encrypted storage key use behind local authentication. |
 | 6.5 | Relational Boundaries | Add deterministic safety boundaries before AI response modes. |
 | 6.6 | Deterministic Daily Tools | Build the non-AI daily-use core with encrypted local records. |
+| 6.7 | Harmful Intent And Dangerous Capability Safeguards | Add deterministic pre/post-generation harm-safety, privacy and daily-tool rules before AI response modes. |
 
 ## Effect On Existing Roadmap
 
 | Existing phase | Original objective remains | Amendment |
 | --- | --- | --- |
-| Phase 7: On-device AI response modes | Yes | Must wait until Phase 6.5 boundary contracts exist. |
-| Phase 8: Safety and support bridge | Yes | Must reuse Phase 6.5 policy outcomes and avoid claiming automatic contact. |
+| Phase 7: On-device AI response modes | Yes | Must wait until Phase 6.5 relational-boundary and Phase 6.7 harm-safety contracts exist. |
+| Phase 8: Safety and support bridge | Yes | Must reuse Phase 6.5 and Phase 6.7 policy outcomes and avoid claiming automatic contact. |
 | Phase 9: Optional backend and encrypted sync | Yes | Must keep Phase 6.6 daily-tool records ciphertext-only and consent-based if synced. |
 | Phase 10: Accessibility, localization and inclusive QA | Yes | Must include lock, boundary and daily-tool copy and flows. |
 | Phase 11: Multimodal and voice expansion | Yes | Must obey Phase 6.5 rules for voice, avatar and attachment-sensitive behavior. |
@@ -47,7 +48,7 @@ Insert three intermediate phases after Phase 6 and before Phase 7:
 
 ## Roadmap Effects
 
-- The next implementation task after Phase 6.6 should reconcile the roadmap,
+- The next implementation task after Phase 6.7 should reconcile the roadmap,
   not implement Phase 7 automatically.
 - Phase 6.4 may require careful changes to Android Keystore, iOS Keychain and
   encrypted-storage key-release flow.
@@ -55,10 +56,13 @@ Insert three intermediate phases after Phase 6 and before Phase 7:
   voice and avatar systems must call.
 - Phase 6.6 gives Bettamind a stronger offline daily-use core before AI becomes
   user-visible.
+- Phase 6.7 gives future AI, memory, export, sync, notification, support and
+  daily-tool surfaces a deterministic harm-safety boundary before AI becomes
+  user-visible.
 - More Codemagic runs should be expected because Phase 6.4 and likely Phase
-  6.6 will touch shared/iOS code.
+  6.6 or Phase 6.7 will touch shared/iOS code.
 
 ## Stop Rule
 
-After this audit, do not begin Phase 6.4, Phase 6.5, Phase 6.6 or Phase 7
-until the owner explicitly approves the next implementation prompt.
+After this amendment, do not begin roadmap reconciliation, Phase 7 or later
+work until the owner explicitly approves the next implementation prompt.

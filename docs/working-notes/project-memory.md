@@ -2,12 +2,13 @@
 
 ## Current phase
 
-Phase 6.6 Deterministic Daily Tools is implemented in this phase. Phases 0
-through 6, Phase 6.4 and Phase 6.5 are treated as implemented and stable, with
-owner-confirmed Codemagic `ios-simulator-unsigned` validation for the Phase 6.5
-commit. Phase 6.6 Windows checks passed locally. Because this phase changes
-shared Kotlin and Compose resources, the pushed Phase 6.6 commit requires
-Codemagic `ios-simulator-unsigned` validation. Do not begin roadmap
+Phase 6.7 Harmful Intent and Dangerous Capability Safeguards is implemented in
+this phase. Phases 0 through 6, Phase 6.4, Phase 6.5 and Phase 6.6 are treated
+as implemented and stable, with owner-confirmed Codemagic
+`ios-simulator-unsigned` validation for the Phase 6.6 commit. Phase 6.7 Windows
+checks passed locally. Because this phase changes shared Kotlin, Compose
+resources, Gradle configuration and GitHub Actions, the pushed Phase 6.7 commit
+requires Codemagic `ios-simulator-unsigned` validation. Do not begin roadmap
 reconciliation, Phase 7 or later work until the owner confirms Codemagic passed
 and explicitly approves the next implementation prompt.
 
@@ -73,6 +74,17 @@ and explicitly approves the next implementation prompt.
 - Phase 6.6 local reminders must use neutral previews, quiet hours, snooze and
   pause-all policy. System-calendar interaction is an explicit handoff and does
   not read broad calendar data by default.
+- Phase 6.7 harmful-intent safeguards must remain deterministic, offline,
+  local and model-free. Future AI response modes must call the policy before
+  generation and validate generated output before display, storage, export,
+  sync, notification, support sharing, voice or avatar use.
+- Phase 6.7 refuses actionable harmful details for dangerous capability
+  requests even when framed as education, fiction, safety research, curiosity,
+  role-play or theory. Ambiguous intent must not be treated as guilt.
+- Harmful, violent, criminal and self-harm narrative is excluded from permanent
+  memory, export, sync and notifications by default. Only minimum encrypted
+  metadata may be stored, and sensitive export/support sharing requires
+  explicit preview plus local step-up authentication.
 - Bettamind PIN/passphrase production storage must use the approved Argon2id
   KDF. Phase 6.4 adds the KDF boundary and tests but does not substitute a
   weaker production fallback.
@@ -382,6 +394,32 @@ and explicitly approves the next implementation prompt.
 - Product, locked specification, AGENTS, assumptions/decisions, Phase 6X plan,
   roadmap amendment, requirements traceability and risk register were updated
   for Phase 6.6.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed for the Phase 6.6
+  commit and approved proceeding with Phase 6.7 only.
+- Phase 6.7 shared harmful-intent and dangerous-capability safeguards were
+  added under `shared/src/commonMain/kotlin/org/bettamind/shared/safety/`.
+- The harm policy adds required risk levels, categories, intent signals,
+  capability signals, pre-generation planning, post-generation output
+  validation, no-model fallback identifiers, minimal encrypted metadata,
+  memory/export/sync/notification/support decisions, app-lock step-up mapping,
+  daily-tool de-escalation decisions and relational-boundary combination.
+- Common tests now cover dangerous capability requests, disguised educational
+  and fictional framing, safety research framing, explosives, weapons,
+  poisoning, evidence hiding, policy bypass, named threats, revenge, stalking,
+  coercion, self-harm method requests, suicidal intent, intrusive thoughts
+  without intent, anger without intent, ordinary conflict, emergency response,
+  prevention, safe distance/disposal, historical or ethical discussion, invalid
+  JSON, unsafe generated output, no-model fallback, offline operation,
+  notifications, export defaults, support summaries, app-lock step-up, daily
+  tools, relational overlap, localization review and RTL.
+- Settings now exposes a concise harmful-intent safeguards explanation through
+  Compose resources. Non-English Phase 6.7 entries are source-English draft
+  fallbacks and require qualified human review before production use.
+- `docs/safety/harmful-intent-and-dangerous-capability-policy.md` documents the
+  Phase 6.7 safety contract, non-goals, privacy boundary and verification.
+- `phaseSixSevenCheck` was added and GitHub Actions mobile checks now run it.
+- AGENTS, locked specification, implementation plan, roadmap amendment,
+  requirements traceability and risk register were updated for Phase 6.7.
 
 ## Important files
 
@@ -428,6 +466,7 @@ and explicitly approves the next implementation prompt.
 - `docs/security/phase-6-ai-model-manager.md`
 - `docs/security/phase-6-4-app-privacy-lock.md`
 - `docs/safety/relational-boundaries.md`
+- `docs/safety/harmful-intent-and-dangerous-capability-policy.md`
 - `docs/product/phase-6-6-deterministic-daily-tools.md`
 - `codemagic.yaml`
 
@@ -548,6 +587,15 @@ and explicitly approves the next implementation prompt.
 - `.\gradlew.bat phaseSixSixCheck --no-daemon --no-configuration-cache --stacktrace --console=plain`
   passed. On Windows, iOS Native targets remain disabled because SQLCipher
   cinterop requires macOS.
+- `.\gradlew.bat :shared:testDebugUnitTest --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed after the Phase 6.7 harmful-intent safeguards and tests were added.
+- `.\gradlew.bat phaseSixSevenCheck --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed. On Windows, iOS Native targets remain disabled because SQLCipher
+  cinterop requires macOS.
+- `git diff --check` reported no whitespace errors, only normal Windows
+  LF-to-CRLF warnings.
+- `git ls-files | rg "\.(tflite|litertlm|gguf|onnx|bin|safetensors|model|mlmodel|task)$"`
+  found no tracked model-weight artifacts.
 - `git diff --check` reported no whitespace errors, only normal Windows
   LF-to-CRLF warnings.
 - Phase 6X docs-only checks:
@@ -585,8 +633,9 @@ and explicitly approves the next implementation prompt.
 
 - iOS cannot be fully built locally on Windows. Every shared/iOS change still
   requires Codemagic `ios-simulator-unsigned`.
-- Phase 6.6 changed shared Kotlin, Compose resources and GitHub Actions, so the
-  pushed commit requires Codemagic `ios-simulator-unsigned`.
+- Phase 6.7 changed shared Kotlin, Compose resources, Gradle configuration and
+  GitHub Actions, so the pushed commit requires Codemagic
+  `ios-simulator-unsigned`.
 - Windows cannot validate the iOS `LocalAuthentication` adapter or SwiftUI
   inactive-scene shield.
 - The local Windows
@@ -607,6 +656,9 @@ and explicitly approves the next implementation prompt.
 - Phase 6.6 deterministic daily tools are a shared foundation. Platform
   reminder scheduling, platform calendar handoff UI and fully wired encrypted
   production storage credentials remain future hardening/integration work.
+- Phase 6.7 harmful-intent safeguards are a deterministic heuristic foundation.
+  They need owner, safety, legal and localization review before production use
+  and before Phase 7 response-mode prompts rely on them.
 - Phase 4 does not yet persist narrative content. Storage status still reports
   encrypted storage unavailable until a separate approved pass wires the
   platform encrypted store into the growth flow. There is no unencrypted
@@ -634,11 +686,14 @@ and explicitly approves the next implementation prompt.
 - Run Codemagic `ios-simulator-unsigned` for pushed commits that change shared
   Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
   iOS, or Codemagic iOS workflow files.
-- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 6.6 commit.
+- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 6.7 commit.
 - Review Phase 6.5 relational-boundary categories and fallback copy before
   production localization or Phase 7 AI response-mode prompts.
 - Review Phase 6.6 daily-tool copy, reminder defaults, quiet-hours defaults
   and calendar handoff policy before production localization or store review.
+- Review Phase 6.7 harmful-intent categories, refusal/fallback identifiers,
+  export/support policy and safety copy before production localization or Phase
+  7 AI response-mode prompts.
 - Decide whether production Bettamind PIN/passphrase setup should be enabled in
   a later hardening pass after an audited Argon2id provider is selected.
 - Provide `brand/source/bettamind-logo-master.svg` if a vector master exists,
@@ -655,6 +710,6 @@ and explicitly approves the next implementation prompt.
 
 ## Next approved task
 
-Commit and push Phase 6.6, then have the owner run Codemagic
+Commit and push Phase 6.7, then have the owner run Codemagic
 `ios-simulator-unsigned`. If Codemagic passes, wait for explicit owner approval
 before roadmap reconciliation. Do not begin Phase 7 automatically.

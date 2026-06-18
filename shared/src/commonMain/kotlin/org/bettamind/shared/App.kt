@@ -155,7 +155,7 @@ private fun AppHeader() {
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                text = stringResource(Res.string.phase_six_six_status),
+                text = stringResource(Res.string.phase_six_seven_status),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -682,6 +682,7 @@ private fun SettingsPanel(
             onPrivacyLockTimeoutChange = onPrivacyLockTimeoutChange,
         )
         RelationalBoundarySettingsPanel()
+        HarmSafetySettingsPanel()
     }
 }
 
@@ -750,6 +751,25 @@ private fun RelationalBoundarySettingsPanel() {
         )
         Text(
             text = stringResource(Res.string.relational_boundary_notification_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun HarmSafetySettingsPanel() {
+    StatusBlock(
+        title = Res.string.harm_safety_title,
+        body = Res.string.harm_safety_description,
+    ) {
+        Text(
+            text = stringResource(Res.string.harm_safety_capability_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = stringResource(Res.string.harm_safety_privacy_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

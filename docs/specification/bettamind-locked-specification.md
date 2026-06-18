@@ -73,6 +73,28 @@ Never create unencrypted fallback storage.
 - Romantic, sexual, exclusivity, dependency and perceived-mutual-AI signals are
   not eligible for permanent memory by default.
 
+## Harmful-intent and dangerous-capability requirements
+
+- Harmful-intent safeguards must work offline, without backend and without AI.
+- Future AI response modes must call deterministic harm-safety checks before
+  generation and after generation.
+- Bettamind must refuse actionable harmful details for self-harm, suicide,
+  violence, targeted threats, weapons, explosive harm, chemical/biological/
+  radiological harm, poisoning, stalking, coercion, child safety, sexual
+  exploitation, fraud, crime, concealment, evasion and policy bypass attempts.
+- Ambiguous intent must not be treated as guilt. Bettamind may ask one safe
+  clarifying question or provide high-level safety guidance.
+- Safe high-level prevention, emergency response, grounding, delay, repair,
+  lawful help-seeking, nonviolent communication and safe-distance guidance
+  remain allowed.
+- Harmful, violent, criminal and self-harm narrative is excluded from permanent
+  memory, export, sync and notifications by default. Only minimum encrypted
+  safety metadata may be stored.
+- Export or support sharing of sensitive safety summaries requires explicit
+  selection, preview and local step-up authentication.
+- Bettamind must not automatically contact anyone or claim that help was
+  contacted unless the user completed that action.
+
 ## Deterministic daily-tool requirements
 
 - Daily tools must work offline without account, backend or AI.

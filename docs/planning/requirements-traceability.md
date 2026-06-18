@@ -30,7 +30,8 @@ Date updated: 2026-06-18
 | Memory/export/sync/notification/voice boundary rules | 6.5+ | Phase 6.5 policy metadata and surface decisions define default exclusions for relationally sensitive memory, export, sync, notification and voice/avatar use. |
 | Deterministic daily tools | 6.6 | Shared daily foundation exists for check-ins, breathing/grounding, timers, reminders, private calendar handoff, worksheets and local trend summaries. |
 | Encrypted product-record persistence | 6.6 | Daily records are serialized through `EncryptedDailyRecordRepository`, which writes only to the shared `EncryptedRecordStore` contract and has no unencrypted fallback. |
-| Safety and support bridge | 8 | Not implemented; should reuse Phase 6.5 policy outcomes. |
+| Harmful-intent and dangerous-capability safeguards | 6.7 | Shared deterministic harm-safety policy handles pre-generation, post-generation, no-model fallback, memory/export/sync/notification/support decisions, daily tools, relational overlap and app-lock step-up rules. |
+| Safety and support bridge | 8 | Not implemented; should reuse Phase 6.5 and Phase 6.7 policy outcomes. |
 | Optional encrypted sync | 9 | Backend skeleton only; no sync implementation. |
 
 ## Phase 6X Audit Acceptance Criteria

@@ -138,6 +138,25 @@ monotonic versions, revocation policy, resumable chunk offsets and removable
 installed packs. No model weights, downloads, cloud AI or Phase 7 response modes
 were added.
 
+## Phase 6.7: Harmful intent and dangerous capability safeguards
+
+Goal: add deterministic safety boundaries for harmful intent, dangerous
+capability and unsafe generated output before any AI-assisted response modes.
+
+Acceptance criteria:
+
+- Risk levels and categories for harmful intent and dangerous capability exist.
+- Pre-generation safeguards decide whether normal generation is allowed.
+- Post-generation safeguards reject actionable harmful generated output.
+- Deterministic fallback works without AI, classifier, valid JSON or network.
+- Memory, export, sync, support summary and notification defaults protect
+  harmful-intent content and require step-up authentication where needed.
+- Daily tools and relational boundaries integrate with harm safety.
+
+Status: implemented as a shared deterministic foundation. No finished AI
+response modes, backend product engine, emergency-service automation, cloud AI,
+unencrypted storage or persistent harmful narrative storage were added.
+
 ## Phase 7: AI-assisted response modes
 
 Goal: add optional AI-assisted modes after deterministic flows are stable.
