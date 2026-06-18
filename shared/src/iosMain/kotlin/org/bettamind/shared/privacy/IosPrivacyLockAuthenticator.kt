@@ -2,9 +2,6 @@ package org.bettamind.shared.privacy
 
 import kotlin.coroutines.resume
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.alloc
-import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.ptr
 import platform.Foundation.NSError
 import platform.LocalAuthentication.LAContext
 import platform.LocalAuthentication.LAErrorAppCancel
@@ -18,7 +15,6 @@ import platform.LocalAuthentication.LAErrorUserCancel
 import platform.LocalAuthentication.LAErrorUserFallback
 import platform.LocalAuthentication.LAPolicyDeviceOwnerAuthentication
 import platform.LocalAuthentication.LAPolicyDeviceOwnerAuthenticationWithBiometrics
-import platform.objc.ObjCObjectVar
 import kotlinx.coroutines.suspendCancellableCoroutine
 
 @OptIn(ExperimentalForeignApi::class)
@@ -61,10 +57,7 @@ class IosPrivacyLockAuthenticator : UserAuthenticator {
         }
 
     private fun canEvaluate(policy: Long): Boolean =
-        memScoped {
-            val error = alloc<ObjCObjectVar<NSError?>>()
-            LAContext().canEvaluatePolicy(policy, error = error.ptr)
-        }
+        LAContext().canEvaluatePolicy(policy, error = null)
 
     private fun Set<AuthenticationMethod>.toIosPolicy(): Long? =
         when {

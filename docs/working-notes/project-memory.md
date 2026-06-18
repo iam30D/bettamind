@@ -311,6 +311,12 @@ validation.
   checks.
 - `docs/security/phase-6-4-app-privacy-lock.md` documents the Phase 6.4
   security boundary and remaining validation.
+- Codemagic `ios-simulator-unsigned` for commit `67d15db` failed in
+  `:shared:compileKotlinIosSimulatorArm64` because
+  `IosPrivacyLockAuthenticator` imported and allocated unsupported
+  `ObjCObjectVar` for an optional `NSError` out pointer. The capability check
+  now passes `error = null` to `LAContext.canEvaluatePolicy`, avoiding that
+  unsupported Kotlin/Native type.
 
 ## Important files
 
