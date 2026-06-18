@@ -100,15 +100,15 @@ Verification:
 Goal: add deterministic boundary enforcement before any AI response modes can
 produce user-visible content.
 
-Status after implementation: Phase 6.5 foundation is implemented. Shared code
-adds deterministic relational risk levels, signals, pre-generation input
-assessment, post-generation output validation, no-model fallback identifiers,
-minimal encrypted metadata, and default memory/export/sync/notification/voice
-surface decisions. Settings exposes the boundary explanation through Compose
-resources. Common tests cover allowed ordinary human relationship discussion
-and blocked or redirected AI attachment, dependency and sexualized persona
-behavior. Codemagic validation is still required for the pushed shared/Compose
-changes.
+Status after implementation: Phase 6.5 foundation is implemented and the owner
+confirmed Codemagic `ios-simulator-unsigned` passed for the pushed commit.
+Shared code adds deterministic relational risk levels, signals, pre-generation
+input assessment, post-generation output validation, no-model fallback
+identifiers, minimal encrypted metadata, and default
+memory/export/sync/notification/voice surface decisions. Settings exposes the
+boundary explanation through Compose resources. Common tests cover allowed
+ordinary human relationship discussion and blocked or redirected AI attachment,
+dependency and sexualized persona behavior.
 
 In scope:
 
@@ -155,6 +155,14 @@ Verification:
 
 Goal: build the offline, non-AI daily-use product layer using encrypted local
 records and privacy-safe local interactions.
+
+Status after implementation: Phase 6.6 foundation is implemented. Shared code
+adds encrypted daily record models and repository, daily check-ins, deterministic
+breathing and grounding exercises, timer recovery, local reminder quiet-hours,
+snooze and pause-all policy, neutral notification preview, private calendar
+handoff policy, deterministic worksheet templates and local trend summaries.
+Compose exposes the foundation on the Today surface. Codemagic validation is
+still required for the pushed shared/Compose changes.
 
 In scope:
 
@@ -257,26 +265,24 @@ Phase 6.6:
 
 ## Exact Next Prompt
 
-Use this prompt to begin the next implementation slice after Phase 6.5 is
+Use this prompt to begin the next implementation slice after Phase 6.6 is
 committed, pushed and validated:
 
 ```text
-Implement Phase 6.6 only from docs/planning/phase-6x-integration-plan.md.
+Reconcile the roadmap after Phase 6X.
 
-Do not implement Phase 7.
-Do not replace the existing implementation plan.
+Do not implement Phase 7 yet.
 Preserve the offline, account-free, backend-optional and no unencrypted
 fallback rules.
 
-Build the deterministic daily-use core using encrypted local records. Include
-the smallest complete slice of daily check-ins, grounding or breathing tools,
-local reminder policy, neutral notification copy and private record models that
-can run offline without account, backend or AI. Do not add cloud sync, public
-feeds, rankings, manipulative streaks, human-worth scores or AI-generated
-coaching.
+Review Phase 6.4, Phase 6.5 and Phase 6.6 outputs against the original active
+implementation plan, update the roadmap documents so Phase 7 has clear entry
+conditions, and identify any remaining gaps or owner decisions before AI
+response modes. Do not add AI response modes, cloud sync, public feeds,
+rankings, manipulative streaks, human-worth scores or AI-generated coaching.
 
 Before coding, read AGENTS.md and the required product, specification,
-planning, risk and project-memory docs. Then implement the smallest complete
-Phase 6.6 slice, run available Windows checks, update docs/working-notes/project-memory.md
-and relevant planning/risk docs, report results, and stop.
+planning, risk and project-memory docs. Run available documentation checks,
+update docs/working-notes/project-memory.md and relevant planning/risk docs,
+report results, and stop.
 ```

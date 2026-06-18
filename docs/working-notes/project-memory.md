@@ -2,14 +2,14 @@
 
 ## Current phase
 
-Phase 6.5 Relational Boundaries is implemented in this phase. Phases 0 through
-6 and Phase 6.4 are treated as implemented and stable, with owner-confirmed
-Codemagic `ios-simulator-unsigned` validation for the Phase 6.4 fix commit.
-Phase 6.5 Windows checks passed locally. Because this phase changes shared
-Kotlin and Compose resources, the pushed Phase 6.5 commit requires Codemagic
-`ios-simulator-unsigned` validation. Do not begin Phase 6.6 or Phase 7 until
-the owner confirms Codemagic passed and explicitly approves the next
-implementation prompt.
+Phase 6.6 Deterministic Daily Tools is implemented in this phase. Phases 0
+through 6, Phase 6.4 and Phase 6.5 are treated as implemented and stable, with
+owner-confirmed Codemagic `ios-simulator-unsigned` validation for the Phase 6.5
+commit. Phase 6.6 Windows checks passed locally. Because this phase changes
+shared Kotlin and Compose resources, the pushed Phase 6.6 commit requires
+Codemagic `ios-simulator-unsigned` validation. Do not begin roadmap
+reconciliation, Phase 7 or later work until the owner confirms Codemagic passed
+and explicitly approves the next implementation prompt.
 
 ## Locked decisions
 
@@ -67,6 +67,12 @@ implementation prompt.
   model-free. Future AI, memory, export, sync, notification, voice and avatar
   surfaces must use the policy before user-visible or stored output.
 - Phase 6.6 must keep daily tools deterministic, offline-first and encrypted.
+- Phase 6.6 daily records must use `EncryptedRecordStore` only. There is no
+  unencrypted fallback, backend sync by default, public ranking, manipulative
+  streak or human-worth score.
+- Phase 6.6 local reminders must use neutral previews, quiet hours, snooze and
+  pause-all policy. System-calendar interaction is an explicit handoff and does
+  not read broad calendar data by default.
 - Bettamind PIN/passphrase production storage must use the approved Argon2id
   KDF. Phase 6.4 adds the KDF boundary and tests but does not substitute a
   weaker production fallback.
@@ -352,6 +358,30 @@ implementation prompt.
 - `phaseSixFiveCheck` was added and GitHub Actions mobile checks now run it.
 - Product, locked specification, AGENTS, Phase 6X plan, roadmap amendment,
   requirements traceability and risk register were updated for Phase 6.5.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed for the Phase 6.5
+  commit `ba8a86d` and approved proceeding to Phase 6.6.
+- Phase 6.6 shared deterministic daily-tool foundation was added under
+  `shared/src/commonMain/kotlin/org/bettamind/shared/daily/`.
+- The daily module adds daily check-in records for mood, energy, stress and
+  sleep; encrypted daily-record repository; encrypted backup/restore delegation;
+  deterministic box-breathing and grounding catalogs; reusable timer recovery;
+  local reminder quiet-hours, snooze and pause-all policy; neutral notification
+  preview; private calendar handoff policy; deterministic worksheet templates;
+  and local trend summaries without AI or human-worth scoring.
+- Common tests now cover encrypted-only daily record persistence, encrypted
+  backup/restore, no fallback/backend/AI/ranking/streak/worth-score policy,
+  deterministic breathing and grounding, timer recovery, neutral reminders,
+  quiet hours, pause-all, snooze, private calendar handoff, worksheet templates,
+  local trend summaries and record validation.
+- The Today surface now exposes the daily-tools foundation through Compose
+  resources. Non-English Phase 6.6 entries are source-English draft fallbacks
+  and require qualified human review before production use.
+- `docs/product/phase-6-6-deterministic-daily-tools.md` documents the Phase
+  6.6 scope, privacy boundary and verification.
+- `phaseSixSixCheck` was added and GitHub Actions mobile checks now run it.
+- Product, locked specification, AGENTS, assumptions/decisions, Phase 6X plan,
+  roadmap amendment, requirements traceability and risk register were updated
+  for Phase 6.6.
 
 ## Important files
 
@@ -375,12 +405,14 @@ implementation prompt.
 - `shared/src/commonMain/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/privacy/PrivacyLockTest.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/growth/`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/daily/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/knowledge/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/ai/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/safety/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/security/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/growth/`
+- `shared/src/commonTest/kotlin/org/bettamind/shared/daily/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/knowledge/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/ai/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/safety/`
@@ -396,6 +428,7 @@ implementation prompt.
 - `docs/security/phase-6-ai-model-manager.md`
 - `docs/security/phase-6-4-app-privacy-lock.md`
 - `docs/safety/relational-boundaries.md`
+- `docs/product/phase-6-6-deterministic-daily-tools.md`
 - `codemagic.yaml`
 
 ## Commands that passed
@@ -509,6 +542,12 @@ implementation prompt.
 - `.\gradlew.bat phaseSixFiveCheck --no-daemon --no-configuration-cache --stacktrace --console=plain`
   passed. On Windows, iOS Native targets remain disabled because SQLCipher
   cinterop requires macOS.
+- `.\gradlew.bat :shared:testDebugUnitTest --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed after the Phase 6.6 deterministic daily-tool foundation and tests
+  were added.
+- `.\gradlew.bat phaseSixSixCheck --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed. On Windows, iOS Native targets remain disabled because SQLCipher
+  cinterop requires macOS.
 - `git diff --check` reported no whitespace errors, only normal Windows
   LF-to-CRLF warnings.
 - Phase 6X docs-only checks:
@@ -546,7 +585,7 @@ implementation prompt.
 
 - iOS cannot be fully built locally on Windows. Every shared/iOS change still
   requires Codemagic `ios-simulator-unsigned`.
-- Phase 6.5 changed shared Kotlin, Compose resources and GitHub Actions, so the
+- Phase 6.6 changed shared Kotlin, Compose resources and GitHub Actions, so the
   pushed commit requires Codemagic `ios-simulator-unsigned`.
 - Windows cannot validate the iOS `LocalAuthentication` adapter or SwiftUI
   inactive-scene shield.
@@ -565,8 +604,9 @@ implementation prompt.
 - Phase 6.5 relational-boundary policy is a deterministic heuristic foundation.
   It needs owner, safety and localization review before production use and
   before Phase 7 response-mode prompts rely on it.
-- Deterministic daily tools are not implemented yet beyond the Phase 4 growth
-  flow skeleton.
+- Phase 6.6 deterministic daily tools are a shared foundation. Platform
+  reminder scheduling, platform calendar handoff UI and fully wired encrypted
+  production storage credentials remain future hardening/integration work.
 - Phase 4 does not yet persist narrative content. Storage status still reports
   encrypted storage unavailable until a separate approved pass wires the
   platform encrypted store into the growth flow. There is no unencrypted
@@ -582,8 +622,8 @@ implementation prompt.
 - The source PNG has a baked checkerboard background; generated assets use a
   documented mask to derive transparency.
 - Locale packs are draft implementation foundations and require qualified human
-  review before production use. Phase 4 non-English strings are draft fallback
-  text and are not production-approved translations.
+  review before production use. Phase 4 and Phase 6.6 non-English strings are
+  draft fallback text and are not production-approved translations.
 - `java` is not available on global `PATH`; current checks used JetBrains'
   bundled JBR at `C:\Program Files\JetBrains\PyCharm 2025.2.3\jbr`.
 - Local Windows Gradle checks require a non-committed `local.properties` with
@@ -594,9 +634,11 @@ implementation prompt.
 - Run Codemagic `ios-simulator-unsigned` for pushed commits that change shared
   Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
   iOS, or Codemagic iOS workflow files.
-- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 6.5 commit.
+- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 6.6 commit.
 - Review Phase 6.5 relational-boundary categories and fallback copy before
   production localization or Phase 7 AI response-mode prompts.
+- Review Phase 6.6 daily-tool copy, reminder defaults, quiet-hours defaults
+  and calendar handoff policy before production localization or store review.
 - Decide whether production Bettamind PIN/passphrase setup should be enabled in
   a later hardening pass after an audited Argon2id provider is selected.
 - Provide `brand/source/bettamind-logo-master.svg` if a vector master exists,
@@ -608,10 +650,11 @@ implementation prompt.
 - Provide owner-approved production model choices, licences, trust anchors and
   delivery governance before accepting real model packs.
 - Arrange qualified human review for production translations, especially any
-  safety, crisis, legal, privacy, consent or relational-boundary copy.
+  safety, crisis, legal, privacy, consent, relational-boundary or daily-tool
+  copy.
 
 ## Next approved task
 
-Commit and push Phase 6.5, then have the owner run Codemagic
+Commit and push Phase 6.6, then have the owner run Codemagic
 `ios-simulator-unsigned`. If Codemagic passes, wait for explicit owner approval
-before Phase 6.6. Do not begin Phase 6.6 or Phase 7 automatically.
+before roadmap reconciliation. Do not begin Phase 7 automatically.

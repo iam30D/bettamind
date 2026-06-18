@@ -73,6 +73,19 @@ Never create unencrypted fallback storage.
 - Romantic, sexual, exclusivity, dependency and perceived-mutual-AI signals are
   not eligible for permanent memory by default.
 
+## Deterministic daily-tool requirements
+
+- Daily tools must work offline without account, backend or AI.
+- Daily check-ins, timers, reminders, calendar entries, worksheets and trend
+  summaries must be deterministic.
+- Personal daily-tool records must use encrypted local storage only.
+- There must be no unencrypted fallback, public feed, public ranking,
+  manipulative streak or human-worth score.
+- Reminder previews must use neutral copy and avoid personal content on the
+  lock screen.
+- System-calendar handoff must require explicit user approval and must not read
+  broad calendar data by default.
+
 ## Localisation requirements
 
 - Use BCP 47 locale identifiers.

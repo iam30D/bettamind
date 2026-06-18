@@ -53,6 +53,10 @@ consent.
 Safety-sensitive flows must use deterministic safeguards first. AI must never
 be the only safety layer.
 
+Daily-use tools such as check-ins, breathing, grounding, reminders, private
+calendar entries and worksheets must remain useful without AI. Personal daily
+records use encrypted local storage only, and reminder previews stay neutral.
+
 ## Global audience
 
 English is the source locale. The architecture must support BCP 47 locale tags,

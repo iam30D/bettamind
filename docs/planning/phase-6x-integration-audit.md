@@ -12,6 +12,10 @@ replace the locked implementation plan and does not begin Phase 7.
 The current `docs/planning/implementation-plan.md` was preserved unchanged at
 `docs/planning/archive/implementation-plan-before-phase-6x.md`.
 
+Post-implementation note: Phase 6.4, Phase 6.5 and Phase 6.6 foundations have
+since been implemented. This audit remains the historical gap analysis that
+motivated those phases.
+
 ## Sources Reviewed
 
 - Product and locked specification docs.

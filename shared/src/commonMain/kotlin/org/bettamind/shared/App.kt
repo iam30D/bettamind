@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import org.bettamind.shared.daily.BreathingExerciseCatalog
 import org.bettamind.shared.growth.AdultGateState
 import org.bettamind.shared.growth.DeterministicGrowthEngine
 import org.bettamind.shared.growth.GrowthSessionState
@@ -154,7 +155,7 @@ private fun AppHeader() {
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                text = stringResource(Res.string.phase_four_status),
+                text = stringResource(Res.string.phase_six_six_status),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -255,17 +256,65 @@ private fun GrowthDestinationContent(
         )
         StorageStatusPanel(growthState.narrativeStorageStatus)
         when (destination) {
-            BettamindDestination.Today -> TodayGrowthPanel(
-                growthState = growthState,
-                onAdvanceGrowth = onAdvanceGrowth,
-                onResetGrowth = onResetGrowth,
-            )
+            BettamindDestination.Today -> {
+                DailyToolsFoundationPanel()
+                TodayGrowthPanel(
+                    growthState = growthState,
+                    onAdvanceGrowth = onAdvanceGrowth,
+                    onResetGrowth = onResetGrowth,
+                )
+            }
 
             BettamindDestination.Reflect -> StepMapPanel(growthState)
             BettamindDestination.Grow -> GrowthSummaryPanel(growthState)
             BettamindDestination.Support -> SupportPanel()
             BettamindDestination.Settings -> Unit
         }
+    }
+}
+
+@Composable
+private fun DailyToolsFoundationPanel() {
+    val breathing = BreathingExerciseCatalog.boxBreathing()
+    StatusBlock(
+        title = Res.string.daily_tools_title,
+        body = Res.string.daily_tools_description,
+    ) {
+        StatusLine(
+            title = Res.string.daily_checkin_title,
+            body = Res.string.daily_checkin_description,
+        )
+        StatusLine(
+            title = Res.string.daily_breathing_title,
+            body = Res.string.daily_breathing_description,
+        )
+        Text(
+            text = stringResource(Res.string.daily_breathing_pattern, breathing.cycleDurationSeconds),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        StatusLine(
+            title = Res.string.daily_reminder_title,
+            body = Res.string.daily_reminder_description,
+        )
+        Text(
+            text = stringResource(Res.string.daily_reminder_neutral_preview),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        StatusLine(
+            title = Res.string.daily_calendar_title,
+            body = Res.string.daily_calendar_description,
+        )
+        StatusLine(
+            title = Res.string.daily_worksheet_title,
+            body = Res.string.daily_worksheet_description,
+        )
+        Text(
+            text = stringResource(Res.string.daily_record_storage_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -420,6 +469,25 @@ private fun SupportPanel() {
         title = Res.string.growth_support_title,
         body = Res.string.growth_support_description,
     )
+}
+
+@Composable
+private fun StatusLine(
+    title: StringResource,
+    body: StringResource,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        Text(
+            text = stringResource(title),
+            style = MaterialTheme.typography.titleSmall,
+        )
+        Text(
+            text = stringResource(body),
+            style = MaterialTheme.typography.bodySmall,
+        )
+    }
 }
 
 @Composable

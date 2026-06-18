@@ -47,6 +47,11 @@
 - Keep Phase 6 model-pack installation source-agnostic. The shared model
   manager accepts externally supplied chunks, verifies signed manifests and
   checksums, and does not download models automatically.
+- Keep Phase 6.6 daily tools deterministic and shared. Personal daily records
+  are serialized through `EncryptedDailyRecordRepository` and written only to
+  the shared encrypted record-store contract. Local reminders use neutral copy,
+  and system-calendar interaction is an explicit handoff instead of broad
+  calendar reading.
 
 ## Deferred decisions
 

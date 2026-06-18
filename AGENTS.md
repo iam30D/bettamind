@@ -52,6 +52,12 @@ long raw logs in it.
 - Ordinary discussion of human relationships, dating, consent, sexuality,
   loneliness, attachment and boundaries remains allowed when not framed as a
   relationship with Bettamind.
+- Daily-tool personal records must use encrypted local storage only; there is
+  no unencrypted fallback, public ranking, manipulative streak or human-worth
+  score.
+- Reminder and calendar features must be local, optional and privacy-safe by
+  default. Reminder previews stay neutral, and system-calendar handoff requires
+  explicit user approval without broad calendar reading.
 
 ## Global localisation
 

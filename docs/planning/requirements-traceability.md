@@ -28,8 +28,8 @@ Date updated: 2026-06-18
 | Background/app-switcher privacy protection | 6.4 | Android sets `FLAG_SECURE`; iOS covers inactive app content with a neutral system-background privacy shield. |
 | Relational boundaries before AI response modes | 6.5 | Shared deterministic policy contracts, pre-generation assessment, post-generation validation, fallback identifiers and tests exist under `shared/src/commonMain/kotlin/org/bettamind/shared/safety/`. |
 | Memory/export/sync/notification/voice boundary rules | 6.5+ | Phase 6.5 policy metadata and surface decisions define default exclusions for relationally sensitive memory, export, sync, notification and voice/avatar use. |
-| Deterministic daily tools | 6.6 | Missing beyond the Phase 4 growth-flow skeleton; check-ins, timers, reminders, calendar, worksheets and trend summaries are planned. |
-| Encrypted product-record persistence | 6.6 | Storage primitive exists, but daily-tool product records are not wired yet. |
+| Deterministic daily tools | 6.6 | Shared daily foundation exists for check-ins, breathing/grounding, timers, reminders, private calendar handoff, worksheets and local trend summaries. |
+| Encrypted product-record persistence | 6.6 | Daily records are serialized through `EncryptedDailyRecordRepository`, which writes only to the shared `EncryptedRecordStore` contract and has no unencrypted fallback. |
 | Safety and support bridge | 8 | Not implemented; should reuse Phase 6.5 policy outcomes. |
 | Optional encrypted sync | 9 | Backend skeleton only; no sync implementation. |
 

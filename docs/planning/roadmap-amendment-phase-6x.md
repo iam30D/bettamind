@@ -9,8 +9,9 @@ This document amends the roadmap without editing the active
 has been archived at
 `docs/planning/archive/implementation-plan-before-phase-6x.md`.
 
-Phase 6.4 and Phase 6.5 foundations are implemented. Phase 6.6 remains the
-next proposed implementation slice before Phase 7.
+Phase 6.4, Phase 6.5 and Phase 6.6 foundations are implemented. The next
+proposed slice is roadmap reconciliation before any Phase 7 response-mode
+implementation.
 
 ## Amendment
 
@@ -46,7 +47,8 @@ Insert three intermediate phases after Phase 6 and before Phase 7:
 
 ## Roadmap Effects
 
-- The next implementation task should be Phase 6.4, not Phase 7.
+- The next implementation task after Phase 6.6 should reconcile the roadmap,
+  not implement Phase 7 automatically.
 - Phase 6.4 may require careful changes to Android Keystore, iOS Keychain and
   encrypted-storage key-release flow.
 - Phase 6.5 creates the safety contract that future AI, memory, notification,
