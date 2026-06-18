@@ -29,6 +29,7 @@ android {
 dependencies {
     implementation(project(":shared"))
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.fragment.ktx)
     implementation(libs.koin.android)
     implementation(libs.kotlinx.coroutines.android)
 }

@@ -2,10 +2,11 @@
 
 ## Current phase
 
-Phase 6X planning audit is complete locally as a documentation-only bridge
-after owner-confirmed Codemagic success for Phase 6. Phases 0 through 6 are
-treated as implemented and stable. Do not begin Phase 6.4, Phase 6.5, Phase 6.6
-or Phase 7 until the owner explicitly approves the next implementation prompt.
+Phase 6.4 App Privacy Lock is implemented locally and awaiting commit, push and
+Codemagic `ios-simulator-unsigned` validation. Phases 0 through 6 are treated as
+implemented and stable. Do not begin Phase 6.5, Phase 6.6 or Phase 7 until the
+owner explicitly approves the next implementation prompt after Phase 6.4
+validation.
 
 ## Locked decisions
 
@@ -56,6 +57,9 @@ or Phase 7 until the owner explicitly approves the next implementation prompt.
   visual lock screen.
 - Phase 6.5 must exist before Phase 7 AI response modes.
 - Phase 6.6 must keep daily tools deterministic, offline-first and encrypted.
+- Bettamind PIN/passphrase production storage must use the approved Argon2id
+  KDF. Phase 6.4 adds the KDF boundary and tests but does not substitute a
+  weaker production fallback.
 
 ## Completed work
 
@@ -291,6 +295,22 @@ or Phase 7 until the owner explicitly approves the next implementation prompt.
   scopes, acceptance criteria, migration implications and exact next prompt.
 - `docs/planning/roadmap-amendment-phase-6x.md` amends the roadmap without
   editing the active implementation plan.
+- Phase 6.4 shared privacy-lock domain code was added under
+  `shared/src/commonMain/kotlin/org/bettamind/shared/privacy/PrivacyLock.kt`.
+- Phase 6.4 common tests were added under
+  `shared/src/commonTest/kotlin/org/bettamind/shared/privacy/PrivacyLockTest.kt`.
+- Android `BiometricPrompt` support was added through
+  `AndroidPrivacyLockAuthenticator`, and Android app preview protection now
+  uses `FLAG_SECURE`.
+- iOS `LocalAuthentication` support was added through
+  `IosPrivacyLockAuthenticator`, and the iOS SwiftUI host covers app content
+  while inactive.
+- Settings now exposes the privacy-lock timeout foundation and security
+  explanation through Compose resources.
+- `phaseSixFourCheck` was added and GitHub Actions now runs it for mobile
+  checks.
+- `docs/security/phase-6-4-app-privacy-lock.md` documents the Phase 6.4
+  security boundary and remaining validation.
 
 ## Important files
 
@@ -312,6 +332,7 @@ or Phase 7 until the owner explicitly approves the next implementation prompt.
 - `shared/src/commonMain/kotlin/org/bettamind/shared/design/BettamindColorTokens.kt`
 - `shared/src/commonMain/composeResources/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/privacy/`
+- `shared/src/commonTest/kotlin/org/bettamind/shared/privacy/PrivacyLockTest.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/growth/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/knowledge/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/ai/`
@@ -330,6 +351,7 @@ or Phase 7 until the owner explicitly approves the next implementation prompt.
 - `docs/security/phase-3-encrypted-storage-spike.md`
 - `docs/security/phase-5-signed-knowledge-packs.md`
 - `docs/security/phase-6-ai-model-manager.md`
+- `docs/security/phase-6-4-app-privacy-lock.md`
 - `codemagic.yaml`
 
 ## Commands that passed
@@ -428,6 +450,16 @@ or Phase 7 until the owner explicitly approves the next implementation prompt.
 - From `backend/`: `.\.venv\Scripts\ruff.exe check .`
 - From `backend/`: `.\.venv\Scripts\mypy.exe app`
 - From `backend/`: `.\.venv\Scripts\pytest.exe`
+- `.\gradlew.bat :shared:compileKotlinMetadata --no-daemon --stacktrace --console=plain`
+- `.\gradlew.bat :shared:compileDebugKotlinAndroid --no-daemon --stacktrace --console=plain`
+- `.\gradlew.bat :shared:testDebugUnitTest --no-daemon --no-configuration-cache --stacktrace --console=plain`
+- `.\gradlew.bat :androidApp:assembleDebug --no-daemon --no-configuration-cache --stacktrace --console=plain`
+- `.\gradlew.bat :androidApp:lintDebug --no-daemon --no-configuration-cache --stacktrace --console=plain`
+- `.\gradlew.bat phaseSixFourCheck --no-daemon --no-configuration-cache --stacktrace --console=plain`
+- `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  completed on Windows after Phase 6.4 changes, with iOS Native compile/test
+  tasks still skipped because SQLCipher cinterop cannot be processed on
+  `mingw_x64`.
 - Phase 6X docs-only checks:
   `git diff --check` passed with normal Windows LF-to-CRLF warnings; archive
   SHA-256 comparison matched for
@@ -463,12 +495,19 @@ or Phase 7 until the owner explicitly approves the next implementation prompt.
 
 - iOS cannot be fully built locally on Windows. Every shared/iOS change still
   requires Codemagic `ios-simulator-unsigned`.
-- Phase 6X is documentation-only, so it does not itself require Codemagic unless
-  a later implementation commit changes shared/iOS code, Compose resources,
-  Gradle iOS behavior, `iosApp` or Codemagic iOS workflow files.
-- App privacy lock is not implemented yet. Existing encrypted storage is real,
-  but Android/iOS storage keys are not currently bound to fresh local user
-  authentication.
+- Phase 6.4 changed shared Kotlin, Compose resources, Android app code, iOS
+  shared code and `iosApp`, so the pushed commit requires Codemagic
+  `ios-simulator-unsigned`.
+- Windows cannot validate the iOS `LocalAuthentication` adapter or SwiftUI
+  inactive-scene shield.
+- Production Bettamind PIN/passphrase setup still needs an audited Argon2id
+  provider for Android and iOS before being enabled for real users. The shared
+  verifier and rate limiter are present, and tests use a fake Argon2id-labeled
+  deriver only.
+- Existing Android Keystore and iOS Keychain adapters remain the Phase 3
+  storage-key stores. Phase 6.4 gates release through local authentication but
+  does not yet add platform OS-level auth-bound key attributes to those
+  existing key records.
 - Relational-boundary policy is not implemented yet. Existing copy says
   Bettamind does not contact anyone automatically, but there is no classifier
   or AI output contract.
@@ -501,9 +540,9 @@ or Phase 7 until the owner explicitly approves the next implementation prompt.
 - Run Codemagic `ios-simulator-unsigned` for pushed commits that change shared
   Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
   iOS, or Codemagic iOS workflow files.
-- Before Phase 6.4 implementation, decide whether to approve a Bettamind PIN
-  fallback, the default lock requirement, auto-lock timeout, screenshot/privacy
-  default and local reset scope.
+- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 6.4 commit.
+- Decide whether production Bettamind PIN/passphrase setup should be enabled in
+  a later hardening pass after an audited Argon2id provider is selected.
 - Provide `brand/source/bettamind-logo-master.svg` if a vector master exists,
   then regenerate assets from that source in a later approved pass.
 - Replace placeholder Android application ID and iOS bundle ID with owner-owned
@@ -517,6 +556,6 @@ or Phase 7 until the owner explicitly approves the next implementation prompt.
 
 ## Next approved task
 
-Wait for explicit owner approval to implement Phase 6.4 from
-`docs/planning/phase-6x-integration-plan.md`. Do not begin Phase 6.5, Phase 6.6
-or Phase 7 automatically.
+Commit and push Phase 6.4, then have the owner run Codemagic
+`ios-simulator-unsigned`. If Codemagic passes, wait for explicit owner approval
+before Phase 6.5. Do not begin Phase 6.5, Phase 6.6 or Phase 7 automatically.

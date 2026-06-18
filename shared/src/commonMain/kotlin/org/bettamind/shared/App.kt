@@ -45,6 +45,7 @@ import org.bettamind.shared.design.BettamindThemeMode
 import org.bettamind.shared.design.BettamindTheme
 import org.bettamind.shared.generated.resources.Res
 import org.bettamind.shared.generated.resources.*
+import org.bettamind.shared.privacy.PrivacyLockTimeout
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -69,6 +70,7 @@ fun BettamindApp() {
     var themeMode by remember { mutableStateOf(BettamindThemeMode.Light) }
     var useAccessibleTypography by remember { mutableStateOf(false) }
     var growthState by remember { mutableStateOf(DeterministicGrowthEngine.locked()) }
+    var privacyLockTimeout by remember { mutableStateOf(PrivacyLockTimeout.OneMinute) }
 
     BettamindTheme(
         themeMode = themeMode,
@@ -108,6 +110,8 @@ fun BettamindApp() {
                     onThemeModeChange = { themeMode = it },
                     useAccessibleTypography = useAccessibleTypography,
                     onAccessibleTypographyChange = { useAccessibleTypography = it },
+                    privacyLockTimeout = privacyLockTimeout,
+                    onPrivacyLockTimeoutChange = { privacyLockTimeout = it },
                     growthState = growthState,
                     onConfirmAdult = {
                         growthState = DeterministicGrowthEngine.adultConfirmed(
@@ -181,6 +185,8 @@ private fun DestinationPanel(
     onThemeModeChange: (BettamindThemeMode) -> Unit,
     useAccessibleTypography: Boolean,
     onAccessibleTypographyChange: (Boolean) -> Unit,
+    privacyLockTimeout: PrivacyLockTimeout,
+    onPrivacyLockTimeoutChange: (PrivacyLockTimeout) -> Unit,
     growthState: GrowthSessionState,
     onConfirmAdult: () -> Unit,
     onBlockMinorOrUnknown: () -> Unit,
@@ -213,6 +219,8 @@ private fun DestinationPanel(
                     onThemeModeChange = onThemeModeChange,
                     useAccessibleTypography = useAccessibleTypography,
                     onAccessibleTypographyChange = onAccessibleTypographyChange,
+                    privacyLockTimeout = privacyLockTimeout,
+                    onPrivacyLockTimeoutChange = onPrivacyLockTimeoutChange,
                 )
             } else {
                 GrowthDestinationContent(
@@ -538,6 +546,8 @@ private fun SettingsPanel(
     onThemeModeChange: (BettamindThemeMode) -> Unit,
     useAccessibleTypography: Boolean,
     onAccessibleTypographyChange: (Boolean) -> Unit,
+    privacyLockTimeout: PrivacyLockTimeout,
+    onPrivacyLockTimeoutChange: (PrivacyLockTimeout) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(14.dp),
@@ -599,7 +609,71 @@ private fun SettingsPanel(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        PrivacyLockSettingsPanel(
+            privacyLockTimeout = privacyLockTimeout,
+            onPrivacyLockTimeoutChange = onPrivacyLockTimeoutChange,
+        )
     }
+}
+
+@Composable
+private fun PrivacyLockSettingsPanel(
+    privacyLockTimeout: PrivacyLockTimeout,
+    onPrivacyLockTimeoutChange: (PrivacyLockTimeout) -> Unit,
+) {
+    StatusBlock(
+        title = Res.string.privacy_lock_title,
+        body = Res.string.privacy_lock_description,
+    ) {
+        Text(
+            text = stringResource(
+                Res.string.privacy_lock_current_timeout,
+                stringResource(privacyLockTimeout.label()),
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        ThemeButtonRow(
+            leftLabel = Res.string.privacy_lock_timeout_immediate,
+            leftSelected = privacyLockTimeout == PrivacyLockTimeout.Immediate,
+            onLeftClick = { onPrivacyLockTimeoutChange(PrivacyLockTimeout.Immediate) },
+            rightLabel = Res.string.privacy_lock_timeout_one_minute,
+            rightSelected = privacyLockTimeout == PrivacyLockTimeout.OneMinute,
+            onRightClick = { onPrivacyLockTimeoutChange(PrivacyLockTimeout.OneMinute) },
+        )
+        ThemeButtonRow(
+            leftLabel = Res.string.privacy_lock_timeout_five_minutes,
+            leftSelected = privacyLockTimeout == PrivacyLockTimeout.FiveMinutes,
+            onLeftClick = { onPrivacyLockTimeoutChange(PrivacyLockTimeout.FiveMinutes) },
+            rightLabel = Res.string.privacy_lock_timeout_fifteen_minutes,
+            rightSelected = privacyLockTimeout == PrivacyLockTimeout.FifteenMinutes,
+            onRightClick = { onPrivacyLockTimeoutChange(PrivacyLockTimeout.FifteenMinutes) },
+        )
+        ThemeModeButton(
+            label = Res.string.privacy_lock_timeout_disabled,
+            selected = privacyLockTimeout == PrivacyLockTimeout.Disabled,
+            onClick = { onPrivacyLockTimeoutChange(PrivacyLockTimeout.Disabled) },
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Text(
+            text = stringResource(Res.string.privacy_lock_reauth_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = stringResource(Res.string.privacy_lock_urgent_support),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+private fun PrivacyLockTimeout.label(): StringResource = when (this) {
+    PrivacyLockTimeout.Disabled -> Res.string.privacy_lock_timeout_disabled
+    PrivacyLockTimeout.Immediate -> Res.string.privacy_lock_timeout_immediate
+    PrivacyLockTimeout.OneMinute -> Res.string.privacy_lock_timeout_one_minute
+    PrivacyLockTimeout.FiveMinutes -> Res.string.privacy_lock_timeout_five_minutes
+    PrivacyLockTimeout.FifteenMinutes -> Res.string.privacy_lock_timeout_fifteen_minutes
 }
 
 @Composable

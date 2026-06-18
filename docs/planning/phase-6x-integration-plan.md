@@ -34,6 +34,13 @@ Goal: add a real app privacy lock that gates private local content and storage
 key use without introducing account recovery, cloud dependency or unencrypted
 fallback storage.
 
+Status after implementation: Phase 6.4 foundation is implemented. Shared code
+now gates storage-key release behind local authentication, Android has a
+`BiometricPrompt` adapter, iOS has a `LocalAuthentication` adapter, Android and
+iOS host apps conceal app previews while backgrounded, and common tests cover
+the core lock, recovery, PIN verifier and notification-privacy policies.
+Codemagic validation is still required for the pushed shared/iOS changes.
+
 In scope:
 
 - Shared privacy-lock policy interfaces.
@@ -50,6 +57,12 @@ In scope:
 - Tests for lock state, key-release failures, reset behavior and no fallback
   storage.
 - Documentation and project-memory updates.
+
+Deferred release-hardening dependency:
+
+- Production Bettamind PIN/passphrase storage still needs an audited Argon2id
+  provider on Android and iOS. Phase 6.4 intentionally does not replace
+  Argon2id with an ad hoc hash fallback.
 
 Out of scope:
 

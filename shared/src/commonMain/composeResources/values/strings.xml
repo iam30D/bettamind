@@ -61,4 +61,15 @@
     <string name="growth_step_repair_description">Notice whether repair is needed and what would be respectful.</string>
     <string name="growth_step_growth">Growth</string>
     <string name="growth_step_growth_description">Carry forward one lesson for the next choice.</string>
+    <string name="privacy_lock_title">Privacy lock</string>
+    <string name="privacy_lock_description">Bettamind can require local authentication before private encrypted storage is released. The recommended default is one minute.</string>
+    <string name="privacy_lock_current_timeout">Current timeout: %1$s</string>
+    <string name="privacy_lock_timeout_immediate">Immediate</string>
+    <string name="privacy_lock_timeout_one_minute">One minute</string>
+    <string name="privacy_lock_timeout_five_minutes">Five minutes</string>
+    <string name="privacy_lock_timeout_fifteen_minutes">Fifteen minutes</string>
+    <string name="privacy_lock_timeout_disabled">Disabled</string>
+    <string name="privacy_lock_reauth_note">Reauthentication is still required before export, sync, professional sharing, recovery data, security changes, PIN changes, deleting local data or highly sensitive records.</string>
+    <string name="privacy_lock_urgent_support">A locked screen may offer static urgent-support information without revealing personal data.</string>
+    <string name="privacy_lock_notification_neutral">Bettamind has a private reminder.</string>
 </resources>

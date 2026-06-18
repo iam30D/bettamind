@@ -14,14 +14,24 @@ struct ComposeView: UIViewControllerRepresentable {
 
 @main
 struct BettamindIOSApp: App {
+    @Environment(\.scenePhase) private var scenePhase
+
     init() {
         IosStorageValidationLauncher.runIfRequested()
     }
 
     var body: some Scene {
         WindowGroup {
-            ComposeView()
-                .ignoresSafeArea()
+            ZStack {
+                ComposeView()
+                    .ignoresSafeArea()
+                    .privacySensitive()
+
+                if scenePhase != .active {
+                    Color(.systemBackground)
+                        .ignoresSafeArea()
+                }
+            }
         }
     }
 }
