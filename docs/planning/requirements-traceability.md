@@ -1,36 +1,42 @@
 # Requirements Traceability
 
-| Requirement | Phase | Phase 1 handling |
+Date updated: 2026-06-18
+
+| Requirement | Phase | Current handling |
 | --- | --- | --- |
-| Kotlin Multiplatform mobile stack | 1 | Create shared KMP module with Android and iOS targets. |
-| Compose Multiplatform shared UI | 1 | Create shared Compose foundation and platform entry points. |
-| Android local build | 1 | Add Android app module and debug build task. |
-| Real iOS Xcode host project | 1 | Add `iosApp/iosApp.xcodeproj` and shared scheme. |
-| Unsigned iOS simulator validation | 1 | Add Codemagic workflow that runs `xcodebuild`. |
-| Optional FastAPI backend | 1 | Add backend skeleton that mobile startup does not require. |
-| Core works without backend | 1+ | Keep no mobile dependency on backend. |
-| Core works without AI | 1+ | Add AI interfaces only, no model logic or downloads. |
-| No finished UI or branding assets | 2 | Phase 1 uses only a minimal foundation screen. |
-| Logo pipeline | 2 | Document and keep placeholders only. |
-| Global localisation architecture | 2+ | Add Compose resource folders and planning docs only. |
-| Encrypted storage | 3 | Android SQLCipher proof exists; iOS SQLCipher source/linking route uses pinned `SQLCipher.swift` and requires Codemagic validation. |
-| Deterministic product engines | 4 | Not implemented in Phase 1. |
-| Signed knowledge packs | 5 | Shared installer requires Ed25519-labeled signed manifests, SHA-256 payload checksums, rollback/replay checks and revocation policy. |
+| Kotlin Multiplatform mobile stack | 1 | Shared KMP module with Android and iOS targets exists. |
+| Compose Multiplatform shared UI | 1 | Shared Compose foundation and platform entry points exist. |
+| Android local build | 1 | Android app module and Gradle checks exist. |
+| Real iOS Xcode host project | 1 | `iosApp/iosApp.xcodeproj` exists and is validated through Codemagic. |
+| Unsigned iOS simulator validation | 1+ | Codemagic `ios-simulator-unsigned` runs real `xcodebuild`; still required after shared/iOS-affecting commits. |
+| Optional FastAPI backend | 1 | Backend health skeleton exists and mobile startup does not require it. |
+| Core works without backend | 1+ | Mobile modules remain independent of backend. |
+| Core works without AI | 1+ | Deterministic flow, storage, packs and app shell work without AI; AI runtime is optional. |
+| No cloud AI in core | 1+ | No cloud AI integration exists. |
+| Logo pipeline | 2 | Brand assets are generated from approved local source; canonical SVG is still preferred when available. |
+| Global localization architecture | 2+ | Compose resource folders, BCP 47 planning, RTL detection and bundled fonts exist; translations are draft until reviewed. |
+| Encrypted local storage | 3 | Shared contracts, Android SQLCipher/Keystore, iOS SQLCipher/Keychain and app-hosted iOS validation exist; no unencrypted fallback. |
+| Deterministic growth engine | 4 | Fixed growth-flow sequence exists and remains in-memory for narrative content. |
+| Adult-only MVP gate | 4 | Self-declared local adult gate exists; no date of birth or identity document is requested. |
+| Signed knowledge packs | 5 | Shared installer verifies signed manifests, SHA-256 checksums, rollback/replay and revocation policy. |
 | Local knowledge retrieval | 5 | Shared in-memory retriever searches installed packs offline without backend or AI. |
-| On-device AI runtime abstraction | 6 | `LocalAiRuntime` remains replaceable; `LiteRtLmRuntimeAdapter` delegates to a platform bridge and `UnavailableLocalAiRuntime` keeps AI optional. |
-| On-device AI model manager | 6 | Shared `ModelPackManager` verifies signed, checksum-checked, resumable and removable model packs without committing model weights. |
-| Safety and support bridge | 8 | Not implemented in Phase 1. |
+| On-device AI runtime abstraction | 6 | `LocalAiRuntime`, unavailable runtime and LiteRT bridge boundary exist. |
+| On-device AI model manager | 6 | `ModelPackManager` verifies signed, checksum-checked, resumable and removable model packs without committing weights. |
+| App privacy lock | 6.4 | Missing; Phase 6X audit recommends a full focused implementation before expanding private local content. |
+| Authentication-bound storage key release | 6.4 | Missing; existing Android Keystore and iOS Keychain key managers are not currently bound to user authentication. |
+| Background/app-switcher privacy protection | 6.4 | Missing; should be handled with platform-specific policies and accessibility review. |
+| Relational boundaries before AI response modes | 6.5 | Missing; Phase 6X audit recommends deterministic policy contracts before Phase 7. |
+| Memory/export/sync/notification/voice boundary rules | 6.5+ | Missing; should be defined before those surfaces use AI or personal content. |
+| Deterministic daily tools | 6.6 | Missing beyond the Phase 4 growth-flow skeleton; check-ins, timers, reminders, calendar, worksheets and trend summaries are planned. |
+| Encrypted product-record persistence | 6.6 | Storage primitive exists, but daily-tool product records are not wired yet. |
+| Safety and support bridge | 8 | Not implemented; should reuse Phase 6.5 policy outcomes. |
 | Optional encrypted sync | 9 | Backend skeleton only; no sync implementation. |
 
-## Phase 1 acceptance criteria
+## Phase 6X Audit Acceptance Criteria
 
-- Gradle wrapper and version catalogue exist.
-- Shared KMP module declares Android, iOS simulator and iOS device targets.
-- Shared module includes common tests and platform adapter foundations.
-- Android app target has display name Bettamind and starts without backend.
-- `iosApp` is a valid Xcode project with a shared scheme.
-- Codemagic unsigned workflow compiles shared tests, iOS targets and runs
-  `xcodebuild` against the real Xcode project.
-- GitHub Actions run non-Xcode checks.
-- Optional FastAPI skeleton has health endpoint and test scaffold.
-- Project memory is updated.
+- Current implementation plan archived unchanged.
+- Existing app, storage, AI, growth, safety and daily-tool functions inventoried.
+- Missing Phase 6.4, 6.5 and 6.6 functions identified.
+- Roadmap amendment created without editing active implementation plan.
+- Risk register and project memory updated.
+- No production source code edited.

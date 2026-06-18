@@ -2,11 +2,10 @@
 
 ## Current phase
 
-Phase 6 on-device AI abstraction and model manager is implemented locally and
-awaits commit, push and Codemagic `ios-simulator-unsigned` validation. The owner
-confirmed Codemagic passed for the Phase 5 commit, then approved proceeding to
-Phase 6. Do not begin Phase 7 until the owner explicitly approves it after
-Phase 6 validation.
+Phase 6X planning audit is complete locally as a documentation-only bridge
+after owner-confirmed Codemagic success for Phase 6. Phases 0 through 6 are
+treated as implemented and stable. Do not begin Phase 6.4, Phase 6.5, Phase 6.6
+or Phase 7 until the owner explicitly approves the next implementation prompt.
 
 ## Locked decisions
 
@@ -51,6 +50,12 @@ Phase 6 validation.
   LiteRT dependency or model weights are committed.
 - Phase 6 model-pack installation is source-agnostic and accepts externally
   supplied signed chunks only. No automatic model download exists.
+- Phase 6X inserts three proposed phases before Phase 7: Phase 6.4 App Privacy
+  Lock, Phase 6.5 Relational Boundaries and Phase 6.6 Deterministic Daily Tools.
+- Phase 6.4 must be a real storage-key/privacy-lock implementation, not only a
+  visual lock screen.
+- Phase 6.5 must exist before Phase 7 AI response modes.
+- Phase 6.6 must keep daily tools deterministic, offline-first and encrypted.
 
 ## Completed work
 
@@ -278,12 +283,26 @@ Phase 6 validation.
 - GitHub Actions mobile checks now run `phaseSixCheck`.
 - `docs/security/phase-6-ai-model-manager.md` documents the Phase 6 trust
   boundary and non-goals.
+- Phase 6X audit archived the active implementation plan unchanged at
+  `docs/planning/archive/implementation-plan-before-phase-6x.md`.
+- `docs/planning/phase-6x-integration-audit.md` records existing and missing
+  functions for Phase 6.4, Phase 6.5 and Phase 6.6.
+- `docs/planning/phase-6x-integration-plan.md` defines the recommended order,
+  scopes, acceptance criteria, migration implications and exact next prompt.
+- `docs/planning/roadmap-amendment-phase-6x.md` amends the roadmap without
+  editing the active implementation plan.
 
 ## Important files
 
 - `AGENTS.md`
 - `docs/specification/bettamind-locked-specification.md`
 - `docs/planning/implementation-plan.md`
+- `docs/planning/archive/implementation-plan-before-phase-6x.md`
+- `docs/planning/phase-6x-integration-audit.md`
+- `docs/planning/phase-6x-integration-plan.md`
+- `docs/planning/roadmap-amendment-phase-6x.md`
+- `docs/planning/requirements-traceability.md`
+- `docs/planning/risk-register.md`
 - `docs/design/brand-and-colour-decision.md`
 - `docs/design/font-sources.md`
 - `docs/working-notes/project-memory.md`
@@ -409,6 +428,11 @@ Phase 6 validation.
 - From `backend/`: `.\.venv\Scripts\ruff.exe check .`
 - From `backend/`: `.\.venv\Scripts\mypy.exe app`
 - From `backend/`: `.\.venv\Scripts\pytest.exe`
+- Phase 6X docs-only checks:
+  `git diff --check` passed with normal Windows LF-to-CRLF warnings; archive
+  SHA-256 comparison matched for
+  `docs/planning/implementation-plan.md` and
+  `docs/planning/archive/implementation-plan-before-phase-6x.md`.
 - `git ls-files | rg "\.(tflite|litertlm|gguf|onnx|bin|safetensors|model|mlmodel|task)$"`
   found no tracked model-weight artifacts.
 - docs/source placeholder scan found only Codemagic's intentional `events: []`
@@ -439,8 +463,17 @@ Phase 6 validation.
 
 - iOS cannot be fully built locally on Windows. Every shared/iOS change still
   requires Codemagic `ios-simulator-unsigned`.
-- Phase 6 changed common shared code, so the next pushed commit requires
-  Codemagic `ios-simulator-unsigned`.
+- Phase 6X is documentation-only, so it does not itself require Codemagic unless
+  a later implementation commit changes shared/iOS code, Compose resources,
+  Gradle iOS behavior, `iosApp` or Codemagic iOS workflow files.
+- App privacy lock is not implemented yet. Existing encrypted storage is real,
+  but Android/iOS storage keys are not currently bound to fresh local user
+  authentication.
+- Relational-boundary policy is not implemented yet. Existing copy says
+  Bettamind does not contact anyone automatically, but there is no classifier
+  or AI output contract.
+- Deterministic daily tools are not implemented yet beyond the Phase 4 growth
+  flow skeleton.
 - Phase 4 does not yet persist narrative content. Storage status still reports
   encrypted storage unavailable until a separate approved pass wires the
   platform encrypted store into the growth flow. There is no unencrypted
@@ -468,8 +501,9 @@ Phase 6 validation.
 - Run Codemagic `ios-simulator-unsigned` for pushed commits that change shared
   Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
   iOS, or Codemagic iOS workflow files.
-- Run Codemagic `ios-simulator-unsigned` for the next pushed Phase 6 commit
-  because it changes shared Kotlin and the GitHub Actions Gradle check target.
+- Before Phase 6.4 implementation, decide whether to approve a Bettamind PIN
+  fallback, the default lock requirement, auto-lock timeout, screenshot/privacy
+  default and local reset scope.
 - Provide `brand/source/bettamind-logo-master.svg` if a vector master exists,
   then regenerate assets from that source in a later approved pass.
 - Replace placeholder Android application ID and iOS bundle ID with owner-owned
@@ -483,6 +517,6 @@ Phase 6 validation.
 
 ## Next approved task
 
-Commit and push Phase 6, then have the owner run Codemagic
-`ios-simulator-unsigned`. If Codemagic passes, wait for explicit owner approval
-before Phase 7. Do not begin Phase 7 automatically.
+Wait for explicit owner approval to implement Phase 6.4 from
+`docs/planning/phase-6x-integration-plan.md`. Do not begin Phase 6.5, Phase 6.6
+or Phase 7 automatically.
