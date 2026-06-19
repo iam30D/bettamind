@@ -26,6 +26,10 @@ with enough free storage. Qwen2.5 1.5B Instruct is the fallback recommendation
 for low-tier or storage-limited devices when enough free storage remains. These
 recommendations are not bundled and do not auto-install.
 
+Licence confirmation and owner-editable approval records live in
+`docs/operations/model-license-approval-records.md`. Draft release notice text
+lives in `docs/legal/model-third-party-notices.md`.
+
 ## Owner licence gate
 
 Complete this gate before any production artifact is uploaded, signed or made
@@ -40,7 +44,11 @@ available to users:
    constraints.
 6. Confirm the model is acceptable for Bettamind's adult, privacy-first,
    non-therapy and non-emergency positioning.
-7. Record approval in the release checklist before packaging.
+7. Complete the matching approval record in
+   `docs/operations/model-license-approval-records.md`.
+8. Review and update `docs/legal/model-third-party-notices.md` for the exact
+   model artifacts offered in the release.
+9. Record approval in the release checklist before packaging.
 
 Current source pages:
 
@@ -58,6 +66,8 @@ unless they are small metadata or documentation files:
 - exact model artifact, preferably a LiteRT-LM-compatible `.litertlm` file;
 - model card URL and archived revision identifier;
 - licence text and notice or attribution text;
+- Apache-2.0 release licence text from `docs/legal/licenses/apache-2.0.txt`
+  when using the current Gemma 4 E2B or Qwen2.5 1.5B recommendations;
 - SHA-256 checksum for the final artifact;
 - artifact size in bytes;
 - signed `ModelPackManifest`;

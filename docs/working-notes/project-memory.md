@@ -5,12 +5,9 @@
 Phase 7 AI-assisted growth modes and local model-pack recommendation policy
 are implemented and pushed. Phases 0 through 6, Phase 6.4, Phase 6.5, Phase
 6.6 and Phase 6.7 are treated as implemented and stable, with owner-confirmed
-Codemagic `ios-simulator-unsigned` validation through commit `621b3c2`. The
-local model recommendation policy changes touched shared AI code, so the
-latest pushed commit containing those changes requires Codemagic
-`ios-simulator-unsigned` validation. Do not begin Phase 8 or later work until
-the owner confirms Codemagic passed for the latest pushed commit and explicitly
-approves the next implementation prompt.
+Codemagic `ios-simulator-unsigned` validation through commit `d1811db`. Do not
+begin Phase 8 or later work until the owner explicitly approves the next
+implementation prompt.
 
 ## Locked decisions
 
@@ -111,6 +108,10 @@ approves the next implementation prompt.
 - Owner licence acceptance and release records are required before packaging or
   distributing any production model artifact. User install consent does not
   replace publisher licence compliance.
+- Without an installed model pack, `LocalAiRuntime` uses the unavailable
+  runtime and deterministic fallback. It does not generate learned-model
+  intelligence; it routes deterministic flows, local resources, optional
+  signed knowledge retrieval and model-free safety policies.
 
 ## Completed work
 
@@ -482,10 +483,23 @@ approves the next implementation prompt.
   is unavailable, declined or removed.
 - Local AI model-pack recommendation policy commit `540f733` was pushed to
   `main` after owner-confirmed Codemagic pass for `621b3c2`.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed for latest pushed
+  commit `d1811db`.
 - `docs/operations/local-ai-model-pack-release.md` and
   `docs/operations/model-pack-manifest-template.json` document the owner
   licence gate, required release records, signed manifest shape and user
   install experience for future production model packs.
+- `docs/architecture/local-ai-no-model-fallback.md` documents that no-model
+  mode is deterministic fallback, not learned-model generation.
+- `docs/operations/model-license-approval-records.md` provides owner-editable
+  approval records for Gemma 4 E2B and Qwen2.5 1.5B Instruct, both currently
+  marked as Apache-2.0 on source pages but still pending owner approval before
+  packaging.
+- `docs/legal/model-third-party-notices.md` provides draft third-party notice
+  text for optional model packs and release checklist items.
+- `docs/legal/licenses/apache-2.0.txt` provides local Apache License, Version
+  2.0 text for release notice bundles when current Gemma 4 E2B or Qwen2.5 1.5B
+  recommendations are used.
 - `AGENTS.md` and `.gitignore` now explicitly prohibit committing AI model
   weights, converted model artifacts, production packages, signing private
   keys, certificates, credentials, database dumps, real logs with personal
@@ -498,6 +512,7 @@ approves the next implementation prompt.
 - `AGENTS.md`
 - `.gitignore`
 - `docs/specification/bettamind-locked-specification.md`
+- `docs/architecture/local-ai-no-model-fallback.md`
 - `docs/planning/implementation-plan.md`
 - `docs/planning/archive/implementation-plan-before-phase-6x.md`
 - `docs/planning/phase-6x-integration-audit.md`
@@ -543,7 +558,10 @@ approves the next implementation prompt.
 - `docs/security/phase-5-signed-knowledge-packs.md`
 - `docs/security/phase-6-ai-model-manager.md`
 - `docs/operations/local-ai-model-pack-release.md`
+- `docs/operations/model-license-approval-records.md`
 - `docs/operations/model-pack-manifest-template.json`
+- `docs/legal/model-third-party-notices.md`
+- `docs/legal/licenses/apache-2.0.txt`
 - `docs/security/phase-6-4-app-privacy-lock.md`
 - `docs/safety/relational-boundaries.md`
 - `docs/safety/harmful-intent-and-dangerous-capability-policy.md`
@@ -749,9 +767,8 @@ approves the next implementation prompt.
 
 - iOS cannot be fully built locally on Windows. Every shared/iOS change still
   requires Codemagic `ios-simulator-unsigned`.
-- Owner confirmed Codemagic `ios-simulator-unsigned` passed for Phase 7 commit
-  `621b3c2`. The later pushed local model recommendation policy changes still
-  require Codemagic validation.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed for Phase 7 and
+  local model recommendation policy through commit `d1811db`.
 - Windows cannot validate the iOS `LocalAuthentication` adapter or SwiftUI
   inactive-scene shield.
 - The local Windows
@@ -808,8 +825,9 @@ approves the next implementation prompt.
 - Run Codemagic `ios-simulator-unsigned` for pushed commits that change shared
   Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
   iOS, or Codemagic iOS workflow files.
-- Run Codemagic `ios-simulator-unsigned` for the next pushed commit containing
-  the local model recommendation policy changes.
+- Run Codemagic `ios-simulator-unsigned` after any future pushed commit that
+  changes shared Kotlin, Compose resources, `iosApp`, Gradle configuration that
+  can affect iOS, or Codemagic iOS workflow files.
 - Review Phase 6.5 relational-boundary categories and fallback copy before
   production localization or Phase 7 AI response-mode prompts.
 - Review Phase 6.6 daily-tool copy, reminder defaults, quiet-hours defaults
@@ -830,6 +848,9 @@ approves the next implementation prompt.
 - Accept or confirm the exact Gemma 4 E2B and/or Qwen2.5 1.5B Instruct model
   licences under the publishing entity before any model artifact is packaged,
   signed, uploaded or offered to users.
+- Complete `docs/operations/model-license-approval-records.md` and review
+  `docs/legal/model-third-party-notices.md` before packaging or offering any
+  optional local AI model artifact.
 - Review Phase 7 AI-growth fallback identifiers, prompt boundaries, model
   schema and production model-output governance before enabling a real local
   model broadly.
@@ -839,7 +860,6 @@ approves the next implementation prompt.
 
 ## Next approved task
 
-Have the owner run Codemagic `ios-simulator-unsigned` for the latest pushed
-commit containing the local AI model-pack recommendation policy. If Codemagic
-passes, wait for explicit owner approval before Phase 8. Do not begin Phase 8
-automatically.
+Complete owner review of model licence approval records before packaging any
+model artifacts. Wait for explicit owner approval before Phase 8. Do not begin
+Phase 8 automatically.

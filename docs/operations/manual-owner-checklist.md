@@ -16,3 +16,8 @@
 - Join the Apple Developer Program.
 - Configure Apple signing only in Codemagic secure credentials.
 - Never commit signing files or credentials.
+- Before offering any optional local AI model, complete
+  `docs/operations/model-license-approval-records.md` for each exact model
+  artifact and review `docs/legal/model-third-party-notices.md`.
+- Keep model weights, converted model artifacts, signing private keys,
+  production trust roots and provider credentials outside Git.
