@@ -493,8 +493,15 @@ implementation prompt.
   mode is deterministic fallback, not learned-model generation.
 - `docs/operations/model-license-approval-records.md` provides owner-editable
   approval records for Gemma 4 E2B and Qwen2.5 1.5B Instruct, both currently
-  marked as Apache-2.0 on source pages but still pending owner approval before
-  packaging.
+  marked as Apache-2.0 on source pages and owner-approved for licence use
+  before artifact packaging.
+- CORE-NOVANESS LIMITED approved Apache-2.0 licence use for both Gemma 4 E2B
+  and Qwen2.5 1.5B Instruct on 2026-06-19, approved by OYINLOLA OLUSAYO. The
+  approval records are marked `APPROVED_LICENSE_ONLY_PENDING_ARTIFACT`; final
+  `.litertlm` revision, source URL, byte size, SHA-256 checksum, signed
+  manifest and device tests remain pending.
+- `docs/operations/litertlm-artifact-build-plan.md` documents when the later
+  `.litertlm` artifact build occurs and the packaging/signing/test process.
 - `docs/legal/model-third-party-notices.md` provides draft third-party notice
   text for optional model packs and release checklist items.
 - `docs/legal/licenses/apache-2.0.txt` provides local Apache License, Version
@@ -559,6 +566,7 @@ implementation prompt.
 - `docs/security/phase-6-ai-model-manager.md`
 - `docs/operations/local-ai-model-pack-release.md`
 - `docs/operations/model-license-approval-records.md`
+- `docs/operations/litertlm-artifact-build-plan.md`
 - `docs/operations/model-pack-manifest-template.json`
 - `docs/legal/model-third-party-notices.md`
 - `docs/legal/licenses/apache-2.0.txt`
@@ -851,6 +859,9 @@ implementation prompt.
 - Complete `docs/operations/model-license-approval-records.md` and review
   `docs/legal/model-third-party-notices.md` before packaging or offering any
   optional local AI model artifact.
+- Build or obtain the final `.litertlm` artifact outside Git, then complete
+  source revision, artifact URL, byte size, SHA-256 checksum, signed manifest
+  and device-test records before setting any model to `APPROVED_FOR_RELEASE`.
 - Review Phase 7 AI-growth fallback identifiers, prompt boundaries, model
   schema and production model-output governance before enabling a real local
   model broadly.
@@ -860,6 +871,7 @@ implementation prompt.
 
 ## Next approved task
 
-Complete owner review of model licence approval records before packaging any
-model artifacts. Wait for explicit owner approval before Phase 8. Do not begin
-Phase 8 automatically.
+Build or obtain the final `.litertlm` artifact outside Git only after explicit
+owner approval for model-packaging work, then complete artifact records and
+tests before any release. Wait for explicit owner approval before Phase 8. Do
+not begin Phase 8 automatically.

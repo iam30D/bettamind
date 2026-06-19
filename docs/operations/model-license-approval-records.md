@@ -31,12 +31,16 @@ For each model to release:
 1. Open the exact model page and licence page.
 2. Sign in or accept provider terms if the provider requires it.
 3. Record the publishing entity and the owner who approved release.
-4. Record the exact model revision or commit used for the artifact.
-5. Record the final artifact filename, byte size and SHA-256 checksum.
-6. Confirm redistribution, offline mobile use and target release countries.
-7. Review third-party notices in `docs/legal/model-third-party-notices.md`.
-8. Change `owner_approval_status` from `PENDING_OWNER_REVIEW` to `APPROVED`
-   only after the owner has completed the above checks.
+4. For licence-only approval before artifact packaging, set
+   `owner_approval_status` to `APPROVED_LICENSE_ONLY_PENDING_ARTIFACT` and keep
+   artifact-specific fields as `PENDING_ARTIFACT_PACKAGING`.
+5. Record the exact model revision or commit used for the artifact when the
+   final `.litertlm` file is created.
+6. Record the final artifact filename, byte size and SHA-256 checksum.
+7. Confirm redistribution, offline mobile use and target release countries.
+8. Review third-party notices in `docs/legal/model-third-party-notices.md`.
+9. Set `owner_approval_status` to `APPROVED_FOR_RELEASE` only after the final
+   artifact fields, tests, notices and signed manifest are complete.
 
 ## Gemma 4 E2B approval record
 
@@ -51,21 +55,22 @@ model_source_url: https://huggingface.co/google/gemma-4-E2B-it
 license_url: https://ai.google.dev/gemma/docs/gemma_4_license
 local_release_license_text: docs/legal/licenses/apache-2.0.txt
 license_verified_on: 2026-06-19
-owner_approval_status: PENDING_OWNER_REVIEW
-publishing_entity: TODO
-approved_by: TODO
-approval_date: TODO
-provider_terms_account_or_record: TODO
-source_revision_or_commit: TODO
-artifact_source_url: TODO
+owner_approval_status: APPROVED_LICENSE_ONLY_PENDING_ARTIFACT
+publishing_entity: CORE-NOVANESS LIMITED
+approved_by: OYINLOLA OLUSAYO
+approval_date: 2026-06-19
+provider_terms_account_or_record: No click-through acceptance shown. Apache-2.0 licence reviewed and approved by publishing entity.
+owner_approval_statement: I have reviewed the Apache-2.0 licence for this model, approve use under my publishing entity, and understand artifact checksum/revision fields will be completed later.
+source_revision_or_commit: PENDING_ARTIFACT_PACKAGING
+artifact_source_url: PENDING_ARTIFACT_PACKAGING
 converted_artifact_file_name: gemma-4-e2b-it.litertlm
-artifact_size_bytes: TODO
-artifact_sha256: TODO
-redistribution_allowed: TODO
-offline_mobile_use_allowed: TODO
-target_release_countries_reviewed: TODO
-third_party_notice_reviewed: TODO
-release_notes: TODO
+artifact_size_bytes: PENDING_ARTIFACT_PACKAGING
+artifact_sha256: PENDING_ARTIFACT_PACKAGING
+redistribution_allowed: APPROVED_UNDER_APACHE_2_0_SUBJECT_TO_FINAL_ARTIFACT_RECORD
+offline_mobile_use_allowed: APPROVED_UNDER_APACHE_2_0_SUBJECT_TO_FINAL_ARTIFACT_RECORD
+target_release_countries_reviewed: PENDING_RELEASE_COUNTRY_REVIEW
+third_party_notice_reviewed: DRAFT_NOTICE_REVIEWED_PENDING_FINAL_ARTIFACT
+release_notes: Licence approved by CORE-NOVANESS LIMITED for future optional local model packaging. Final LiteRT-LM artifact revision, source URL, byte size, SHA-256 checksum, signed manifest and device tests remain pending.
 ```
 
 ## Qwen2.5 1.5B Instruct approval record
@@ -81,19 +86,20 @@ model_source_url: https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct
 license_url: https://www.apache.org/licenses/LICENSE-2.0
 local_release_license_text: docs/legal/licenses/apache-2.0.txt
 license_verified_on: 2026-06-19
-owner_approval_status: PENDING_OWNER_REVIEW
-publishing_entity: TODO
-approved_by: TODO
-approval_date: TODO
-provider_terms_account_or_record: TODO
-source_revision_or_commit: TODO
-artifact_source_url: TODO
+owner_approval_status: APPROVED_LICENSE_ONLY_PENDING_ARTIFACT
+publishing_entity: CORE-NOVANESS LIMITED
+approved_by: OYINLOLA OLUSAYO
+approval_date: 2026-06-19
+provider_terms_account_or_record: No click-through acceptance shown. Apache-2.0 licence reviewed and approved by publishing entity.
+owner_approval_statement: I have reviewed the Apache-2.0 licence for this model, approve use under my publishing entity, and understand artifact checksum/revision fields will be completed later.
+source_revision_or_commit: PENDING_ARTIFACT_PACKAGING
+artifact_source_url: PENDING_ARTIFACT_PACKAGING
 converted_artifact_file_name: qwen2.5-1.5b-instruct.litertlm
-artifact_size_bytes: TODO
-artifact_sha256: TODO
-redistribution_allowed: TODO
-offline_mobile_use_allowed: TODO
-target_release_countries_reviewed: TODO
-third_party_notice_reviewed: TODO
-release_notes: TODO
+artifact_size_bytes: PENDING_ARTIFACT_PACKAGING
+artifact_sha256: PENDING_ARTIFACT_PACKAGING
+redistribution_allowed: APPROVED_UNDER_APACHE_2_0_SUBJECT_TO_FINAL_ARTIFACT_RECORD
+offline_mobile_use_allowed: APPROVED_UNDER_APACHE_2_0_SUBJECT_TO_FINAL_ARTIFACT_RECORD
+target_release_countries_reviewed: PENDING_RELEASE_COUNTRY_REVIEW
+third_party_notice_reviewed: DRAFT_NOTICE_REVIEWED_PENDING_FINAL_ARTIFACT
+release_notes: Licence approved by CORE-NOVANESS LIMITED for future optional local model packaging. Final LiteRT-LM artifact revision, source URL, byte size, SHA-256 checksum, signed manifest and device tests remain pending.
 ```

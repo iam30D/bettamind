@@ -28,7 +28,9 @@ recommendations are not bundled and do not auto-install.
 
 Licence confirmation and owner-editable approval records live in
 `docs/operations/model-license-approval-records.md`. Draft release notice text
-lives in `docs/legal/model-third-party-notices.md`.
+lives in `docs/legal/model-third-party-notices.md`. The later `.litertlm`
+artifact build process is documented in
+`docs/operations/litertlm-artifact-build-plan.md`.
 
 ## Owner licence gate
 
