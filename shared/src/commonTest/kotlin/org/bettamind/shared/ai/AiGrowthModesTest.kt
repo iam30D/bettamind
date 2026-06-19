@@ -5,6 +5,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.bettamind.shared.privacy.SensitiveAction
+import org.bettamind.shared.safety.AllowedDiscussionScope
+import org.bettamind.shared.safety.BetterHumanPathway
+import org.bettamind.shared.safety.SafetyIntentConfidence
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -33,9 +36,12 @@ class AiGrowthModesTest {
             assertNull(response.modelText)
             assertTrue(response.actionKeys.isNotEmpty())
             assertFalse(response.metadata.permanentMemoryProposalEligible)
+            assertFalse(response.metadata.memoryEligible)
             assertFalse(response.metadata.exportEligible)
             assertFalse(response.metadata.syncAllowedByDefault)
             assertFalse(response.metadata.notificationAllowed)
+            assertFalse(response.metadata.safetyBoundaryApplied)
+            assertEquals(BetterHumanPathway.NoFollowupNeeded, response.metadata.betterHumanPathway)
         }
     }
 
@@ -69,8 +75,41 @@ class AiGrowthModesTest {
         assertEquals(setOf(AiGrowthContextKind.CheckIn), response.metadata.preGeneration.includedContextKinds)
         assertEquals(setOf(AiGrowthContextKind.Worksheet), response.metadata.preGeneration.omittedContextKinds)
         assertTrue(response.metadata.requiresAppLockStepUp)
+        assertTrue(response.metadata.requiresStepUpAuth)
         assertEquals(SensitiveAction.AccessHighlySensitiveRecord, response.metadata.sensitiveAction)
         assertEquals(AiGrowthResponseSource.LocalModel, response.source)
+    }
+
+    @Test
+    fun structuredModelSafetyMetadataIsExposedWithoutAllowingAutomaticMemory() = runTest {
+        val runtime = RecordingAiRuntime(
+            output = modelJson(
+                mode = AiGrowthMode.GuidedReflection,
+                text = "Pause, name the value, and prepare one repair action.",
+                betterHumanPathway = BetterHumanPathway.ValuesToAction.wireName,
+                recommendedTool = BetterHumanPathway.RepairPlanning.wireName,
+                requiresStepUpAuth = true,
+            ),
+        )
+        val engine = AiGrowthModeEngine(runtime)
+
+        val response = engine.respond(
+            AiGrowthModeRequest(
+                mode = AiGrowthMode.GuidedReflection,
+                userInput = "Help me respond with more responsibility.",
+            ),
+        )
+
+        assertTrue(runtime.lastPrompt!!.contains("response_shape=json_object_with_schemaVersion_mode_text_actionKeys_safety_metadata_memoryEligible_exportEligible"))
+        assertEquals(AiGrowthResponseSource.LocalModel, response.source)
+        assertFalse(response.metadata.safetyBoundaryApplied)
+        assertEquals(SafetyIntentConfidence.Medium, response.metadata.userIntentConfidence)
+        assertEquals(AllowedDiscussionScope.OpenGrowthReflection, response.metadata.allowedDiscussionScope)
+        assertEquals(BetterHumanPathway.ValuesToAction, response.metadata.betterHumanPathway)
+        assertEquals(BetterHumanPathway.RepairPlanning, response.metadata.recommendedTool)
+        assertTrue(response.metadata.requiresStepUpAuth)
+        assertFalse(response.metadata.memoryEligible)
+        assertFalse(response.metadata.permanentMemoryWriteAllowed)
     }
 
     @Test
@@ -92,7 +131,10 @@ class AiGrowthModesTest {
 
         assertEquals(0, runtime.generatedRequests)
         assertEquals(AiGrowthFallbackReason.PreGenerationHarmSafety, response.fallbackReason)
-        assertEquals("harm_safety_fallback_refuse_capability", response.fallbackLocalizationKey)
+        assertEquals("compassionate_safety_fallback_chemical_weapon_explosive_poison", response.fallbackLocalizationKey)
+        assertTrue(response.metadata.safetyBoundaryApplied)
+        assertEquals("chemical_weapon_explosive_poisoning_request", response.metadata.safetyBoundaryReason)
+        assertEquals(BetterHumanPathway.LeaveSituation, response.metadata.recommendedTool)
         assertFalse(response.metadata.permanentMemoryProposalEligible)
         assertFalse(response.metadata.exportEligible)
         assertTrue(response.metadata.requiresAppLockStepUp)
@@ -117,7 +159,9 @@ class AiGrowthModesTest {
 
         assertEquals(0, runtime.generatedRequests)
         assertEquals(AiGrowthFallbackReason.PreGenerationRelationalBoundary, response.fallbackReason)
-        assertEquals("relational_fallback_software_boundary", response.fallbackLocalizationKey)
+        assertEquals("compassionate_safety_fallback_romantic_dependency", response.fallbackLocalizationKey)
+        assertTrue(response.metadata.safetyBoundaryApplied)
+        assertEquals("romantic_dependency_to_bettamind", response.metadata.safetyBoundaryReason)
         assertFalse(response.metadata.permanentMemoryProposalEligible)
         assertFalse(response.metadata.exportEligible)
     }
@@ -150,6 +194,37 @@ class AiGrowthModesTest {
         assertFalse(response.metadata.exportEligible)
         assertFalse(response.metadata.syncAllowedByDefault)
         assertFalse(response.metadata.notificationAllowed)
+        assertTrue(response.metadata.safetyBoundaryApplied)
+    }
+
+    @Test
+    fun shamingGeneratedOutputIsBlockedBeforeDisplayOrStorage() = runTest {
+        val runtime = RecordingAiRuntime(
+            output = modelJson(
+                mode = AiGrowthMode.ActionOnly,
+                text = "You are a bad person and should be ashamed.",
+                memoryEligible = true,
+                exportEligible = true,
+            ),
+        )
+        val engine = AiGrowthModeEngine(runtime)
+
+        val response = engine.respond(
+            AiGrowthModeRequest(
+                mode = AiGrowthMode.ActionOnly,
+                userInput = "Help me choose a calmer next step.",
+            ),
+        )
+
+        assertEquals(1, runtime.generatedRequests)
+        assertEquals(AiGrowthResponseSource.DeterministicFallback, response.source)
+        assertEquals(AiGrowthFallbackReason.UnsafeGeneratedOutput, response.fallbackReason)
+        assertEquals("compassionate_safety_fallback_shame_after_thought", response.fallbackLocalizationKey)
+        assertNull(response.modelText)
+        assertTrue(response.metadata.safetyBoundaryApplied)
+        assertEquals("shame_after_unsafe_thought", response.metadata.safetyBoundaryReason)
+        assertFalse(response.metadata.permanentMemoryProposalEligible)
+        assertFalse(response.metadata.exportEligible)
     }
 
     @Test
@@ -196,6 +271,7 @@ class AiGrowthModesTest {
         assertEquals(AiGrowthModeEngine.ResponseSchemaVersion, response.metadata.schemaVersion)
         assertEquals("A pattern is visible: pause before reacting, name the value, and repair clearly.", response.modelText)
         assertTrue(response.metadata.permanentMemoryProposalEligible)
+        assertTrue(response.metadata.memoryEligible)
         assertTrue(response.metadata.permanentMemoryRequiresSeparateApproval)
         assertFalse(response.metadata.permanentMemoryWriteAllowed)
         assertTrue(response.metadata.exportEligible)
@@ -226,8 +302,16 @@ class AiGrowthModesTest {
         mode: AiGrowthMode,
         text: String,
         actionKeys: List<String> = listOf("ai_growth_action_choose_one_concrete_step"),
+        safetyBoundaryApplied: Boolean = false,
+        safetyBoundaryReason: String? = null,
+        userIntentConfidence: String = SafetyIntentConfidence.Medium.wireName,
+        allowedDiscussionScope: String = AllowedDiscussionScope.OpenGrowthReflection.wireName,
+        betterHumanPathway: String = BetterHumanPathway.NoFollowupNeeded.wireName,
+        recommendedTool: String = BetterHumanPathway.NoFollowupNeeded.wireName,
         memoryEligible: Boolean = false,
         exportEligible: Boolean = false,
+        requiresStepUpAuth: Boolean = false,
+        requiresUrgentSupport: Boolean = false,
     ): String =
         """
         {
@@ -235,8 +319,16 @@ class AiGrowthModesTest {
           "mode": "${mode.wireName}",
           "text": "$text",
           "actionKeys": [${actionKeys.joinToString { "\"$it\"" }}],
+          "safetyBoundaryApplied": $safetyBoundaryApplied,
+          "safetyBoundaryReason": ${safetyBoundaryReason?.let { "\"$it\"" } ?: "null"},
+          "userIntentConfidence": "$userIntentConfidence",
+          "allowedDiscussionScope": "$allowedDiscussionScope",
+          "betterHumanPathway": "$betterHumanPathway",
+          "recommendedTool": "$recommendedTool",
           "memoryEligible": $memoryEligible,
-          "exportEligible": $exportEligible
+          "exportEligible": $exportEligible,
+          "requiresStepUpAuth": $requiresStepUpAuth,
+          "requiresUrgentSupport": $requiresUrgentSupport
         }
         """.trimIndent()
 }

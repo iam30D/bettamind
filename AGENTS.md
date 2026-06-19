@@ -63,6 +63,11 @@ long raw logs in it.
   nonjudgmental support, avoid assuming guilt for ambiguous intent, never
   auto-contact a third party and exclude harmful-intent narrative from memory,
   export, sync and notifications by default.
+- Safety redirection must remain compassionate, dignity-preserving and useful:
+  acknowledge feelings without validating harmful action, refuse harmful
+  capability, avoid shame or diagnosis, separate the person from the harmful
+  action and guide toward reflection, delay, safety, responsibility, repair and
+  deterministic tools.
 
 ## Global localisation
 

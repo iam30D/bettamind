@@ -2,12 +2,14 @@
 
 ## Current phase
 
-Phase 7 AI-assisted growth modes and local model-pack recommendation policy
-are implemented and pushed. Phases 0 through 6, Phase 6.4, Phase 6.5, Phase
-6.6 and Phase 6.7 are treated as implemented and stable, with owner-confirmed
-Codemagic `ios-simulator-unsigned` validation through commit `d1811db`. Do not
-begin Phase 8 or later work until the owner explicitly approves the next
-implementation prompt.
+Phase 7.5 compassionate safety redirection and better-human pathways are
+implemented and locally verified on Windows. Phases 0 through 7 and the local
+model-pack recommendation/licence records are treated as implemented, with
+owner-confirmed Codemagic `ios-simulator-unsigned` validation through commit
+`d1811db`. Phase 7.5 changes still require owner-run Codemagic
+`ios-simulator-unsigned` after the pushed commit because shared Kotlin, Compose
+resources and Gradle configuration changed. Do not begin Phase 8 or later work
+until the owner explicitly approves the next implementation prompt.
 
 ## Locked decisions
 
@@ -100,6 +102,23 @@ implementation prompt.
   before display, memory/export/sync/notification eligibility, voice or avatar
   use. Permanent memory remains proposal-only, automatic writes are disabled
   and separate approval is required.
+- Phase 7.5 adds compassionate safety redirection as a deterministic layer on
+  top of Phase 6.5, Phase 6.7 and Phase 7. Safety boundaries must stay firm
+  while avoiding shame, diagnosis and guilt assumptions for ambiguous intent.
+- Phase 7.5 safety responses use localization-key templates for
+  acknowledgement, boundary, human-growth redirect, practical next step and
+  privacy notice. Better-human pathways can recommend grounding, breathing,
+  delay, leaving the situation, contact support, emergency help, conflict
+  reflection, repair planning, values-to-action, difficult conversation,
+  consent and boundaries, self-compassion or no follow-up needed.
+- Phase 7.5 AI metadata must expose safety boundary status and reason, user
+  intent confidence, allowed discussion scope, better-human pathway,
+  recommended deterministic tool, memory/export eligibility, step-up
+  authentication and urgent-support requirement.
+- Phase 7.5 generated output must be blocked before display/storage/export/
+  sync/notification/voice/avatar use if it shames, diagnoses, assumes bad
+  intent without evidence, encourages Bettamind dependency or skips a safe next
+  step when a boundary is applied.
 - Local AI model packs remain optional recommendations only. Bettamind installs
   and runs with no model; Gemma 4 E2B is the preferred LiteRT-LM recommendation
   for standard/high devices after testing, Qwen2.5 1.5B Instruct is the smaller
@@ -507,6 +526,28 @@ implementation prompt.
 - `docs/legal/licenses/apache-2.0.txt` provides local Apache License, Version
   2.0 text for release notice bundles when current Gemma 4 E2B or Qwen2.5 1.5B
   recommendations are used.
+- Phase 7.5 compassionate safety redirection was added under
+  `shared/src/commonMain/kotlin/org/bettamind/shared/safety/CompassionateSafetyRedirection.kt`.
+- `CompassionateSafetyRedirectionPolicy` composes existing harm and relational
+  assessments into safety redirection mode, reason, better-human pathway,
+  response keys, recommended deterministic tools, unsafe-reminder replacement,
+  memory/export/app-lock metadata and urgent-support flags.
+- `AiGrowthModeEngine` now includes Phase 7.5 metadata in structured response
+  handling: safety boundary applied/reason, user intent confidence, allowed
+  discussion scope, better-human pathway, recommended tool, memory/export
+  eligibility, step-up authentication and urgent-support requirement.
+- Phase 7.5 post-generation validation blocks output that shames, diagnoses,
+  assumes bad intent without evidence, encourages dependency on Bettamind or
+  omits a safe next step when a boundary is applied.
+- Compose resources now include English source strings plus matching draft
+  target-locale fallback entries for compassionate safety redirection. These
+  strings require qualified human review before production use.
+- `docs/safety/compassionate-safety-redirection.md` documents the Phase 7.5
+  safety-redirection contract, non-goals, AI integration, daily-tool/reminder
+  integration, privacy/export/app-lock rules, localisation rules and
+  verification coverage.
+- `phaseSevenFiveCheck` was added as the Windows verification task for this
+  slice. It does not begin Phase 8.
 - `AGENTS.md` and `.gitignore` now explicitly prohibit committing AI model
   weights, converted model artifacts, production packages, signing private
   keys, certificates, credentials, database dumps, real logs with personal
@@ -545,6 +586,7 @@ implementation prompt.
 - `shared/src/commonMain/kotlin/org/bettamind/shared/ai/AiGrowthModes.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/ai/LocalAiModelRecommendation.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/safety/`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/safety/CompassionateSafetyRedirection.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/security/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/growth/`
@@ -554,6 +596,7 @@ implementation prompt.
 - `shared/src/commonTest/kotlin/org/bettamind/shared/ai/AiGrowthModesTest.kt`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/ai/LocalAiModelRecommendationTest.kt`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/safety/`
+- `shared/src/commonTest/kotlin/org/bettamind/shared/safety/CompassionateSafetyRedirectionTest.kt`
 - `shared/src/androidMain/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/iosMain/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/iosTest/kotlin/org/bettamind/shared/privacy/`
@@ -573,6 +616,7 @@ implementation prompt.
 - `docs/security/phase-6-4-app-privacy-lock.md`
 - `docs/safety/relational-boundaries.md`
 - `docs/safety/harmful-intent-and-dangerous-capability-policy.md`
+- `docs/safety/compassionate-safety-redirection.md`
 - `docs/product/phase-6-6-deterministic-daily-tools.md`
 - `codemagic.yaml`
 - `.github/workflows/phase-1-checks.yml`
@@ -770,6 +814,23 @@ implementation prompt.
   passed after the local AI model-pack recommendation policy and AGENTS
   artifact-governance updates. On Windows, iOS Native targets remain disabled
   because SQLCipher cinterop requires macOS.
+- `.\gradlew.bat :shared:compileKotlinMetadata --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed after Phase 7.5 Kotlin and Compose resource changes.
+- `.\gradlew.bat :shared:testDebugUnitTest --tests org.bettamind.shared.safety.CompassionateSafetyRedirectionTest --tests org.bettamind.shared.ai.AiGrowthModesTest --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed after the Phase 7.5 safety-redirection and AI metadata tests were
+  added.
+- Locale resource parity check found no missing string keys across the 10
+  Compose `strings.xml` files.
+- `.\gradlew.bat phaseSevenFiveCheck --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed after Phase 7.5 changes.
+- `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  completed on Windows after Phase 7.5 changes, with iOS Native compile/test
+  tasks still skipped because SQLCipher cinterop cannot be processed on
+  `mingw_x64`.
+- `git diff --check` reported no whitespace errors, only normal Windows
+  LF-to-CRLF warnings.
+- `git ls-files | rg "\.(tflite|litertlm|gguf|onnx|bin|safetensors|model|mlmodel|task|pt|pth|ckpt|mlpackage)$"`
+  found no tracked model-weight artifacts.
 
 ## Known blockers and limitations
 
@@ -805,6 +866,13 @@ implementation prompt.
   E2B and Qwen2.5 1.5B Instruct, but exact artifacts, licence acceptance,
   checksums, trust anchors, signing keys, delivery governance and prompt/output
   review remain future owner/release work.
+- Phase 7.5 is a deterministic heuristic foundation. Compassionate
+  safety-redirection categories, fallback keys, reminder replacements and AI
+  metadata should receive owner, safety, legal and qualified localization
+  review before production use.
+- Phase 7.5 shared Kotlin, Compose resources and Gradle task changes cannot be
+  fully validated for iOS on Windows. The pushed commit requires Codemagic
+  `ios-simulator-unsigned`.
 - Phase 4 does not yet persist narrative content. Storage status still reports
   encrypted storage unavailable until a separate approved pass wires the
   platform encrypted store into the growth flow. There is no unencrypted
@@ -836,6 +904,12 @@ implementation prompt.
 - Run Codemagic `ios-simulator-unsigned` after any future pushed commit that
   changes shared Kotlin, Compose resources, `iosApp`, Gradle configuration that
   can affect iOS, or Codemagic iOS workflow files.
+- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 7.5 commit
+  because it changes shared Kotlin, Compose resources and Gradle verification
+  tasks.
+- Review Phase 7.5 compassionate safety-redirection reasons, fallback copy,
+  unsafe-reminder replacements, AI metadata semantics and post-generation
+  validator categories before production localization or store review.
 - Review Phase 6.5 relational-boundary categories and fallback copy before
   production localization or Phase 7 AI response-mode prompts.
 - Review Phase 6.6 daily-tool copy, reminder defaults, quiet-hours defaults
@@ -865,13 +939,15 @@ implementation prompt.
 - Review Phase 7 AI-growth fallback identifiers, prompt boundaries, model
   schema and production model-output governance before enabling a real local
   model broadly.
+- Arrange qualified human review for all Phase 7.5 safety-redirection strings
+  in every production locale before release.
 - Arrange qualified human review for production translations, especially any
   safety, crisis, legal, privacy, consent, relational-boundary or daily-tool
   copy.
 
 ## Next approved task
 
-Build or obtain the final `.litertlm` artifact outside Git only after explicit
-owner approval for model-packaging work, then complete artifact records and
-tests before any release. Wait for explicit owner approval before Phase 8. Do
-not begin Phase 8 automatically.
+Run Codemagic `ios-simulator-unsigned` for the pushed Phase 7.5 commit, then
+review the Phase 7.5 safety-redirection copy and validator categories before
+production localization or store review. Wait for explicit owner approval
+before Phase 8. Do not begin Phase 8 automatically.

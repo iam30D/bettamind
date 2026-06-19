@@ -14,8 +14,9 @@ This plan is a roadmap control document and does not replace the archived
 pre-Phase-6X plan at
 `docs/planning/archive/implementation-plan-before-phase-6x.md`.
 
-Status update: Phase 7 is now implemented as an optional local AI growth-mode
-foundation after owner approval. Phase 8 and later phases are not started.
+Status update: Phase 7 is implemented as an optional local AI growth-mode
+foundation, and Phase 7.5 is implemented as a deterministic compassionate
+safety-redirection layer. Phase 8 and later phases are not started.
 
 ## Completed Preconditions
 
@@ -97,6 +98,36 @@ Required tests:
 Status: completed for the shared Phase 7 foundation. Production model choices,
 model licences, trust anchors, human review and Codemagic validation remain
 owner/release gates.
+
+## Phase 7.5: Compassionate Safety Redirection
+
+Objective: make safety responses firm, useful and dignity-preserving before
+the Phase 8 support bridge is started.
+
+Acceptance criteria:
+
+- Compassionate safety-redirection mode, reason, pathway, response and decision
+  models exist.
+- Better-human pathways connect safety boundaries to grounding, breathing,
+  delay, leaving the situation, contact support, emergency help, reflection,
+  repair, values, difficult conversations, consent and boundaries,
+  self-compassion or no follow-up needed.
+- Safety redirects acknowledge feelings without validating harmful action,
+  refuse harmful assistance, avoid shame and diagnosis, separate person from
+  action, and offer practical deterministic next steps.
+- AI structured metadata exposes safety boundary, reason, user intent
+  confidence, allowed discussion scope, better-human pathway, recommended
+  tool, memory/export eligibility, step-up authentication and urgent support.
+- Generated output is blocked if it shames, diagnoses, assumes bad intent,
+  encourages dependency or skips a safe next step when a boundary is applied.
+- Unsafe reminder creation is refused with neutral safe replacement reminders.
+- Sensitive safety narrative remains memory-ineligible and export-excluded by
+  default; selected sensitive export requires preview and step-up
+  authentication.
+
+Status: completed as a deterministic foundation. It does not add Phase 8
+support bridge behavior, automatic contact, backend sync, cloud AI or model
+downloads.
 
 ## Phase 8: Safety And Support Bridge
 
@@ -274,13 +305,15 @@ Required tests:
 
 Before Phase 8 begins:
 
-- Owner confirms Phase 7 Codemagic `ios-simulator-unsigned` validation passed.
+- Owner confirms Phase 7.5 Codemagic `ios-simulator-unsigned` validation passed
+  for the pushed shared/Gradle/resource changes.
 - Owner confirms Phase 8 will implement the safety and support bridge only, not
   Phase 9 sync, Phase 10 localisation completion, Phase 11 speech or Phase 12
   release readiness.
 - Owner reviews Phase 6.5 relational categories, Phase 6.7 harm-safety
-  categories and Phase 7 AI-growth fallback identifiers before support flows
-  rely on them broadly.
+  categories, Phase 7 AI-growth fallback identifiers and Phase 7.5
+  compassionate safety-redirection copy before support flows rely on them
+  broadly.
 - Owner confirms local emergency/support resource scope and copy-review
   expectations.
 - Codemagic remains the required iOS validation path after shared/iOS-affecting

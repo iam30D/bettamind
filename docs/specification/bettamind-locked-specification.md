@@ -95,6 +95,31 @@ Never create unencrypted fallback storage.
 - Bettamind must not automatically contact anyone or claim that help was
   contacted unless the user completed that action.
 
+## Compassionate safety-redirection requirements
+
+- Safety boundaries must remain firm without making Bettamind cold,
+  condemning or useless.
+- Safety redirects must acknowledge the situation calmly, refuse harmful
+  assistance where needed, avoid shame and diagnosis, avoid assuming guilt for
+  ambiguous intent and separate the person from harmful action.
+- Safety redirects must guide toward reflection, delay, safety,
+  responsibility, repair, compassion and justice, with practical deterministic
+  next steps such as grounding, breathing, leaving the situation, contacting
+  support by user choice or using worksheets.
+- AI response metadata must expose whether a safety boundary was applied, why,
+  the allowed discussion scope, intent confidence, better-human pathway,
+  recommended deterministic tool, memory/export eligibility, step-up
+  authentication requirement and urgent-support requirement.
+- Generated output must be blocked before display, storage, export, sync,
+  notification, voice or avatar use if it shames or condemns the user,
+  diagnoses the user, assumes bad intent without evidence, provides harmful
+  instructions, reciprocates romance or sexual desire, encourages dependency or
+  gives no safe next step when a boundary is applied.
+- Unsafe reminders must be refused with neutral safe replacement reminders.
+- Safety-sensitive narratives remain memory-ineligible and export-excluded by
+  default. Sensitive export or sharing requires explicit selection, preview and
+  local step-up authentication.
+
 ## Deterministic daily-tool requirements
 
 - Daily tools must work offline without account, backend or AI.
@@ -145,10 +170,11 @@ for key exchange, package fingerprint or professional verification.
 6. Phase 5: signed knowledge packs and local retrieval.
 7. Phase 6: on-device AI abstraction and model manager.
 8. Phase 7: AI-assisted response modes.
-9. Phase 8: safety and support bridge.
-10. Phase 9: optional backend and encrypted sync.
-11. Phase 10: global localisation and accessibility completion.
-12. Phase 11: optional offline speech.
-13. Phase 12: performance, red-team and release readiness.
+9. Phase 7.5: compassionate safety redirection and better-human pathways.
+10. Phase 8: safety and support bridge.
+11. Phase 9: optional backend and encrypted sync.
+12. Phase 10: global localisation and accessibility completion.
+13. Phase 11: optional offline speech.
+14. Phase 12: performance, red-team and release readiness.
 
 Stop after the requested phase. Do not begin the next phase automatically.

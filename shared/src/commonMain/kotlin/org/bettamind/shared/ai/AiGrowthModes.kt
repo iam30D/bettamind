@@ -5,7 +5,11 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.bettamind.shared.privacy.SensitiveAction
+import org.bettamind.shared.safety.AllowedDiscussionScope
+import org.bettamind.shared.safety.BetterHumanPathway
 import org.bettamind.shared.safety.CombinedRelationalHarmSafetyDecision
+import org.bettamind.shared.safety.CompassionateGenerationValidation
+import org.bettamind.shared.safety.CompassionateSafetyRedirectionPolicy
 import org.bettamind.shared.safety.HarmRiskLevel
 import org.bettamind.shared.safety.HarmSafetyDecision
 import org.bettamind.shared.safety.HarmSafetyPolicy
@@ -13,6 +17,9 @@ import org.bettamind.shared.safety.RelationalBoundaryAction
 import org.bettamind.shared.safety.RelationalBoundaryAssessment
 import org.bettamind.shared.safety.RelationalBoundaryPolicy
 import org.bettamind.shared.safety.RelationalRiskLevel
+import org.bettamind.shared.safety.SafetyIntentConfidence
+import org.bettamind.shared.safety.SafetyRedirectDecision
+import org.bettamind.shared.safety.SafetyRedirectionReason
 
 enum class AiGrowthMode(val wireName: String) {
     QuickGuidance("quick_guidance"),
@@ -58,6 +65,7 @@ data class AiGrowthPreGenerationClassification(
     val relationalAssessment: RelationalBoundaryAssessment,
     val harmDecision: HarmSafetyDecision,
     val combinedDecision: CombinedRelationalHarmSafetyDecision,
+    val safetyRedirectDecision: SafetyRedirectDecision,
     val includedContextKinds: Set<AiGrowthContextKind>,
     val omittedContextKinds: Set<AiGrowthContextKind>,
     val promptMayReachLocalModel: Boolean,
@@ -80,6 +88,15 @@ data class AiGrowthResponseMetadata(
     val syncAllowedByDefault: Boolean,
     val notificationAllowed: Boolean,
     val requiresAppLockStepUp: Boolean,
+    val safetyBoundaryApplied: Boolean,
+    val safetyBoundaryReason: String?,
+    val userIntentConfidence: SafetyIntentConfidence,
+    val allowedDiscussionScope: AllowedDiscussionScope,
+    val betterHumanPathway: BetterHumanPathway,
+    val recommendedTool: BetterHumanPathway,
+    val memoryEligible: Boolean,
+    val requiresStepUpAuth: Boolean,
+    val requiresUrgentSupport: Boolean,
     val sensitiveAction: SensitiveAction?,
 )
 
@@ -102,8 +119,16 @@ data class AiGrowthStructuredModelResponse(
     val mode: String,
     val text: String,
     val actionKeys: List<String> = emptyList(),
+    val safetyBoundaryApplied: Boolean = false,
+    val safetyBoundaryReason: String? = null,
+    val userIntentConfidence: String = SafetyIntentConfidence.Medium.wireName,
+    val allowedDiscussionScope: String = AllowedDiscussionScope.OpenGrowthReflection.wireName,
+    val betterHumanPathway: String = BetterHumanPathway.NoFollowupNeeded.wireName,
+    val recommendedTool: String = BetterHumanPathway.NoFollowupNeeded.wireName,
     val memoryEligible: Boolean = false,
     val exportEligible: Boolean = false,
+    val requiresStepUpAuth: Boolean = false,
+    val requiresUrgentSupport: Boolean = false,
 )
 
 class AiGrowthModeEngine(
@@ -165,12 +190,17 @@ class AiGrowthModeEngine(
 
         val postRelational = RelationalBoundaryPolicy.validateGeneratedOutput(structured.text)
         val postHarm = HarmSafetyPolicy.validateGeneratedOutput(structured.text)
-        if (!postRelational.metadata.mayDisplay || !postHarm.mayDisplay) {
+        val postCompassionate = CompassionateSafetyRedirectionPolicy.validateGeneratedOutput(
+            output = structured.text,
+            preGenerationDecision = preGeneration.safetyRedirectDecision,
+        )
+        if (!postRelational.metadata.mayDisplay || !postHarm.mayDisplay || !postCompassionate.mayDisplay) {
             return unsafeOutputFallback(
                 mode = request.mode,
                 preGeneration = preGeneration,
                 postRelational = postRelational,
                 postHarm = postHarm,
+                postCompassionate = postCompassionate,
             )
         }
 
@@ -178,8 +208,17 @@ class AiGrowthModeEngine(
             preGeneration = preGeneration,
             postRelational = postRelational,
             postHarm = postHarm,
+            postCompassionate = postCompassionate,
+            modelSafetyBoundaryApplied = structured.safetyBoundaryApplied,
+            modelSafetyBoundaryReason = structured.safetyBoundaryReason,
+            modelIntentConfidence = structured.userIntentConfidence,
+            modelAllowedDiscussionScope = structured.allowedDiscussionScope,
+            modelBetterHumanPathway = structured.betterHumanPathway,
+            modelRecommendedTool = structured.recommendedTool,
             modelMemoryEligible = structured.memoryEligible,
             modelExportEligible = structured.exportEligible,
+            modelRequiresStepUpAuth = structured.requiresStepUpAuth,
+            modelRequiresUrgentSupport = structured.requiresUrgentSupport,
         )
         return AiGrowthModeResponse(
             mode = request.mode,
@@ -204,16 +243,24 @@ class AiGrowthModeEngine(
             harmDecision = harmPlan.decision,
             relationalAssessment = relationalAssessment,
         )
-        val promptMayReachLocalModel = harmPlan.promptMayReachNormalGeneration &&
+        val safetyRedirectDecision = CompassionateSafetyRedirectionPolicy.decide(
+            text = request.userInput,
+            harmDecision = harmPlan.decision,
+            relationalAssessment = relationalAssessment,
+        )
+        val promptMayReachLocalModel = safetyRedirectDecision.normalGenerationAllowed &&
+            harmPlan.promptMayReachNormalGeneration &&
             relationalAssessment.action == RelationalBoundaryAction.Allow
         val requiresAppLockStepUp = includedContextKinds.isNotEmpty() ||
             harmPlan.decision.riskLevel != HarmRiskLevel.None ||
-            relationalAssessment.riskLevel != RelationalRiskLevel.None
+            relationalAssessment.riskLevel != RelationalRiskLevel.None ||
+            safetyRedirectDecision.requiresStepUpAuth
         return AiGrowthPreGenerationClassification(
             mode = request.mode,
             relationalAssessment = relationalAssessment,
             harmDecision = harmPlan.decision,
             combinedDecision = combined,
+            safetyRedirectDecision = safetyRedirectDecision,
             includedContextKinds = includedContextKinds,
             omittedContextKinds = omittedContextKinds,
             promptMayReachLocalModel = promptMayReachLocalModel,
@@ -228,21 +275,19 @@ class AiGrowthModeEngine(
         preGeneration: AiGrowthPreGenerationClassification,
     ): AiGrowthModeResponse {
         if (preGeneration.harmDecision.riskLevel != HarmRiskLevel.None) {
-            val fallback = HarmSafetyPolicy.fallbackFor(preGeneration.harmDecision)
             return deterministicFallback(
                 mode = mode,
                 preGeneration = preGeneration,
                 fallbackReason = AiGrowthFallbackReason.PreGenerationHarmSafety,
-                fallbackLocalizationKey = fallback.localizationKey,
+                fallbackLocalizationKey = preGeneration.safetyRedirectDecision.response.fallbackLocalizationKey,
             )
         }
 
-        val fallback = RelationalBoundaryPolicy.fallbackFor(preGeneration.relationalAssessment)
         return deterministicFallback(
             mode = mode,
             preGeneration = preGeneration,
             fallbackReason = AiGrowthFallbackReason.PreGenerationRelationalBoundary,
-            fallbackLocalizationKey = fallback.localizationKey,
+            fallbackLocalizationKey = preGeneration.safetyRedirectDecision.response.fallbackLocalizationKey,
         )
     }
 
@@ -251,17 +296,20 @@ class AiGrowthModeEngine(
         preGeneration: AiGrowthPreGenerationClassification,
         postRelational: RelationalBoundaryAssessment,
         postHarm: HarmSafetyDecision,
+        postCompassionate: CompassionateGenerationValidation,
     ): AiGrowthModeResponse {
-        val fallbackLocalizationKey = if (!postHarm.mayDisplay) {
-            HarmSafetyPolicy.fallbackFor(postHarm).localizationKey
-        } else {
-            RelationalBoundaryPolicy.fallbackFor(postRelational).localizationKey
-        }
+        val fallbackLocalizationKey = postCompassionate.fallbackLocalizationKey
+            ?: if (!postHarm.mayDisplay) {
+                HarmSafetyPolicy.fallbackFor(postHarm).localizationKey
+            } else {
+                RelationalBoundaryPolicy.fallbackFor(postRelational).localizationKey
+            }
         return deterministicFallback(
             mode = mode,
             preGeneration = preGeneration,
             postRelational = postRelational,
             postHarm = postHarm,
+            postCompassionate = postCompassionate,
             fallbackReason = AiGrowthFallbackReason.UnsafeGeneratedOutput,
             fallbackLocalizationKey = fallbackLocalizationKey,
         )
@@ -276,20 +324,38 @@ class AiGrowthModeEngine(
             RelationalBoundaryPolicy.validateGeneratedOutput(""),
         postHarm: HarmSafetyDecision =
             HarmSafetyPolicy.validateGeneratedOutput(""),
+        postCompassionate: CompassionateGenerationValidation =
+            CompassionateGenerationValidation(
+                mayDisplay = true,
+                reason = SafetyRedirectionReason.None,
+                fallbackLocalizationKey = null,
+                response = null,
+            ),
     ): AiGrowthModeResponse =
         AiGrowthModeResponse(
             mode = mode,
             source = AiGrowthResponseSource.DeterministicFallback,
             modelText = null,
-            actionKeys = mode.deterministicActionKeys(),
+            actionKeys = preGeneration.safetyRedirectDecision.actionKeys
+                .takeIf { preGeneration.safetyRedirectDecision.safetyBoundaryApplied }
+                ?: mode.deterministicActionKeys(),
             fallbackReason = fallbackReason,
             fallbackLocalizationKey = fallbackLocalizationKey,
             metadata = metadataFor(
                 preGeneration = preGeneration,
                 postRelational = postRelational,
                 postHarm = postHarm,
+                postCompassionate = postCompassionate,
+                modelSafetyBoundaryApplied = false,
+                modelSafetyBoundaryReason = null,
+                modelIntentConfidence = preGeneration.safetyRedirectDecision.userIntentConfidence.wireName,
+                modelAllowedDiscussionScope = preGeneration.safetyRedirectDecision.allowedDiscussionScope.wireName,
+                modelBetterHumanPathway = preGeneration.safetyRedirectDecision.recommendedTool.wireName,
+                modelRecommendedTool = preGeneration.safetyRedirectDecision.recommendedTool.wireName,
                 modelMemoryEligible = false,
                 modelExportEligible = false,
+                modelRequiresStepUpAuth = false,
+                modelRequiresUrgentSupport = false,
             ),
         )
 
@@ -297,26 +363,48 @@ class AiGrowthModeEngine(
         preGeneration: AiGrowthPreGenerationClassification,
         postRelational: RelationalBoundaryAssessment,
         postHarm: HarmSafetyDecision,
+        postCompassionate: CompassionateGenerationValidation,
+        modelSafetyBoundaryApplied: Boolean,
+        modelSafetyBoundaryReason: String?,
+        modelIntentConfidence: String,
+        modelAllowedDiscussionScope: String,
+        modelBetterHumanPathway: String,
+        modelRecommendedTool: String,
         modelMemoryEligible: Boolean,
         modelExportEligible: Boolean,
+        modelRequiresStepUpAuth: Boolean,
+        modelRequiresUrgentSupport: Boolean,
     ): AiGrowthResponseMetadata {
         val relationalMemory = RelationalBoundaryPolicy.reviewPermanentMemoryProposal(postRelational)
         val relationalExport = RelationalBoundaryPolicy.reviewExport(postRelational)
         val harmMemory = HarmSafetyPolicy.reviewPermanentMemory(postHarm)
         val harmExport = HarmSafetyPolicy.reviewExport(postHarm)
+        val safetyBoundaryApplied = preGeneration.safetyRedirectDecision.safetyBoundaryApplied ||
+            modelSafetyBoundaryApplied ||
+            !postRelational.metadata.mayDisplay ||
+            !postHarm.mayDisplay ||
+            !postCompassionate.mayDisplay
         val memoryEligible = modelMemoryEligible &&
+            !safetyBoundaryApplied &&
             preGeneration.relationalAssessment.metadata.permanentMemoryEligible &&
             preGeneration.harmDecision.permanentMemoryEligible &&
+            preGeneration.safetyRedirectDecision.memoryEligible &&
             relationalMemory.allowed &&
             harmMemory.allowed
         val exportEligible = modelExportEligible &&
+            !safetyBoundaryApplied &&
             preGeneration.relationalAssessment.metadata.exportAllowedByDefault &&
             preGeneration.harmDecision.exportAllowedByDefault &&
+            preGeneration.safetyRedirectDecision.exportEligible &&
             relationalExport.allowed &&
             harmExport.allowed
         val safetySensitive = preGeneration.requiresAppLockStepUp ||
+            preGeneration.safetyRedirectDecision.requiresStepUpAuth ||
             postRelational.riskLevel != RelationalRiskLevel.None ||
             postHarm.riskLevel != HarmRiskLevel.None ||
+            !postCompassionate.mayDisplay ||
+            modelRequiresStepUpAuth ||
+            modelRequiresUrgentSupport ||
             memoryEligible ||
             exportEligible
         return AiGrowthResponseMetadata(
@@ -332,6 +420,26 @@ class AiGrowthModeEngine(
             syncAllowedByDefault = false,
             notificationAllowed = false,
             requiresAppLockStepUp = safetySensitive,
+            safetyBoundaryApplied = safetyBoundaryApplied,
+            safetyBoundaryReason = preGeneration.safetyRedirectDecision.safetyBoundaryReason
+                ?: modelSafetyBoundaryReason
+                ?: postCompassionate.reason.wireName.takeIf { !postCompassionate.mayDisplay },
+            userIntentConfidence = SafetyIntentConfidence.entries.firstOrNull {
+                it.wireName == modelIntentConfidence
+            } ?: preGeneration.safetyRedirectDecision.userIntentConfidence,
+            allowedDiscussionScope = AllowedDiscussionScope.entries.firstOrNull {
+                it.wireName == modelAllowedDiscussionScope
+            } ?: preGeneration.safetyRedirectDecision.allowedDiscussionScope,
+            betterHumanPathway = BetterHumanPathway.entries.firstOrNull {
+                it.wireName == modelBetterHumanPathway
+            } ?: preGeneration.safetyRedirectDecision.recommendedTool,
+            recommendedTool = BetterHumanPathway.entries.firstOrNull {
+                it.wireName == modelRecommendedTool
+            } ?: preGeneration.safetyRedirectDecision.recommendedTool,
+            memoryEligible = memoryEligible,
+            requiresStepUpAuth = safetySensitive,
+            requiresUrgentSupport = preGeneration.safetyRedirectDecision.requiresUrgentSupport ||
+                modelRequiresUrgentSupport,
             sensitiveAction = SensitiveAction.AccessHighlySensitiveRecord.takeIf { safetySensitive },
         )
     }
@@ -345,7 +453,10 @@ class AiGrowthModeEngine(
             add("mode=${request.mode.wireName}")
             add("tone=respectful_nonjudgmental_autonomy_respecting")
             add("boundaries=no_cloud_ai_no_romance_no_diagnosis_no_emergency_claims_no_actionable_harm")
-            add("response_shape=json_object_with_schemaVersion_mode_text_actionKeys_memoryEligible_exportEligible")
+            add("response_shape=json_object_with_schemaVersion_mode_text_actionKeys_safety_metadata_memoryEligible_exportEligible")
+            add("safetyBoundaryApplied=false")
+            add("allowedDiscussionScope=${preGeneration.safetyRedirectDecision.allowedDiscussionScope.wireName}")
+            add("betterHumanPathway=${preGeneration.safetyRedirectDecision.recommendedTool.wireName}")
             preGeneration.includedContextKinds
                 .sortedBy { it.wireName }
                 .forEach { add("consented_context=${it.wireName}") }

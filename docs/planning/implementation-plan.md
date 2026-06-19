@@ -277,6 +277,46 @@ standard/high devices after testing, Qwen2.5 1.5B Instruct as the smaller
 fallback, and explicit user approval plus owner licence acceptance as required
 before any signed model pack is distributed or installed.
 
+## Phase 7.5: Compassionate safety redirection and better-human pathways
+
+Goal: improve safety-response usefulness and dignity without weakening Phase
+6.5 relational boundaries, Phase 6.7 harmful-intent safeguards or Phase 7 AI
+response-mode gates.
+
+Acceptance criteria:
+
+- Safety-redirection domain models exist for mode, reason, pathway, response
+  and decision metadata.
+- Better-human pathways cover grounding, breathing, delay action, leaving the
+  situation, contact support, emergency help, conflict reflection, repair
+  planning, values to action, difficult conversation, consent and boundaries,
+  self compassion and no follow-up needed.
+- Deterministic safety responses use acknowledgement, boundary,
+  human-growth redirect, practical next step and privacy metadata.
+- AI pre-generation classification exposes safety boundary, intent confidence,
+  allowed discussion scope, better-human pathway and recommended
+  deterministic tool.
+- AI post-generation validation rejects shaming, diagnosis, bad-intent
+  assumptions, dependency-building output, unsafe instructions and missing
+  safe next steps when a boundary is applied.
+- Unsafe reminders are refused with neutral safe replacement reminders.
+- Memory/export defaults keep safety-sensitive narrative ineligible and
+  require preview plus local step-up authentication before selected sensitive
+  export.
+- English source strings exist and all target locale entries are present as
+  draft fallbacks pending qualified human review.
+
+Status: implemented as a deterministic shared foundation. The new
+`CompassionateSafetyRedirectionPolicy` composes existing harm and relational
+assessments into dignity-preserving fallback keys, better-human pathways,
+recommended deterministic tools, privacy/export/app-lock metadata and unsafe
+reminder replacements. `AiGrowthModeEngine` now includes the Phase 7.5
+metadata in structured responses and blocks generated output that shames,
+diagnoses, assumes guilt, encourages dependency or omits a safe next step after
+a boundary. No Phase 8 support bridge, automatic third-party contact, backend,
+cloud AI, model download, speech, sync or persistent safety narrative storage
+was added.
+
 ## Phase 8: Safety and support bridge
 
 Goal: implement layered safety and consent-based encrypted third-party support.

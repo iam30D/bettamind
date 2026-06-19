@@ -227,6 +227,9 @@ class HarmSafetyEngine(
 
     fun unavailableAiFallback(input: String): HarmSafetyResponse =
         deterministicFallback(input)
+
+    fun compassionateRedirection(input: String): SafetyRedirectDecision =
+        CompassionateSafetyRedirectionPolicy.decide(input)
 }
 
 object HarmSafetyPolicy {
