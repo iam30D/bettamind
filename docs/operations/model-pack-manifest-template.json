@@ -1,0 +1,15 @@
+{
+  "modelId": "google/gemma-4-E2B-it",
+  "version": 1,
+  "displayName": "Gemma 4 E2B local model",
+  "runtimeId": "litert-lm",
+  "artifactFileName": "gemma-4-e2b-it.litertlm",
+  "artifactSizeBytes": 0,
+  "artifactChecksumSha256": "<sha256-of-final-litertlm-artifact>",
+  "capabilities": [
+    "Generation"
+  ],
+  "signingKeyId": "<owner-approved-ed25519-model-pack-key-id>",
+  "signatureAlgorithm": "Ed25519",
+  "signature": "<ed25519-signature-over-signed-manifest-bytes>"
+}

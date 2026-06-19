@@ -1,6 +1,6 @@
 # Risk Register
 
-Date updated: 2026-06-18
+Date updated: 2026-06-19
 
 | Risk | Impact | Mitigation | Status |
 | --- | --- | --- | --- |
@@ -18,6 +18,9 @@ Date updated: 2026-06-18
 | AI added before deterministic flows | Product and safety risk | Phase 6 started only after deterministic Phase 4 and signed-pack Phase 5 validation; Phase 6 adds optional runtime/model interfaces only | Mitigated |
 | Model weights accidentally committed or downloaded automatically | Repository bloat, licence breach or privacy/safety risk | Phase 6 adds no model files and no downloader; model installation accepts externally supplied signed chunks only | Mitigated for Phase 6 |
 | Production model-pack trust roots are not supplied | Untrusted model packs could be accepted in release builds | Phase 6 enforces signed manifests, SHA-256 checksums, rollback/revocation policy and a verifier boundary; release work must add owner-approved Ed25519 trust anchors | Open |
+| Recommended model licences are not accepted or recorded by the app owner before distribution | Copyright, licence, store-review or redistribution failure | `docs/operations/local-ai-model-pack-release.md` adds an owner licence gate before packaging; user install consent does not replace publisher licence compliance | Open |
+| Optional local AI recommendation feels mandatory or auto-installs | Violates offline, no-AI-required and consent rules | `BettamindLocalAiModelPolicy` keeps auto-install disabled, requires explicit user approval before install and preserves deterministic fallback when declined or removed | Mitigated for recommendation policy |
+| Recommended model pack exceeds practical device storage, memory, battery or thermal limits | Poor user experience and possible store-quality issues | Recommendation policy uses Gemma 4 E2B only for standard/high devices with storage headroom and Qwen2.5 1.5B as the smaller fallback; production release still requires physical device tests | Open |
 | Android SDK missing on Windows | Android build could not run locally | Installed command-line tools, platform-tools, Android 36 platform and build-tools 36.0.0 | Mitigated |
 | No app privacy lock exists yet | Private local content could remain accessible after device handoff or unlocked app session | Phase 6.4 adds shared lock policy, timeout handling and platform authentication adapters | Mitigated for foundation |
 | App lock implemented as visual-only gate | SQLCipher key could remain available despite a displayed lock screen | Phase 6.4 gates `StorageKeyManager.loadOrCreateDatabaseKey()` behind local authentication | Mitigated |

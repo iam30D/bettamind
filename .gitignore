@@ -17,6 +17,7 @@
 .idea/
 .vscode/settings.json
 .gradle/
+.kotlin/
 local.properties
 .DS_Store
 Thumbs.db
@@ -31,9 +32,15 @@ Pods/
 models/
 model-packs/
 *.tflite
+*.task
 *.litertlm
 *.gguf
 *.onnx
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
 *.mlmodel
 *.mlpackage
 

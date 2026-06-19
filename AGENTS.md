@@ -87,6 +87,30 @@ long raw logs in it.
 - Stop and report security, privacy, encryption, localisation, iOS or model feasibility blockers.
 - Do not automatically begin the next phase.
 
+## AI model, signing and secret artifacts
+
+- Never commit AI model weights, converted model artifacts or downloaded model
+  packages. This includes `.litertlm`, `.tflite`, `.task`, `.gguf`, `.onnx`,
+  `.safetensors`, `.bin`, `.pt`, `.pth`, `.ckpt`, `.mlmodel`, `.mlpackage`,
+  tokenizer/model binary bundles and any large provider-supplied weight files.
+- Never commit production model-pack artifacts, production knowledge packs,
+  release packages, app-store upload archives or generated package outputs
+  unless a human owner explicitly approves the exact file path and purpose.
+- Never commit signing private keys, keystores, provisioning profiles,
+  certificates, Apple signing material, Android upload keys, Ed25519 private
+  keys, API keys, service-account files, `.env` files, credential exports,
+  database dumps, real logs with personal content or real user data.
+- Public metadata may be committed only when it contains no secrets or weights:
+  model-pack manifest templates, checksums, public model-card URLs, licence
+  notices, public signing key identifiers and documented trust-anchor plans.
+- Production model packs must be obtained outside Git, approved by the owner
+  for licence compliance, signed with owner-controlled Ed25519 keys,
+  SHA-256-verified, versioned, removable and installed only after explicit user
+  approval. User install consent does not replace publisher licence compliance.
+- If a model, signing, production or secret artifact appears in `git status`,
+  stop and report it before staging or committing. Do not add blanket
+  `.gitignore` exceptions that hide required review of generated artifacts.
+
 ## Windows and iOS workflow
 
 - Windows is the primary development environment.

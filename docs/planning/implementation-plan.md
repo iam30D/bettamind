@@ -271,7 +271,11 @@ eligibility decisions. Responses use a structured JSON schema with safety
 metadata, memory/export eligibility and fallback identifiers. Permanent memory
 is proposal-only, disabled for automatic writes and requires separate approval.
 No cloud AI, model downloads, model weights, backend dependency, speech,
-support bridge or sync implementation was added.
+support bridge or sync implementation was added. Model-pack recommendation
+policy now records Gemma 4 E2B as the preferred optional LiteRT-LM pack for
+standard/high devices after testing, Qwen2.5 1.5B Instruct as the smaller
+fallback, and explicit user approval plus owner licence acceptance as required
+before any signed model pack is distributed or installed.
 
 ## Phase 8: Safety and support bridge
 

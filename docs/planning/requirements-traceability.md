@@ -1,6 +1,6 @@
 # Requirements Traceability
 
-Date updated: 2026-06-18
+Date updated: 2026-06-19
 
 | Requirement | Phase | Current handling |
 | --- | --- | --- |
@@ -22,6 +22,7 @@ Date updated: 2026-06-18
 | Local knowledge retrieval | 5 | Shared in-memory retriever searches installed packs offline without backend or AI. |
 | On-device AI runtime abstraction | 6 | `LocalAiRuntime`, unavailable runtime and LiteRT bridge boundary exist. |
 | On-device AI model manager | 6 | `ModelPackManager` verifies signed, checksum-checked, resumable and removable model packs without committing weights. |
+| Optional model-pack recommendation policy | 7 | `BettamindLocalAiModelPolicy` recommends Gemma 4 E2B or Qwen2.5 1.5B based on device/storage tier while forbidding auto-install, requiring user approval and preserving deterministic fallback. |
 | App privacy lock | 6.4 | Shared lock policy, timeout settings, Settings copy and key-release gate implemented. |
 | Authentication-bound storage key release | 6.4 | `VaultKeyReleaseService` calls the platform storage key manager only after successful local authentication; Android and iOS platform authentication adapters exist. |
 | Bettamind PIN/passphrase fallback | 6.4 | Shared policy, verifier and rate limiter implemented behind a KDF interface; production Argon2id provider remains a release-hardening dependency. |

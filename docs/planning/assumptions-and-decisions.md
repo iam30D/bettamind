@@ -47,6 +47,12 @@
 - Keep Phase 6 model-pack installation source-agnostic. The shared model
   manager accepts externally supplied chunks, verifies signed manifests and
   checksums, and does not download models automatically.
+- Adopt an optional local model-pack recommendation policy, not a bundled model
+  shipment: Bettamind runs with no installed AI model, Gemma 4 E2B is the
+  preferred LiteRT-LM recommendation for standard/high devices after device
+  testing, Qwen2.5 1.5B Instruct is the smaller fallback recommendation, and
+  every install requires explicit user approval plus signed/checksum-verified
+  removable model packs.
 - Keep Phase 6.6 daily tools deterministic and shared. Personal daily records
   are serialized through `EncryptedDailyRecordRepository` and written only to
   the shared encrypted record-store contract. Local reminders use neutral copy,
@@ -57,6 +63,6 @@
 
 - Final Android application ID.
 - Final iOS bundle identifier.
-- Production local AI runtime build, model choices, model licences, trust
-  anchors and delivery channels.
+- Production local AI runtime build, exact model artifacts, model licences,
+  trust anchors, signing keys, device-test results and delivery channels.
 - Signed release and TestFlight configuration.

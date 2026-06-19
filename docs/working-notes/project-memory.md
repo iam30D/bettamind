@@ -2,13 +2,14 @@
 
 ## Current phase
 
-Phase 7 AI-assisted growth modes is implemented locally. Phases 0 through 6,
-Phase 6.4, Phase 6.5, Phase 6.6 and Phase 6.7 are treated as implemented and
-stable, with owner-confirmed Codemagic `ios-simulator-unsigned` validation
-through the Phase 6.7 commit. Phase 7 changes shared Kotlin, Compose
-resources, Gradle configuration and GitHub Actions, so the pushed Phase 7
-commit requires Codemagic `ios-simulator-unsigned` validation. Do not begin
-Phase 8 or later work until the owner confirms Codemagic passed and explicitly
+Phase 7 AI-assisted growth modes and local model-pack recommendation policy
+are implemented locally. Phases 0 through 6, Phase 6.4, Phase 6.5, Phase 6.6
+and Phase 6.7 are treated as implemented and stable, with owner-confirmed
+Codemagic `ios-simulator-unsigned` validation through commit `621b3c2`. The
+local model recommendation policy changes are not pushed yet and touch shared
+AI code, so the next pushed commit requires Codemagic
+`ios-simulator-unsigned` validation. Do not begin Phase 8 or later work until
+the owner confirms Codemagic passed for the next pushed commit and explicitly
 approves the next implementation prompt.
 
 ## Locked decisions
@@ -102,6 +103,14 @@ approves the next implementation prompt.
   before display, memory/export/sync/notification eligibility, voice or avatar
   use. Permanent memory remains proposal-only, automatic writes are disabled
   and separate approval is required.
+- Local AI model packs remain optional recommendations only. Bettamind installs
+  and runs with no model; Gemma 4 E2B is the preferred LiteRT-LM recommendation
+  for standard/high devices after testing, Qwen2.5 1.5B Instruct is the smaller
+  fallback recommendation, and every model install requires explicit user
+  approval plus signed/checksum-verified removable packs.
+- Owner licence acceptance and release records are required before packaging or
+  distributing any production model artifact. User install consent does not
+  replace publisher licence compliance.
 
 ## Completed work
 
@@ -464,10 +473,28 @@ approves the next implementation prompt.
 - `phaseSevenCheck` was added and GitHub Actions mobile checks now run it.
 - Implementation plan, continuation plan, requirements traceability and risk
   register were updated for Phase 7.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed for pushed commit
+  `621b3c2`.
+- `BettamindLocalAiModelPolicy` now records the optional local AI model-pack
+  recommendation rules: Gemma 4 E2B for standard/high devices with storage
+  headroom, Qwen2.5 1.5B Instruct as the smaller fallback, no auto-install,
+  explicit user approval before install and deterministic fallback when a model
+  is unavailable, declined or removed.
+- `docs/operations/local-ai-model-pack-release.md` and
+  `docs/operations/model-pack-manifest-template.json` document the owner
+  licence gate, required release records, signed manifest shape and user
+  install experience for future production model packs.
+- `AGENTS.md` and `.gitignore` now explicitly prohibit committing AI model
+  weights, converted model artifacts, production packages, signing private
+  keys, certificates, credentials, database dumps, real logs with personal
+  content and real user data. `.gitignore` includes `.kotlin/` and common model
+  artifact extensions such as `.litertlm`, `.task`, `.gguf`, `.onnx`,
+  `.safetensors`, `.bin`, `.pt`, `.pth`, `.ckpt`, `.mlmodel` and `.mlpackage`.
 
 ## Important files
 
 - `AGENTS.md`
+- `.gitignore`
 - `docs/specification/bettamind-locked-specification.md`
 - `docs/planning/implementation-plan.md`
 - `docs/planning/archive/implementation-plan-before-phase-6x.md`
@@ -492,6 +519,7 @@ approves the next implementation prompt.
 - `shared/src/commonMain/kotlin/org/bettamind/shared/knowledge/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/ai/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/ai/AiGrowthModes.kt`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/ai/LocalAiModelRecommendation.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/safety/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/security/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/privacy/`
@@ -500,6 +528,7 @@ approves the next implementation prompt.
 - `shared/src/commonTest/kotlin/org/bettamind/shared/knowledge/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/ai/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/ai/AiGrowthModesTest.kt`
+- `shared/src/commonTest/kotlin/org/bettamind/shared/ai/LocalAiModelRecommendationTest.kt`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/safety/`
 - `shared/src/androidMain/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/iosMain/kotlin/org/bettamind/shared/privacy/`
@@ -511,6 +540,8 @@ approves the next implementation prompt.
 - `docs/security/phase-3-encrypted-storage-spike.md`
 - `docs/security/phase-5-signed-knowledge-packs.md`
 - `docs/security/phase-6-ai-model-manager.md`
+- `docs/operations/local-ai-model-pack-release.md`
+- `docs/operations/model-pack-manifest-template.json`
 - `docs/security/phase-6-4-app-privacy-lock.md`
 - `docs/safety/relational-boundaries.md`
 - `docs/safety/harmful-intent-and-dangerous-capability-policy.md`
@@ -702,14 +733,23 @@ approves the next implementation prompt.
   found no tracked model-weight artifacts.
 - `rg -l "ai_growth_modes_title" shared\src\commonMain\composeResources | Measure-Object`
   reported 10 resource files with the Phase 7 string key.
+- `.\gradlew.bat :shared:compileKotlinMetadata --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed after the local AI model-pack recommendation policy and artifact
+  governance updates.
+- `.\gradlew.bat :shared:testDebugUnitTest --tests org.bettamind.shared.ai.LocalAiModelRecommendationTest --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed after the recommendation policy tests were added.
+- `.\gradlew.bat phaseSevenCheck --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed after the local AI model-pack recommendation policy and AGENTS
+  artifact-governance updates. On Windows, iOS Native targets remain disabled
+  because SQLCipher cinterop requires macOS.
 
 ## Known blockers and limitations
 
 - iOS cannot be fully built locally on Windows. Every shared/iOS change still
   requires Codemagic `ios-simulator-unsigned`.
-- Phase 7 changed shared Kotlin, Compose resources, Gradle configuration and
-  GitHub Actions, so the pushed commit requires Codemagic
-  `ios-simulator-unsigned`.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed for Phase 7 commit
+  `621b3c2`. The unpushed local model recommendation policy changes still
+  require Codemagic validation after they are pushed.
 - Windows cannot validate the iOS `LocalAuthentication` adapter or SwiftUI
   inactive-scene shield.
 - The local Windows
@@ -734,9 +774,10 @@ approves the next implementation prompt.
   They need owner, safety, legal and localization review before production use
   and before Phase 7 response-mode prompts rely on them.
 - Phase 7 is implemented against the existing `LocalAiRuntime` boundary and
-  unavailable-runtime/no-model path. Production model choices, model licences,
-  model trust anchors, delivery governance and prompt/output review remain
-  future owner/release work.
+  unavailable-runtime/no-model path. The recommendation policy names Gemma 4
+  E2B and Qwen2.5 1.5B Instruct, but exact artifacts, licence acceptance,
+  checksums, trust anchors, signing keys, delivery governance and prompt/output
+  review remain future owner/release work.
 - Phase 4 does not yet persist narrative content. Storage status still reports
   encrypted storage unavailable until a separate approved pass wires the
   platform encrypted store into the growth flow. There is no unencrypted
@@ -765,7 +806,8 @@ approves the next implementation prompt.
 - Run Codemagic `ios-simulator-unsigned` for pushed commits that change shared
   Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
   iOS, or Codemagic iOS workflow files.
-- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 7 commit.
+- Run Codemagic `ios-simulator-unsigned` for the next pushed commit containing
+  the local model recommendation policy changes.
 - Review Phase 6.5 relational-boundary categories and fallback copy before
   production localization or Phase 7 AI response-mode prompts.
 - Review Phase 6.6 daily-tool copy, reminder defaults, quiet-hours defaults
@@ -783,6 +825,9 @@ approves the next implementation prompt.
   governance before accepting real public packs.
 - Provide owner-approved production model choices, licences, trust anchors and
   delivery governance before accepting real model packs.
+- Accept or confirm the exact Gemma 4 E2B and/or Qwen2.5 1.5B Instruct model
+  licences under the publishing entity before any model artifact is packaged,
+  signed, uploaded or offered to users.
 - Review Phase 7 AI-growth fallback identifiers, prompt boundaries, model
   schema and production model-output governance before enabling a real local
   model broadly.
@@ -792,6 +837,7 @@ approves the next implementation prompt.
 
 ## Next approved task
 
-Commit and push Phase 7, then have the owner run Codemagic
-`ios-simulator-unsigned`. If Codemagic passes, wait for explicit owner approval
-before Phase 8. Do not begin Phase 8 automatically.
+Commit and push the local AI model-pack recommendation policy, then have the
+owner run Codemagic `ios-simulator-unsigned` for that pushed commit. If
+Codemagic passes, wait for explicit owner approval before Phase 8. Do not begin
+Phase 8 automatically.
