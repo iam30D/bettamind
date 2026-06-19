@@ -15,8 +15,9 @@ pre-Phase-6X plan at
 `docs/planning/archive/implementation-plan-before-phase-6x.md`.
 
 Status update: Phase 7 is implemented as an optional local AI growth-mode
-foundation, and Phase 7.5 is implemented as a deterministic compassionate
-safety-redirection layer. Phase 8 and later phases are not started.
+foundation, Phase 7.5 is implemented as a deterministic compassionate
+safety-redirection layer, and Phase 8 is implemented as a deterministic safety
+and support bridge foundation. Phase 9 and later phases are not started.
 
 ## Completed Preconditions
 
@@ -165,6 +166,13 @@ Required tests:
 - No-auto-contact tests.
 - Support summary minimum-detail and step-up-authentication tests.
 - Localisation review-flag tests.
+
+Status: implemented as a shared deterministic foundation in
+`shared/src/commonMain/kotlin/org/bettamind/shared/support/SafetySupportBridge.kt`.
+It adds voluntary support actions, minimum-detail sharing previews, local
+resource metadata and step-up sharing metadata without automatic contact,
+backend sync, cloud AI, model downloads, speech or persistent crisis narrative
+storage.
 
 ## Phase 9: Optional Backend, Encrypted Export And Sync
 

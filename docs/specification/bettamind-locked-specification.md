@@ -160,6 +160,14 @@ Sharing must be user-controlled, consent-based and minimum-data. MVP transfer
 methods are encrypted export files, operating-system share sheets and QR codes
 for key exchange, package fingerprint or professional verification.
 
+The safety support bridge must reuse deterministic harm-safety,
+relational-boundary and daily-tool outcomes. Support actions are voluntary
+only. Bettamind must never automatically contact a third party and must not
+claim that help was contacted unless the user completed that action.
+Sensitive support summaries require explicit selection, preview and local
+step-up authentication, and must exclude raw crisis or harmful narrative by
+default.
+
 ## Phase order
 
 1. Phase 0: audit and locked plan.

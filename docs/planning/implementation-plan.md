@@ -339,6 +339,16 @@ Acceptance criteria:
 - Crisis or harmful narrative is not stored by default.
 - Safety-critical translations require qualified human review.
 
+Status: implemented as a shared deterministic foundation. The new
+`SafetySupportBridgePolicy` composes harm-safety, relational-boundary,
+compassionate-redirection and daily-tool decisions into support risk levels,
+voluntary support actions, local resource metadata, minimum-detail summaries
+and explicit preview plus app-lock step-up metadata before sensitive sharing.
+Bettamind still does not automatically contact anyone, does not claim help was
+contacted, does not store crisis or harmful narrative by default and does not
+add backend sync, cloud AI, model downloads, speech or production-approved
+translations.
+
 ## Phase 9: Optional backend and encrypted sync
 
 Goal: add ciphertext-only sync and signed pack delivery.

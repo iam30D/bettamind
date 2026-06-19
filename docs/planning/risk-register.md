@@ -1,6 +1,6 @@
 # Risk Register
 
-Date updated: 2026-06-19
+Date updated: 2026-06-20
 
 | Risk | Impact | Mitigation | Status |
 | --- | --- | --- | --- |
@@ -47,7 +47,8 @@ Date updated: 2026-06-19
 | Phase 7.5 overblocks ordinary anger, intrusive thoughts or safe questions | Bettamind could become unhelpful for legitimate reflection and prevention | Tests cover anger without intent, intrusive thoughts without intent, ambiguous fictional or academic questions, safe prevention, emergency-response questions, ordinary human relationships and appreciation | Partially mitigated |
 | Phase 7.5 underblocks unsafe model output that avoids existing harm keywords | Shaming, diagnosis, dependency-building or no-next-step output could reach display | `CompassionateSafetyRedirectionPolicy.validateGeneratedOutput` blocks shame, diagnosis, bad-intent assumptions, dependency encouragement and missing safe next steps when a boundary is applied | Partially mitigated |
 | Phase 7.5 safety-redirection copy ships without qualified review | Sensitive self-harm, violence, relational and consent copy could be culturally or legally inadequate | English source and draft locale keys are present; production release still requires qualified human review before using safety-critical translations | Open |
-| Phase 8 support bridge overclaims emergency or third-party action | Users may believe help was contacted or support was escalated automatically | Phase 8 must keep support voluntary, forbid automatic contact and test minimum-necessary summaries plus step-up sharing | Open for Phase 8 |
+| Phase 8 support bridge overclaims emergency or third-party action | Users may believe help was contacted or support was escalated automatically | `SafetySupportBridgePolicy` keeps support actions voluntary, forbids automatic contact, requires minimum-detail previews plus step-up metadata for sensitive sharing and tests that no help-contact claim is made | Mitigated for Phase 8 foundation |
+| Phase 8 support bridge copy or local resource labels ship without qualified review | Safety, crisis or regional support copy could be culturally or legally inadequate | English source and draft fallback resources are present; production release still needs qualified human review and owner-approved local resource scope before store release | Open |
 | Phase 9 export or sync leaks sensitive daily, relational or harmful-intent content | Privacy, safety and backend trust failure | Phase 9 must keep sync disabled by default, ciphertext-only and guarded by app-lock reauthentication with explicit exclusion tests | Open for Phase 9 |
 | Phase 11 speech expands privacy, attachment or harm-safety risk | Raw audio, seductive voice persona or unvalidated spoken output could undermine product rules | Phase 11 must keep microphone optional, avoid raw audio retention by default and route spoken input/output through text-equivalent safety policies | Open for Phase 11 |
 | Phase 12 release hardening under-scopes Phase 6X surfaces | App-lock, relational, harm, reminder, export or sync issues could survive release review | Phase 12 must include privacy-lock bypass, encryption, relational, harm, reminder, notification, timer, calendar, export, sync and jailbreak red-team gates | Open for Phase 12 |

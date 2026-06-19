@@ -156,7 +156,7 @@ private fun AppHeader() {
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                text = stringResource(Res.string.phase_seven_five_status),
+                text = stringResource(Res.string.phase_eight_status),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -500,9 +500,31 @@ private fun GrowthSummaryPanel(growthState: GrowthSessionState) {
 @Composable
 private fun SupportPanel() {
     StatusBlock(
-        title = Res.string.growth_support_title,
-        body = Res.string.growth_support_description,
-    )
+        title = Res.string.support_bridge_title,
+        body = Res.string.support_bridge_description,
+    ) {
+        StatusLine(
+            title = Res.string.support_bridge_no_auto_contact_title,
+            body = Res.string.support_bridge_no_auto_contact_body,
+        )
+        StatusLine(
+            title = Res.string.support_bridge_preview_title,
+            body = Res.string.support_bridge_preview_body,
+        )
+        StatusLine(
+            title = Res.string.support_bridge_daily_tools_title,
+            body = Res.string.support_bridge_daily_tools_body,
+        )
+        StatusLine(
+            title = Res.string.support_bridge_resources_title,
+            body = Res.string.support_bridge_resources_body,
+        )
+        Text(
+            text = stringResource(Res.string.support_bridge_review_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
 }
 
 @Composable

@@ -57,6 +57,11 @@ Daily-use tools such as check-ins, breathing, grounding, reminders, private
 calendar entries and worksheets must remain useful without AI. Personal daily
 records use encrypted local storage only, and reminder previews stay neutral.
 
+The safety and support bridge is deterministic, local and user-controlled. It
+may suggest daily tools, local resource types or a minimum-detail support
+summary, but Bettamind does not automatically contact anyone or claim help was
+contacted.
+
 ## Global audience
 
 English is the source locale. The architecture must support BCP 47 locale tags,
