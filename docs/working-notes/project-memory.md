@@ -3,13 +3,13 @@
 ## Current phase
 
 Phase 7 AI-assisted growth modes and local model-pack recommendation policy
-are implemented locally. Phases 0 through 6, Phase 6.4, Phase 6.5, Phase 6.6
-and Phase 6.7 are treated as implemented and stable, with owner-confirmed
+are implemented and pushed. Phases 0 through 6, Phase 6.4, Phase 6.5, Phase
+6.6 and Phase 6.7 are treated as implemented and stable, with owner-confirmed
 Codemagic `ios-simulator-unsigned` validation through commit `621b3c2`. The
-local model recommendation policy changes are not pushed yet and touch shared
-AI code, so the next pushed commit requires Codemagic
+local model recommendation policy changes touched shared AI code, so the
+latest pushed commit containing those changes requires Codemagic
 `ios-simulator-unsigned` validation. Do not begin Phase 8 or later work until
-the owner confirms Codemagic passed for the next pushed commit and explicitly
+the owner confirms Codemagic passed for the latest pushed commit and explicitly
 approves the next implementation prompt.
 
 ## Locked decisions
@@ -480,6 +480,8 @@ approves the next implementation prompt.
   headroom, Qwen2.5 1.5B Instruct as the smaller fallback, no auto-install,
   explicit user approval before install and deterministic fallback when a model
   is unavailable, declined or removed.
+- Local AI model-pack recommendation policy commit `540f733` was pushed to
+  `main` after owner-confirmed Codemagic pass for `621b3c2`.
 - `docs/operations/local-ai-model-pack-release.md` and
   `docs/operations/model-pack-manifest-template.json` document the owner
   licence gate, required release records, signed manifest shape and user
@@ -748,8 +750,8 @@ approves the next implementation prompt.
 - iOS cannot be fully built locally on Windows. Every shared/iOS change still
   requires Codemagic `ios-simulator-unsigned`.
 - Owner confirmed Codemagic `ios-simulator-unsigned` passed for Phase 7 commit
-  `621b3c2`. The unpushed local model recommendation policy changes still
-  require Codemagic validation after they are pushed.
+  `621b3c2`. The later pushed local model recommendation policy changes still
+  require Codemagic validation.
 - Windows cannot validate the iOS `LocalAuthentication` adapter or SwiftUI
   inactive-scene shield.
 - The local Windows
@@ -837,7 +839,7 @@ approves the next implementation prompt.
 
 ## Next approved task
 
-Commit and push the local AI model-pack recommendation policy, then have the
-owner run Codemagic `ios-simulator-unsigned` for that pushed commit. If
-Codemagic passes, wait for explicit owner approval before Phase 8. Do not begin
-Phase 8 automatically.
+Have the owner run Codemagic `ios-simulator-unsigned` for the latest pushed
+commit containing the local AI model-pack recommendation policy. If Codemagic
+passes, wait for explicit owner approval before Phase 8. Do not begin Phase 8
+automatically.
