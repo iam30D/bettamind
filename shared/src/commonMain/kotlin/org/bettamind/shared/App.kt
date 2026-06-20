@@ -156,7 +156,7 @@ private fun AppHeader() {
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                text = stringResource(Res.string.phase_eight_status),
+                text = stringResource(Res.string.phase_nine_status),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -739,6 +739,7 @@ private fun SettingsPanel(
         )
         RelationalBoundarySettingsPanel()
         HarmSafetySettingsPanel()
+        EncryptedExportSyncSettingsPanel()
     }
 }
 
@@ -826,6 +827,30 @@ private fun HarmSafetySettingsPanel() {
         )
         Text(
             text = stringResource(Res.string.harm_safety_privacy_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun EncryptedExportSyncSettingsPanel() {
+    StatusBlock(
+        title = Res.string.encrypted_sync_title,
+        body = Res.string.encrypted_sync_description,
+    ) {
+        Text(
+            text = stringResource(Res.string.encrypted_sync_default_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = stringResource(Res.string.encrypted_sync_privacy_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = stringResource(Res.string.encrypted_sync_calendar_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

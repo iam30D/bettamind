@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from app.api.health import router as health_router
+from app.api.sync import router as sync_router
 from app.core.settings import Settings
 
 
@@ -13,6 +14,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         redoc_url="/redoc" if app_settings.enable_docs else None,
     )
     app.include_router(health_router)
+    app.include_router(sync_router)
     return app
 
 

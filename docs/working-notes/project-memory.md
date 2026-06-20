@@ -2,14 +2,13 @@
 
 ## Current phase
 
-Phase 8 safety and support bridge is implemented and locally verified on
-Windows. Phases 0 through 7.5 and the local model-pack recommendation/licence
-records are treated as implemented, with owner-confirmed Codemagic
-`ios-simulator-unsigned` validation through Phase 7.5 commit `cf4b240`. The
-current Phase 8 changes will require owner-run Codemagic
-`ios-simulator-unsigned` after they are pushed because shared Kotlin, Compose
-resources and Gradle configuration changed. Do not begin Phase 9 or later work
-until the owner explicitly approves the next implementation prompt.
+Phase 9 optional encrypted export and sync foundation is implemented and
+locally verified on Windows. The pushed Phase 9 commit requires owner-run
+Codemagic validation. Phases 0 through 8 and the local model-pack
+recommendation/licence records are treated as implemented, with
+owner-confirmed Codemagic `ios-simulator-unsigned` validation through Phase 8
+commit `dff65d3e7773c5ab2c7aeb8b0d133c8030717c08`. Do not begin Phase 10 or
+later work until the owner explicitly approves the next implementation prompt.
 
 ## Locked decisions
 
@@ -91,7 +90,8 @@ until the owner explicitly approves the next implementation prompt.
 - The active continuation plan is
   `docs/planning/phase-7-to-12-continuation-plan.md`. It preserves the original
   Phase 7 through Phase 12 objectives and adds required Phase 6.4 through Phase
-  6.7 integration gates. Phase 8 is implemented; Phase 9 is not started.
+  6.7 integration gates. Phase 9 is implemented in the current working tree;
+  Phase 10 is not started.
 - Phase 7 AI-assisted growth modes are optional, local and replaceable behind
   `LocalAiRuntime`. No cloud AI, model downloads, model weights, backend
   dependency, speech or sync implementation exists.
@@ -126,6 +126,21 @@ until the owner explicitly approves the next implementation prompt.
 - Phase 8 support summaries must use minimum necessary detail, exclude raw
   crisis or harmful narrative by default and require explicit preview plus
   local step-up authentication before sensitive sharing.
+- Phase 9 encrypted export/sync must remain optional. Backend use is not
+  required for core mobile use, sync is disabled by default and the user must
+  explicitly approve encrypted sync before any backend payload is prepared.
+- Phase 9 backend payloads must be ciphertext-only versioned envelopes with
+  nonce, key version, manifest version and SHA-256 ciphertext checksum. The
+  optional backend must reject plaintext fields.
+- Phase 9 export and sync decisions must require encrypted packages/envelopes
+  and app-lock step-up. Daily-tool, relationally sensitive, harm-safety and
+  support-summary content is excluded by default; sensitive export requires
+  explicit selection and preview.
+- Phase 9 conflict handling must be deterministic and non-destructive:
+  divergent encrypted versions are kept for user review instead of silently
+  overwriting local private data.
+- Phase 9 device revocation must require explicit user action and local
+  step-up authentication, and revocation records/manifests must be versioned.
 - Local AI model packs remain optional recommendations only. Bettamind installs
   and runs with no model; Gemma 4 E2B is the preferred LiteRT-LM recommendation
   for standard/high devices after testing, Qwen2.5 1.5B Instruct is the smaller
@@ -581,6 +596,25 @@ until the owner explicitly approves the next implementation prompt.
   content and real user data. `.gitignore` includes `.kotlin/` and common model
   artifact extensions such as `.litertlm`, `.task`, `.gguf`, `.onnx`,
   `.safetensors`, `.bin`, `.pt`, `.pth`, `.ckpt`, `.mlmodel` and `.mlpackage`.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed for the pushed
+  Phase 8 commit `dff65d3e7773c5ab2c7aeb8b0d133c8030717c08`.
+- Phase 9 encrypted export and sync policy was added under
+  `shared/src/commonMain/kotlin/org/bettamind/shared/sync/EncryptedExportSync.kt`.
+- `BettamindExportSyncPolicy` reviews export and sync eligibility for daily
+  tools, growth/AI records, relational-boundary metadata, harm-safety metadata,
+  support summaries, encrypted backups and calendar handoff receipts.
+- `EncryptedSyncEnvelope`, `SyncManifest`, `DeviceRevocationRecord`,
+  `CiphertextOnlyBackendContract`, `SyncConflictResolver` and encrypted backup
+  envelope helpers define the Phase 9 shared contract.
+- The optional FastAPI backend now exposes `POST /sync/envelopes` and accepts
+  only strict encrypted envelope payloads with valid base64 nonce/ciphertext and
+  matching SHA-256 ciphertext checksum. Extra plaintext fields are rejected.
+- Compose Settings now shows an encrypted export/sync foundation block. Sync is
+  not enabled by the UI and no automatic backend setup exists.
+- `docs/security/phase-9-encrypted-export-sync.md` documents Phase 9 scope,
+  implemented controls, backend contract, non-goals and verification coverage.
+- `phaseNineCheck` was added as the Windows verification task for this slice.
+  It does not begin Phase 10.
 
 ## Important files
 
@@ -615,6 +649,7 @@ until the owner explicitly approves the next implementation prompt.
 - `shared/src/commonMain/kotlin/org/bettamind/shared/safety/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/safety/CompassionateSafetyRedirection.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/support/SafetySupportBridge.kt`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/sync/EncryptedExportSync.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/security/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/growth/`
@@ -626,6 +661,10 @@ until the owner explicitly approves the next implementation prompt.
 - `shared/src/commonTest/kotlin/org/bettamind/shared/safety/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/safety/CompassionateSafetyRedirectionTest.kt`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/support/SafetySupportBridgeTest.kt`
+- `shared/src/commonTest/kotlin/org/bettamind/shared/sync/EncryptedExportSyncTest.kt`
+- `backend/app/api/sync.py`
+- `backend/app/schemas/sync.py`
+- `backend/tests/test_sync.py`
 - `shared/src/androidMain/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/iosMain/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/iosTest/kotlin/org/bettamind/shared/privacy/`
@@ -647,6 +686,7 @@ until the owner explicitly approves the next implementation prompt.
 - `docs/safety/harmful-intent-and-dangerous-capability-policy.md`
 - `docs/safety/compassionate-safety-redirection.md`
 - `docs/safety/safety-support-bridge.md`
+- `docs/security/phase-9-encrypted-export-sync.md`
 - `docs/product/phase-6-6-deterministic-daily-tools.md`
 - `codemagic.yaml`
 - `.github/workflows/phase-1-checks.yml`
@@ -876,6 +916,33 @@ until the owner explicitly approves the next implementation prompt.
   completed on Windows after Phase 8 changes, with iOS Native compile/test
   tasks still skipped because SQLCipher cinterop cannot be processed on
   `mingw_x64`.
+- `.\gradlew.bat :shared:compileKotlinMetadata --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed after Phase 9 changes, with expected Windows iOS cinterop target
+  skips.
+- `.\gradlew.bat :shared:compileDebugKotlinAndroid --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed after Phase 9 changes.
+- `.\gradlew.bat :shared:testDebugUnitTest --tests org.bettamind.shared.sync.EncryptedExportSyncTest --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed after the Phase 9 encrypted export/sync tests were added. Two earlier
+  short-timeout attempts exceeded the tool timeout and were terminated with
+  `taskkill` before the successful longer-timeout run.
+- From `backend/`: `.\.venv\Scripts\ruff.exe check .` passed after Phase 9
+  backend sync endpoint changes.
+- From `backend/`: `.\.venv\Scripts\mypy.exe app` passed after Phase 9 backend
+  sync endpoint changes.
+- From `backend/`: `.\.venv\Scripts\pytest.exe` passed after Phase 9 backend
+  sync endpoint changes.
+- `.\gradlew.bat phaseNineCheck --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  passed after Phase 9 changes.
+- `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --no-configuration-cache --stacktrace --console=plain`
+  completed on Windows after Phase 9 changes, with iOS Native compile/test
+  tasks still skipped because SQLCipher cinterop cannot be processed on
+  `mingw_x64`.
+- XML string-resource parity check parsed all 10 Compose `strings.xml` files
+  and found no source string keys missing after Phase 9 strings were added.
+- `git diff --check` reported no whitespace errors after Phase 9 changes, only
+  normal Windows LF-to-CRLF warnings.
+- `git ls-files | rg "\.(tflite|litertlm|gguf|onnx|bin|safetensors|model|mlmodel|task|pt|pth|ckpt|mlpackage)$"`
+  found no tracked model-weight artifacts after Phase 9 changes.
 
 ## Known blockers and limitations
 
@@ -916,9 +983,14 @@ until the owner explicitly approves the next implementation prompt.
   safety-redirection categories, fallback keys, reminder replacements and AI
   metadata should receive owner, safety, legal and qualified localization
   review before production use.
-- Phase 8 shared Kotlin, Compose resources and Gradle task changes cannot be
-  fully validated for iOS on Windows. The pushed Phase 8 commit will require
-  Codemagic `ios-simulator-unsigned`.
+- Phase 9 shared Kotlin, Compose resources, backend and Gradle task changes
+  cannot be fully validated for iOS on Windows. The future pushed Phase 9
+  commit will require Codemagic `ios-simulator-unsigned`.
+- Phase 9 is a contract foundation. Production sync still needs durable
+  encrypted backend persistence, account/device provisioning if offered,
+  device key exchange, retention/deletion policy, deployment secrets,
+  operational monitoring and release security review. None of those secrets or
+  runtime databases should be committed.
 - During Phase 8 local verification, initial short-timeout Gradle task runs
   exceeded the tool timeout and left stale Java/Gradle workers, which were
   terminated with `taskkill`. Re-running with longer timeouts passed targeted
@@ -955,14 +1027,18 @@ until the owner explicitly approves the next implementation prompt.
 - Run Codemagic `ios-simulator-unsigned` after any future pushed commit that
   changes shared Kotlin, Compose resources, `iosApp`, Gradle configuration that
   can affect iOS, or Codemagic iOS workflow files.
-- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 8 commit because
-  it changes shared Kotlin, Compose resources and Gradle verification tasks.
+- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 9 commit because
+  it changes shared Kotlin, Compose resources, backend code and Gradle
+  verification tasks.
 - Review Phase 7.5 compassionate safety-redirection reasons, fallback copy,
   unsafe-reminder replacements, AI metadata semantics and post-generation
   validator categories before production localization or store review.
 - Review Phase 8 support-bridge risk levels, support action labels, local
   resource labels, minimum-detail summary preview and no-auto-contact wording
   before production localization or store review.
+- Review Phase 9 export/sync settings copy, backend envelope contract,
+  sensitive export preview semantics, daily/relational/harm default exclusions,
+  conflict handling and device revocation flow before production sync work.
 - Review Phase 6.5 relational-boundary categories and fallback copy before
   production localization or Phase 7 AI response-mode prompts.
 - Review Phase 6.6 daily-tool copy, reminder defaults, quiet-hours defaults
@@ -1003,7 +1079,6 @@ until the owner explicitly approves the next implementation prompt.
 
 ## Next approved task
 
-Push the Phase 8 commit, then run Codemagic `ios-simulator-unsigned` for that
-pushed commit. Review Phase 8 support-bridge copy, local resource labels and
-summary preview semantics before production localization or store review. Do
-not begin Phase 9 automatically.
+Run Codemagic `ios-simulator-unsigned` for the pushed Phase 9 commit. Review
+the Phase 9 export/sync contract and copy before production sync work. Do not
+begin Phase 10 automatically.

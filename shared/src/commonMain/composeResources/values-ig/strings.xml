@@ -111,6 +111,12 @@
     <string name="harm_safety_description">Bettamind uses deterministic safeguards before and after AI so unsafe requests can be redirected without shame.</string>
     <string name="harm_safety_capability_note">Actionable harmful details are refused, while high-level prevention, emergency response, grounding and nonviolent repair remain available.</string>
     <string name="harm_safety_privacy_note">Sensitive safety content is excluded from memory, export, sync and notifications by default; sharing requires explicit preview and local authentication.</string>
+    <string name="phase_nine_status">Optional encrypted export and sync foundation</string>
+    <string name="encrypted_sync_title">Encrypted export and sync</string>
+    <string name="encrypted_sync_description">Export, backup, device revocation and backend sync are optional. Sync is off by default and core use does not require an account or backend.</string>
+    <string name="encrypted_sync_default_note">Bettamind prepares only encrypted, versioned, checksum-verified packages after explicit approval and local authentication.</string>
+    <string name="encrypted_sync_privacy_note">Daily, relationship-boundary and harm-safety content is excluded by default; sensitive inclusion needs explicit selection and preview.</string>
+    <string name="encrypted_sync_calendar_note">System-calendar handoff remains local and explicit, without broad calendar reading.</string>
     <string name="phase_seven_five_status">Compassionate safety redirection foundation</string>
     <string name="compassionate_safety_privacy_notice">Sensitive safety content stays out of memory, export and notifications by default unless the user explicitly selects it with local authentication.</string>
     <string name="compassionate_safety_ack_none">I can keep this focused on the next humane step.</string>

@@ -368,6 +368,18 @@ Acceptance criteria:
 - Optional system-calendar handoff remains explicit and does not read broad
   calendar data.
 
+Status: implemented as a shared deterministic export/sync policy foundation and
+optional ciphertext-only FastAPI contract. `BettamindExportSyncPolicy` keeps
+sync disabled by default, requires encrypted packages/envelopes, explicit
+approval, preview where sensitive and app-lock step-up before export or sync.
+Daily-tool, relationally sensitive, harm-safety and support-summary content is
+excluded by default. Conflict handling keeps divergent encrypted versions for
+review instead of silently overwriting local data, device revocation is explicit
+and versioned, encrypted backup/restore contracts are present and calendar
+handoff remains local without broad calendar reads. This phase does not add
+automatic sync, mandatory accounts, production backend persistence, secrets,
+model artifacts, cloud AI, speech or Phase 10 production localization.
+
 ## Phase 10: Global localisation and accessibility completion
 
 Goal: complete target locale packs and accessibility validation.

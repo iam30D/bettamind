@@ -210,6 +210,15 @@ Required tests:
 - Conflict resolution and device revocation tests.
 - Encrypted backup/restore tests.
 
+Status: implemented as a shared deterministic export/sync contract in
+`shared/src/commonMain/kotlin/org/bettamind/shared/sync/EncryptedExportSync.kt`
+plus an optional FastAPI `POST /sync/envelopes` contract. The implementation
+keeps mobile core backend-independent, sync disabled by default, payloads
+ciphertext-only, app-lock step-up required for export/sync, daily/relational/
+harm-safety/support records excluded by default, conflict resolution
+non-destructive, device revocation explicit and backup/restore encrypted. It
+does not begin Phase 10 localization/accessibility completion.
+
 ## Phase 10: Global Localisation And Accessibility
 
 Original objective: complete target locale packs and accessibility validation.
