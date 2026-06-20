@@ -1,6 +1,6 @@
 # Requirements Traceability
 
-Date updated: 2026-06-19
+Date updated: 2026-06-20
 
 | Requirement | Phase | Current handling |
 | --- | --- | --- |
@@ -43,7 +43,7 @@ Date updated: 2026-06-19
 | Safety and support bridge | 8 | Shared `SafetySupportBridgePolicy` reuses Phase 6.5, Phase 6.6, Phase 6.7 and Phase 7.5 outcomes for self-harm, suicide, violence intent, dangerous-capability refusal, relational overlap, voluntary support actions, no automatic contact, local resources, minimum-detail summaries and step-up sharing metadata. |
 | Optional encrypted sync | 9 | Shared export/sync policy and optional FastAPI envelope contract keep sync optional, disabled by default, ciphertext-only and protected by app-lock reauthentication, with daily, relational, harm-safety and support-summary exclusions, non-destructive conflicts, explicit device revocation and encrypted backup/restore tests. |
 | Global localisation and accessibility | 10 | Shared localisation/accessibility policy covers target locale profiles, RTL, script fallback, locale-aware formatting metadata, resource completeness, screen-reader surfaces, large text, reduced motion, low-literacy mode and qualified human-review gates for safety-critical copy. |
-| Optional offline speech | 11 | Planned only; text-only use must remain complete, microphone use optional, raw audio not retained by default and spoken input/output routed through the same relational and harm-safety policies as text. |
+| Optional offline speech | 11 | Shared `OfflineSpeechPolicy` and `SpeechPackManager` keep text-only use complete, model explicit microphone permission state, forbid raw-audio retention by default, protect sensitive transcripts with app-lock metadata, route spoken input/output through relational and harm-safety policies, prefer OS offline voices and require signed, checksum-verified, licensed, removable speech packs. |
 | Performance, red-team and release readiness | 12 | Planned only; must include app-lock, encryption, relational, harm, reminder, notification, timer, calendar, export, sync, low-resource, Android physical-device, Codemagic/Xcode, TestFlight and store-readiness gates. |
 
 ## Phase 6X Audit Acceptance Criteria

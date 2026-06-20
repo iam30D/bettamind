@@ -1,6 +1,6 @@
 # Phase 7 To 12 Continuation Plan
 
-Date updated: 2026-06-18
+Date updated: 2026-06-20
 
 ## Purpose
 
@@ -16,8 +16,11 @@ pre-Phase-6X plan at
 
 Status update: Phase 7 is implemented as an optional local AI growth-mode
 foundation, Phase 7.5 is implemented as a deterministic compassionate
-safety-redirection layer, and Phase 8 is implemented as a deterministic safety
-and support bridge foundation. Phase 9 and later phases are not started.
+safety-redirection layer, Phase 8 is implemented as a deterministic safety and
+support bridge foundation, Phase 9 is implemented as an encrypted export/sync
+foundation, Phase 10 is implemented as a localisation/accessibility foundation
+and Phase 11 is implemented as an optional offline speech foundation. Phase 12
+is not started.
 
 ## Completed Preconditions
 
@@ -290,6 +293,17 @@ Required tests:
 - Relational and harm-safety speech pipeline tests.
 - Voice-output persona boundary tests.
 - Offline speech-pack validation tests where packs are introduced.
+
+Status: implemented as a shared optional offline speech foundation in
+`shared/src/commonMain/kotlin/org/bettamind/shared/speech/OfflineSpeech.kt`.
+The implementation keeps text-only fallback complete, models explicit
+microphone permission state, disallows raw-audio retention by default, requires
+app-lock metadata for sensitive transcripts, routes spoken input and generated
+spoken output through existing relational and harm-safety policies, prefers OS
+offline voices before local voice packs and validates optional speech packs as
+licensed, signed, checksum-verified, versioned, revocable and removable. It
+does not add platform microphone integration, speech artifacts, cloud speech,
+automatic downloads, TestFlight, store-readiness or Phase 12 hardening.
 
 ## Phase 12: Performance, Red-Team And Release Readiness
 

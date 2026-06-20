@@ -65,6 +65,7 @@ enum class LocalizedSurface {
     Timer,
     SupportBridge,
     ExportSync,
+    OfflineSpeech,
     General,
 }
 
@@ -125,6 +126,7 @@ object LocalizationReadinessPolicy {
             key.startsWith("daily") -> LocalizedSurface.DailyTool
             key.startsWith("growth_age") -> LocalizedSurface.LegalConsentPrivacy
             key.startsWith("encrypted_sync") -> LocalizedSurface.ExportSync
+            key.startsWith("offline_speech") -> LocalizedSurface.OfflineSpeech
             else -> LocalizedSurface.General
         }
 
@@ -137,6 +139,7 @@ object LocalizationReadinessPolicy {
             LocalizedSurface.LegalConsentPrivacy,
             LocalizedSurface.SupportBridge,
             LocalizedSurface.ExportSync,
+            LocalizedSurface.OfflineSpeech,
         )
 
     fun evaluate(

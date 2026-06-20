@@ -87,7 +87,7 @@ long raw logs in it.
 - Do not create unencrypted fallback storage.
 - Do not make the backend mandatory.
 - Do not automatically download models.
-- Never commit secrets, signing files, certificates, model weights, databases or real personal content.
+- Never commit secrets, signing files, certificates, model weights, speech packs, databases or real personal content.
 - Never weaken tests to make a phase pass.
 - Stop and report security, privacy, encryption, localisation, iOS or model feasibility blockers.
 - Do not automatically begin the next phase.
@@ -98,9 +98,10 @@ long raw logs in it.
   packages. This includes `.litertlm`, `.tflite`, `.task`, `.gguf`, `.onnx`,
   `.safetensors`, `.bin`, `.pt`, `.pth`, `.ckpt`, `.mlmodel`, `.mlpackage`,
   tokenizer/model binary bundles and any large provider-supplied weight files.
-- Never commit production model-pack artifacts, production knowledge packs,
-  release packages, app-store upload archives or generated package outputs
-  unless a human owner explicitly approves the exact file path and purpose.
+- Never commit production model-pack artifacts, production speech packs,
+  production voice/audio packs, production knowledge packs, release packages,
+  app-store upload archives or generated package outputs unless a human owner
+  explicitly approves the exact file path and purpose.
 - Never commit signing private keys, keystores, provisioning profiles,
   certificates, Apple signing material, Android upload keys, Ed25519 private
   keys, API keys, service-account files, `.env` files, credential exports,
@@ -112,9 +113,14 @@ long raw logs in it.
   for licence compliance, signed with owner-controlled Ed25519 keys,
   SHA-256-verified, versioned, removable and installed only after explicit user
   approval. User install consent does not replace publisher licence compliance.
-- If a model, signing, production or secret artifact appears in `git status`,
-  stop and report it before staging or committing. Do not add blanket
-  `.gitignore` exceptions that hide required review of generated artifacts.
+- Production speech packs must be obtained outside Git, approved by the owner
+  for licence compliance, signed with owner-controlled Ed25519 keys,
+  SHA-256-verified, versioned, removable and installed only after explicit user
+  approval.
+- If a model, speech, signing, production or secret artifact appears in
+  `git status`, stop and report it before staging or committing. Do not add
+  blanket `.gitignore` exceptions that hide required review of generated
+  artifacts.
 
 ## Windows and iOS workflow
 

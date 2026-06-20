@@ -27,6 +27,7 @@ class GlobalLocalizationAccessibilityTest {
             "privacy_lock_title",
             "harm_safety_privacy_note",
             "support_bridge_review_note",
+            "offline_speech_microphone_body",
             "daily_checkin_title",
         )
         val completeLocalizedKeys = BettamindLocales.initialTargets.associateWith { sourceKeys }
@@ -42,6 +43,7 @@ class GlobalLocalizationAccessibilityTest {
         assertFalse(draftReport.productionReady)
         assertTrue("privacy_lock_title" in draftReport.safetyCriticalKeys)
         assertTrue("harm_safety_privacy_note" in draftReport.safetyCriticalKeys)
+        assertTrue("offline_speech_microphone_body" in draftReport.safetyCriticalKeys)
         assertFalse("daily_checkin_title" in draftReport.safetyCriticalKeys)
 
         val reviewed = sourceKeys

@@ -165,7 +165,7 @@ private fun AppHeader() {
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                text = stringResource(Res.string.phase_ten_status),
+                text = stringResource(Res.string.phase_eleven_status),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -725,6 +725,7 @@ private fun SettingsPanel(
             useLowLiteracyCopy = useLowLiteracyCopy,
             onLowLiteracyCopyChange = onLowLiteracyCopyChange,
         )
+        OfflineSpeechSettingsPanel()
         Text(
             text = stringResource(Res.string.settings_locale_note),
             style = MaterialTheme.typography.bodySmall,
@@ -826,6 +827,36 @@ private fun SettingsSwitchRow(
             },
             checked = checked,
             onCheckedChange = onCheckedChange,
+        )
+    }
+}
+
+@Composable
+private fun OfflineSpeechSettingsPanel() {
+    StatusBlock(
+        title = Res.string.offline_speech_title,
+        body = Res.string.offline_speech_description,
+    ) {
+        StatusLine(
+            title = Res.string.offline_speech_text_fallback_title,
+            body = Res.string.offline_speech_text_fallback_body,
+        )
+        StatusLine(
+            title = Res.string.offline_speech_microphone_title,
+            body = Res.string.offline_speech_microphone_body,
+        )
+        StatusLine(
+            title = Res.string.offline_speech_audio_retention_title,
+            body = Res.string.offline_speech_audio_retention_body,
+        )
+        StatusLine(
+            title = Res.string.offline_speech_packs_title,
+            body = Res.string.offline_speech_packs_body,
+        )
+        Text(
+            text = stringResource(Res.string.offline_speech_safety_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }

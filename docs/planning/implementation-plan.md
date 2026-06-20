@@ -426,6 +426,20 @@ Acceptance criteria:
 - Harmful-intent safeguards apply to spoken input and generated spoken output.
 - Accessibility fallback and offline operation are preserved.
 
+Status: implemented as a shared optional offline speech foundation.
+`OfflineSpeechPolicy` keeps text-only fallback complete, represents microphone
+use as explicit permission-scoped state, forbids raw-audio retention by
+default, requires app-lock metadata for sensitive transcripts, routes spoken
+input through existing relational-boundary and harm-safety decisions and blocks
+spoken output that is romantic, seductive, possessive, manipulative or harmful.
+`SpeechPackManager` requires user approval, publisher licence approval,
+approved licence identifiers, Ed25519-labeled signatures, SHA-256 checksums,
+monotonic versions, revocation handling and removability for any local speech
+pack. Settings exposes the offline speech foundation copy. This phase does not
+add platform microphone integration, bundled speech packs, cloud speech,
+automatic downloads, voice/model artifacts, TestFlight, store metadata,
+performance hardening or Phase 12 release readiness.
+
 ## Phase 12: Performance, red-team and release readiness
 
 Goal: harden for real release.

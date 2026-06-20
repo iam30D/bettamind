@@ -65,4 +65,7 @@
 - Final iOS bundle identifier.
 - Production local AI runtime build, exact model artifacts, model licences,
   trust anchors, signing keys, device-test results and delivery channels.
+- Production offline speech adapters, OS voice support matrix, speech-pack
+  artifacts, speech-pack licences, trust anchors, signing keys and device-test
+  results.
 - Signed release and TestFlight configuration.

@@ -2,12 +2,12 @@
 
 ## Current phase
 
-Phase 10 global localisation and accessibility completion is implemented and
-locally verified on Windows. The pushed Phase 10 commit requires owner-run
-Codemagic validation. Phases 0 through 9 and the local model-pack
+Phase 11 optional offline speech foundation is implemented and locally verified
+on Windows. The pushed Phase 11 commit will require owner-run Codemagic
+validation. Phases 0 through 10 and the local model-pack
 recommendation/licence records are treated as implemented, with
-owner-confirmed Codemagic `ios-simulator-unsigned` validation through Phase 9
-commit `b39ac2b3ec2f5d1b1a8e4d73a2b5fd98b4233926`. Do not begin Phase 11 or
+owner-confirmed Codemagic `ios-simulator-unsigned` validation through Phase 10
+commit `23674ca0492f8c37dc91b211856d568c05f0c70f`. Do not begin Phase 12 or
 later work until the owner explicitly approves the next implementation prompt.
 
 ## Locked decisions
@@ -90,8 +90,8 @@ later work until the owner explicitly approves the next implementation prompt.
 - The active continuation plan is
   `docs/planning/phase-7-to-12-continuation-plan.md`. It preserves the original
   Phase 7 through Phase 12 objectives and adds required Phase 6.4 through Phase
-  6.7 integration gates. Phase 10 is implemented in the current working tree;
-  Phase 11 is not started.
+  6.7 integration gates. Phase 11 is implemented in the current working tree;
+  Phase 12 is not started.
 - Phase 7 AI-assisted growth modes are optional, local and replaceable behind
   `LocalAiRuntime`. No cloud AI, model downloads, model weights, backend
   dependency, speech or sync implementation exists.
@@ -161,6 +161,17 @@ later work until the owner explicitly approves the next implementation prompt.
   script font fallbacks, large text, reduced motion, screen-reader labels,
   accessible typography and low-literacy mode. Platform-specific assistive
   technology testing still belongs in release validation.
+- Phase 11 offline speech remains optional. Text-only use is complete without
+  microphone access, speech packs or backend services.
+- Phase 11 microphone use must be explicit and permission-scoped. No passive
+  listening exists, and raw audio is not retained by default.
+- Phase 11 spoken input and generated spoken output must route through the
+  same relational-boundary and harm-safety policies as text before display,
+  storage, export, sync, notification, support sharing, voice or avatar use.
+- OS offline voices are preferred before local voice packs. Any production
+  speech pack must be owner-approved for licence compliance, signed,
+  SHA-256-verified, versioned, revocable, removable and installed only after
+  explicit user approval. No speech artifacts are committed.
 
 ## Completed work
 
@@ -642,6 +653,32 @@ later work until the owner explicitly approves the next implementation prompt.
   coverage.
 - `phaseTenCheck` was added as the Windows verification task for this slice.
   It does not begin Phase 11 speech.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed for the pushed
+  Phase 10 commit `23674ca0492f8c37dc91b211856d568c05f0c70f`.
+- Phase 11 optional offline speech policy was added under
+  `shared/src/commonMain/kotlin/org/bettamind/shared/speech/OfflineSpeech.kt`.
+- `OfflineSpeechPolicy` keeps text-only fallback available, models explicit
+  microphone permission state, forbids raw-audio retention by default, requires
+  app-lock metadata for sensitive transcripts and routes spoken input plus
+  spoken output through relational-boundary and harm-safety decisions.
+- `SpeechPackManager` requires user approval, publisher licence approval,
+  approved licence identifiers, Ed25519-labeled signatures, SHA-256 artifact
+  checksums, monotonic versions, revocation policy and removability for any
+  optional local speech pack.
+- Compose Settings now shows an optional offline speech foundation block.
+  It does not request microphone permission, enable speech capture, install
+  packs or add any cloud speech path.
+- Compose resources now include matching Phase 11 speech keys across all
+  target locale packs. Non-English entries remain draft fallbacks until
+  qualified review records approve them for production.
+- `docs/safety/phase-11-offline-speech.md` documents Phase 11 scope,
+  implemented controls, non-goals, production requirements and verification
+  coverage.
+- `AGENTS.md` and `.gitignore` now also cover production speech packs and
+  voice/audio pack artifacts. Raw audio file types are not blanket-ignored so
+  they remain visible for review if they appear.
+- `phaseElevenCheck` was added as the Windows verification task for this
+  slice. It does not begin Phase 12 release readiness.
 
 ## Important files
 
@@ -678,6 +715,7 @@ later work until the owner explicitly approves the next implementation prompt.
 - `shared/src/commonMain/kotlin/org/bettamind/shared/support/SafetySupportBridge.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/sync/EncryptedExportSync.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/accessibility/GlobalLocalizationAccessibility.kt`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/speech/OfflineSpeech.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/security/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/growth/`
@@ -691,6 +729,7 @@ later work until the owner explicitly approves the next implementation prompt.
 - `shared/src/commonTest/kotlin/org/bettamind/shared/support/SafetySupportBridgeTest.kt`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/sync/EncryptedExportSyncTest.kt`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/accessibility/GlobalLocalizationAccessibilityTest.kt`
+- `shared/src/commonTest/kotlin/org/bettamind/shared/speech/OfflineSpeechTest.kt`
 - `backend/app/api/sync.py`
 - `backend/app/schemas/sync.py`
 - `backend/tests/test_sync.py`
@@ -715,6 +754,7 @@ later work until the owner explicitly approves the next implementation prompt.
 - `docs/safety/harmful-intent-and-dangerous-capability-policy.md`
 - `docs/safety/compassionate-safety-redirection.md`
 - `docs/safety/safety-support-bridge.md`
+- `docs/safety/phase-11-offline-speech.md`
 - `docs/security/phase-9-encrypted-export-sync.md`
 - `docs/design/phase-10-localisation-accessibility.md`
 - `docs/product/phase-6-6-deterministic-daily-tools.md`
@@ -990,6 +1030,25 @@ later work until the owner explicitly approves the next implementation prompt.
   completed on Windows after Phase 10 changes, with iOS Native compile/test
   tasks still skipped because SQLCipher cinterop cannot be processed on
   `mingw_x64`.
+- `.\gradlew.bat :shared:compileDebugKotlinAndroid --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after Phase 11 shared Kotlin and Compose resource changes.
+- `.\gradlew.bat :shared:testDebugUnitTest --tests org.bettamind.shared.speech.OfflineSpeechTest --tests org.bettamind.shared.accessibility.GlobalLocalizationAccessibilityTest --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after Phase 11 speech tests and updated localisation review tests were
+  added. An earlier run caught an overbroad safe-output test phrase, which was
+  corrected before the passing rerun.
+- XML string-resource parity check parsed all 10 Compose `strings.xml` files
+  and found no source string keys missing after Phase 11 strings were added.
+- `.\gradlew.bat phaseElevenCheck --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after Phase 11 changes.
+- `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  completed on Windows after Phase 11 changes, with iOS Native compile/test
+  tasks still skipped because SQLCipher cinterop cannot be processed on
+  `mingw_x64`.
+- `git diff --check` reported no whitespace errors after Phase 11 changes,
+  only normal Windows LF-to-CRLF warnings.
+- `git ls-files | rg "\.(tflite|litertlm|gguf|onnx|bin|safetensors|model|mlmodel|task|pt|pth|ckpt|mlpackage|speechpack|voicepack)$"`
+  found no tracked model-weight, model-pack or speech-pack artifacts after
+  Phase 11 changes.
 
 ## Known blockers and limitations
 
@@ -1030,8 +1089,8 @@ later work until the owner explicitly approves the next implementation prompt.
   safety-redirection categories, fallback keys, reminder replacements and AI
   metadata should receive owner, safety, legal and qualified localization
   review before production use.
-- Phase 10 shared Kotlin, Compose resources and Gradle task changes cannot be
-  fully validated for iOS on Windows. The future pushed Phase 10 commit will
+- Phase 11 shared Kotlin, Compose resources and Gradle task changes cannot be
+  fully validated for iOS on Windows. The future pushed Phase 11 commit will
   require Codemagic `ios-simulator-unsigned`.
 - Phase 9 is a contract foundation. Production sync still needs durable
   encrypted backend persistence, account/device provisioning if offered,
@@ -1043,6 +1102,10 @@ later work until the owner explicitly approves the next implementation prompt.
   still required before production use of safety, crisis, legal, privacy,
   consent, relational-boundary, support, export/sync and daily-tool
   translations.
+- Phase 11 is an optional offline speech foundation. Production speech still
+  needs platform STT/TTS adapters, microphone permission copy, OS voice support
+  review, speech-pack licence approvals, signed artifacts, device tests and
+  store privacy-label review before real release.
 - During Phase 8 local verification, initial short-timeout Gradle task runs
   exceeded the tool timeout and left stale Java/Gradle workers, which were
   terminated with `taskkill`. Re-running with longer timeouts passed targeted
@@ -1079,7 +1142,7 @@ later work until the owner explicitly approves the next implementation prompt.
 - Run Codemagic `ios-simulator-unsigned` after any future pushed commit that
   changes shared Kotlin, Compose resources, `iosApp`, Gradle configuration that
   can affect iOS, or Codemagic iOS workflow files.
-- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 10 commit because
+- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 11 commit because
   it changes shared Kotlin, Compose resources and Gradle verification tasks.
 - Review Phase 7.5 compassionate safety-redirection reasons, fallback copy,
   unsafe-reminder replacements, AI metadata semantics and post-generation
@@ -1094,6 +1157,10 @@ later work until the owner explicitly approves the next implementation prompt.
   reduced-motion treatment, screen-reader state descriptions, script font
   fallback plan and locale readiness gating before production localization or
   store review.
+- Review Phase 11 offline speech copy, microphone permission language,
+  no-raw-audio-retention rule, sensitive-transcript app-lock behavior,
+  spoken-output persona boundary and speech-pack licence/signing governance
+  before production speech work.
 - Review Phase 6.5 relational-boundary categories and fallback copy before
   production localization or Phase 7 AI response-mode prompts.
 - Review Phase 6.6 daily-tool copy, reminder defaults, quiet-hours defaults
@@ -1111,6 +1178,9 @@ later work until the owner explicitly approves the next implementation prompt.
   governance before accepting real public packs.
 - Provide owner-approved production model choices, licences, trust anchors and
   delivery governance before accepting real model packs.
+- Provide owner-approved production speech adapters, speech-pack choices,
+  licences, trust anchors, signing keys and device-test results before
+  accepting or offering real speech packs.
 - Accept or confirm the exact Gemma 4 E2B and/or Qwen2.5 1.5B Instruct model
   licences under the publishing entity before any model artifact is packaged,
   signed, uploaded or offered to users.
@@ -1134,6 +1204,6 @@ later work until the owner explicitly approves the next implementation prompt.
 
 ## Next approved task
 
-Run Codemagic `ios-simulator-unsigned` for the pushed Phase 10 commit. Arrange
-qualified human review for production locale packs before release. Do not begin
-Phase 11 automatically.
+Run Codemagic `ios-simulator-unsigned` for the pushed Phase 11 commit. Review
+offline speech copy and governance before any production speech adapter or pack
+work. Do not begin Phase 12 automatically.
