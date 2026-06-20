@@ -20,7 +20,9 @@ safety-redirection layer, Phase 8 is implemented as a deterministic safety and
 support bridge foundation, Phase 9 is implemented as an encrypted export/sync
 foundation, Phase 10 is implemented as a localisation/accessibility foundation
 and Phase 11 is implemented as an optional offline speech foundation. Phase 12
-is not started.
+is implemented as a repository-side release-readiness foundation; production
+release remains blocked until owner device, TestFlight, store, translation,
+rollback and Codemagic evidence is recorded.
 
 ## Completed Preconditions
 
@@ -341,6 +343,14 @@ Required tests:
 - Reminder, notification, timer, calendar, export and sync privacy tests.
 - Low-resource and physical-device checks.
 - Codemagic/Xcode and TestFlight validation gates.
+
+Status: implemented as a shared release-readiness gate foundation in
+`shared/src/commonMain/kotlin/org/bettamind/shared/release/ReleaseReadiness.kt`.
+Automated tests cover required gate coverage, deterministic red-team cases and
+privacy-surface release blockers. Physical-device performance, battery,
+thermal, memory, TestFlight, store metadata, qualified translation review,
+rollback and Codemagic validation are explicit owner release gates before any
+production release.
 
 ## Phase 8 Entry Requirements
 

@@ -28,6 +28,7 @@ class GlobalLocalizationAccessibilityTest {
             "harm_safety_privacy_note",
             "support_bridge_review_note",
             "offline_speech_microphone_body",
+            "release_readiness_store_body",
             "daily_checkin_title",
         )
         val completeLocalizedKeys = BettamindLocales.initialTargets.associateWith { sourceKeys }
@@ -44,6 +45,7 @@ class GlobalLocalizationAccessibilityTest {
         assertTrue("privacy_lock_title" in draftReport.safetyCriticalKeys)
         assertTrue("harm_safety_privacy_note" in draftReport.safetyCriticalKeys)
         assertTrue("offline_speech_microphone_body" in draftReport.safetyCriticalKeys)
+        assertTrue("release_readiness_store_body" in draftReport.safetyCriticalKeys)
         assertFalse("daily_checkin_title" in draftReport.safetyCriticalKeys)
 
         val reviewed = sourceKeys
@@ -120,6 +122,7 @@ class GlobalLocalizationAccessibilityTest {
         assertTrue(plan.simplifiedCopyRequired)
         assertTrue(LocalizedSurface.AppLock in plan.screenReaderLabelsRequired)
         assertTrue(LocalizedSurface.SupportBridge in plan.screenReaderLabelsRequired)
+        assertTrue(LocalizedSurface.ReleaseReadiness in plan.screenReaderLabelsRequired)
         assertTrue("atkinson_hyperlegible_regular" in plan.fontFallbackKeys)
         assertTrue("noto_sans_arabic_variable" in plan.fontFallbackKeys)
     }

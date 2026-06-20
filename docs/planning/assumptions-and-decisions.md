@@ -58,6 +58,11 @@
   the shared encrypted record-store contract. Local reminders use neutral copy,
   and system-calendar interaction is an explicit handoff instead of broad
   calendar reading.
+- Treat Phase 12 as a release-readiness gate foundation, not as production
+  approval. Repository checks may prove deterministic privacy and safety
+  contracts, but physical-device performance, battery, thermal, memory,
+  Codemagic iOS, TestFlight, store metadata, rollback and qualified
+  translation review remain owner-controlled release evidence.
 
 ## Deferred decisions
 
@@ -69,3 +74,7 @@
   artifacts, speech-pack licences, trust anchors, signing keys and device-test
   results.
 - Signed release and TestFlight configuration.
+- Phase 12 production release evidence: Android physical-device matrix,
+  low-resource budgets on real devices, TestFlight signoff, store listing
+  metadata, privacy-label answers, rollback owner/process, production pack
+  revocation process and qualified human-review records for production locales.

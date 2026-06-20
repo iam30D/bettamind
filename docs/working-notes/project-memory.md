@@ -2,13 +2,13 @@
 
 ## Current phase
 
-Phase 11 optional offline speech foundation is implemented and locally verified
-on Windows. The pushed Phase 11 commit will require owner-run Codemagic
-validation. Phases 0 through 10 and the local model-pack
+Phase 12 performance, red-team and release-readiness foundation is implemented
+and locally verified on Windows. Phases 0 through 11 and the local model-pack
 recommendation/licence records are treated as implemented, with
-owner-confirmed Codemagic `ios-simulator-unsigned` validation through Phase 10
-commit `23674ca0492f8c37dc91b211856d568c05f0c70f`. Do not begin Phase 12 or
-later work until the owner explicitly approves the next implementation prompt.
+owner-confirmed Codemagic `ios-simulator-unsigned` validation through Phase 11
+commit `5bba3dc74860aaa3077a53d542d15b4357f54f04`. The pushed Phase 12 commit
+will require owner-run Codemagic validation and real release evidence before
+production approval.
 
 ## Locked decisions
 
@@ -172,6 +172,15 @@ later work until the owner explicitly approves the next implementation prompt.
   speech pack must be owner-approved for licence compliance, signed,
   SHA-256-verified, versioned, revocable, removable and installed only after
   explicit user approval. No speech artifacts are committed.
+- Phase 12 is a release-readiness gate foundation, not a production-release
+  approval. Repository checks can prove deterministic privacy and red-team
+  contracts, but physical-device performance, battery, thermal, memory,
+  Codemagic iOS, TestFlight, store metadata, rollback and qualified
+  translation review remain owner-controlled release evidence.
+- Phase 12 production readiness must stay blocked until all required
+  `ReleaseReadinessPolicy` gates are passed or explicitly accepted with
+  evidence; missing physical-device or store evidence cannot be treated as a
+  passing automated check.
 
 ## Completed work
 
@@ -679,6 +688,29 @@ later work until the owner explicitly approves the next implementation prompt.
   they remain visible for review if they appear.
 - `phaseElevenCheck` was added as the Windows verification task for this
   slice. It does not begin Phase 12 release readiness.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed for the pushed
+  Phase 11 commit `5bba3dc74860aaa3077a53d542d15b4357f54f04`.
+- Phase 12 release-readiness policy was added under
+  `shared/src/commonMain/kotlin/org/bettamind/shared/release/ReleaseReadiness.kt`.
+- `ReleaseReadinessPolicy` records required production gates for threat model,
+  app-lock bypass, encryption-key protection, relational and harm red-team,
+  reminders, notifications, timers, background privacy, calendar, export, sync,
+  speech, localization/accessibility, low-resource performance, battery,
+  thermal, memory, Android physical devices, Codemagic iOS, TestFlight, store
+  metadata, rollback and artifact policy.
+- `ReleaseRedTeamSuite` reuses existing deterministic policies to cover
+  romantic attachment, sexualization, dangerous capability, self-harm,
+  violence, jailbreak/policy bypass and unsafe spoken output cases.
+- Compose Settings now shows a Phase 12 release-readiness foundation block and
+  the app header reflects the Phase 12 status.
+- Compose resources now include Phase 12 release-readiness keys across all
+  target locale packs. Non-English entries remain draft fallbacks until
+  qualified review records approve them for production.
+- `docs/operations/phase-12-release-readiness.md` documents implemented
+  gates, manual owner gates, artifact rules and verification scope.
+- `phaseTwelveCheck` was added as the Windows verification task for this
+  slice. It does not replace Codemagic, TestFlight or physical-device release
+  evidence.
 
 ## Important files
 
@@ -716,6 +748,8 @@ later work until the owner explicitly approves the next implementation prompt.
 - `shared/src/commonMain/kotlin/org/bettamind/shared/sync/EncryptedExportSync.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/accessibility/GlobalLocalizationAccessibility.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/speech/OfflineSpeech.kt`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/release/ReleaseReadiness.kt`
+- `shared/src/commonTest/kotlin/org/bettamind/shared/release/ReleaseReadinessTest.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/security/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/growth/`
@@ -755,6 +789,7 @@ later work until the owner explicitly approves the next implementation prompt.
 - `docs/safety/compassionate-safety-redirection.md`
 - `docs/safety/safety-support-bridge.md`
 - `docs/safety/phase-11-offline-speech.md`
+- `docs/operations/phase-12-release-readiness.md`
 - `docs/security/phase-9-encrypted-export-sync.md`
 - `docs/design/phase-10-localisation-accessibility.md`
 - `docs/product/phase-6-6-deterministic-daily-tools.md`
@@ -1049,6 +1084,20 @@ later work until the owner explicitly approves the next implementation prompt.
 - `git ls-files | rg "\.(tflite|litertlm|gguf|onnx|bin|safetensors|model|mlmodel|task|pt|pth|ckpt|mlpackage|speechpack|voicepack)$"`
   found no tracked model-weight, model-pack or speech-pack artifacts after
   Phase 11 changes.
+- `.\gradlew.bat --no-daemon --stacktrace --console=plain :shared:compileDebugKotlinAndroid`
+  passed after Phase 12 shared Kotlin and Compose resource changes.
+- `.\gradlew.bat --no-daemon --stacktrace --console=plain :shared:testDebugUnitTest`
+  passed after Phase 12 release-readiness and localisation-review tests were
+  added.
+- `.\gradlew.bat --no-daemon --stacktrace --console=plain :shared:testDebugUnitTest --tests org.bettamind.shared.release.ReleaseReadinessTest --rerun-tasks`
+  explicitly executed and passed the Phase 12 release-readiness test class.
+- `.\gradlew.bat --no-daemon --stacktrace --console=plain phaseTwelveCheck`
+  passed after Phase 12 changes.
+- `git diff --check` reported no whitespace errors after Phase 12 changes,
+  only normal Windows LF-to-CRLF warnings.
+- `rg --files --glob '!**/.git/**' --glob '!**/build/**' | rg "\.(litertlm|tflite|task|gguf|onnx|safetensors|bin|pt|pth|ckpt|mlmodel|mlpackage|keystore|p12|mobileprovision|cer|env|db|sqlite|aab|ipa|xcarchive|wav|mp3|m4a|flac)$"`
+  found no model, signing, secret, database, audio-pack or store-archive
+  artifacts in the working tree after Phase 12 changes.
 
 ## Known blockers and limitations
 
@@ -1106,6 +1155,16 @@ later work until the owner explicitly approves the next implementation prompt.
   needs platform STT/TTS adapters, microphone permission copy, OS voice support
   review, speech-pack licence approvals, signed artifacts, device tests and
   store privacy-label review before real release.
+- Phase 12 is a repository-side release-readiness foundation. Production
+  release remains blocked until owner evidence exists for Android physical
+  devices, low-resource performance, battery/thermal/memory behavior,
+  Codemagic iOS for the pushed Phase 12 commit, TestFlight, store metadata,
+  privacy labels, screenshots, support/safety claims, qualified translation
+  review and rollback.
+- Initial Phase 12 Gradle verification hit a Kotlin compile-cache delete
+  failure and a short no-daemon timeout. `.\gradlew.bat --stop` stopped two
+  daemons; reruns with longer timeouts passed compile, shared tests and
+  `phaseTwelveCheck`.
 - During Phase 8 local verification, initial short-timeout Gradle task runs
   exceeded the tool timeout and left stale Java/Gradle workers, which were
   terminated with `taskkill`. Re-running with longer timeouts passed targeted
@@ -1142,7 +1201,7 @@ later work until the owner explicitly approves the next implementation prompt.
 - Run Codemagic `ios-simulator-unsigned` after any future pushed commit that
   changes shared Kotlin, Compose resources, `iosApp`, Gradle configuration that
   can affect iOS, or Codemagic iOS workflow files.
-- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 11 commit because
+- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 12 commit because
   it changes shared Kotlin, Compose resources and Gradle verification tasks.
 - Review Phase 7.5 compassionate safety-redirection reasons, fallback copy,
   unsafe-reminder replacements, AI metadata semantics and post-generation
@@ -1161,6 +1220,11 @@ later work until the owner explicitly approves the next implementation prompt.
   no-raw-audio-retention rule, sensitive-transcript app-lock behavior,
   spoken-output persona boundary and speech-pack licence/signing governance
   before production speech work.
+- Complete Phase 12 production release evidence before any production release:
+  Android physical-device matrix, low-resource startup/memory behavior,
+  battery/thermal review, TestFlight installation/smoke testing, store
+  metadata and privacy labels, screenshots, support/safety claims, qualified
+  human review for production locale strings and rollback/revocation process.
 - Review Phase 6.5 relational-boundary categories and fallback copy before
   production localization or Phase 7 AI response-mode prompts.
 - Review Phase 6.6 daily-tool copy, reminder defaults, quiet-hours defaults
@@ -1204,6 +1268,8 @@ later work until the owner explicitly approves the next implementation prompt.
 
 ## Next approved task
 
-Run Codemagic `ios-simulator-unsigned` for the pushed Phase 11 commit. Review
-offline speech copy and governance before any production speech adapter or pack
-work. Do not begin Phase 12 automatically.
+Run Codemagic `ios-simulator-unsigned` for the pushed Phase 12 commit. Before
+production release, complete Android physical-device testing, low-resource
+startup/memory checks, battery/thermal review, TestFlight, store metadata and
+privacy labels, qualified human review for production locale strings and the
+rollback/revocation record.

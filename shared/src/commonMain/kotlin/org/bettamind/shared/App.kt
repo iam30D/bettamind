@@ -165,7 +165,7 @@ private fun AppHeader() {
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                text = stringResource(Res.string.phase_eleven_status),
+                text = stringResource(Res.string.phase_twelve_status),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -738,6 +738,7 @@ private fun SettingsPanel(
         RelationalBoundarySettingsPanel()
         HarmSafetySettingsPanel()
         EncryptedExportSyncSettingsPanel()
+        ReleaseReadinessSettingsPanel()
     }
 }
 
@@ -969,6 +970,40 @@ private fun EncryptedExportSyncSettingsPanel() {
         )
         Text(
             text = stringResource(Res.string.encrypted_sync_calendar_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun ReleaseReadinessSettingsPanel() {
+    StatusBlock(
+        title = Res.string.release_readiness_title,
+        body = Res.string.release_readiness_description,
+    ) {
+        StatusLine(
+            title = Res.string.release_readiness_red_team_title,
+            body = Res.string.release_readiness_red_team_body,
+        )
+        StatusLine(
+            title = Res.string.release_readiness_performance_title,
+            body = Res.string.release_readiness_performance_body,
+        )
+        StatusLine(
+            title = Res.string.release_readiness_store_title,
+            body = Res.string.release_readiness_store_body,
+        )
+        StatusLine(
+            title = Res.string.release_readiness_owner_gates_title,
+            body = Res.string.release_readiness_owner_gates_body,
+        )
+        StatusLine(
+            title = Res.string.release_readiness_artifact_title,
+            body = Res.string.release_readiness_artifact_body,
+        )
+        Text(
+            text = stringResource(Res.string.release_readiness_review_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

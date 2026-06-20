@@ -458,3 +458,15 @@ Acceptance criteria:
   testing are complete.
 - Store-readiness review covers privacy labels, screenshots, metadata, support
   claims and safety disclaimers.
+
+Status: implemented as a repository-side release-readiness foundation.
+`ReleaseReadinessPolicy` and `ReleaseRedTeamSuite` cover app-lock bypass,
+encryption-key protection, relational, sexualization, harmful-capability,
+self-harm, violence, jailbreak, reminder, notification, timer, background,
+calendar, export, sync, speech, localization, performance, store, TestFlight,
+rollback and artifact-policy gates. The repo-side report intentionally remains
+not production-ready until owner evidence is recorded for low-resource
+physical-device testing, battery/thermal/memory behavior, Android devices,
+Codemagic iOS validation for the pushed Phase 12 commit, TestFlight,
+store metadata/privacy labels/screenshots/support claims, qualified
+translation review and rollback.

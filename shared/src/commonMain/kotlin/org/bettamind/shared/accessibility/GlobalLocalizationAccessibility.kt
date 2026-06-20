@@ -66,6 +66,7 @@ enum class LocalizedSurface {
     SupportBridge,
     ExportSync,
     OfflineSpeech,
+    ReleaseReadiness,
     General,
 }
 
@@ -127,6 +128,7 @@ object LocalizationReadinessPolicy {
             key.startsWith("growth_age") -> LocalizedSurface.LegalConsentPrivacy
             key.startsWith("encrypted_sync") -> LocalizedSurface.ExportSync
             key.startsWith("offline_speech") -> LocalizedSurface.OfflineSpeech
+            key.startsWith("release_readiness") -> LocalizedSurface.ReleaseReadiness
             else -> LocalizedSurface.General
         }
 
@@ -140,6 +142,7 @@ object LocalizationReadinessPolicy {
             LocalizedSurface.SupportBridge,
             LocalizedSurface.ExportSync,
             LocalizedSurface.OfflineSpeech,
+            LocalizedSurface.ReleaseReadiness,
         )
 
     fun evaluate(
@@ -303,5 +306,6 @@ object AccessibilityReadinessPolicy {
         LocalizedSurface.SupportBridge,
         LocalizedSurface.HarmSafety,
         LocalizedSurface.ExportSync,
+        LocalizedSurface.ReleaseReadiness,
     )
 }
