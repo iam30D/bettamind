@@ -2,12 +2,12 @@
 
 ## Current phase
 
-Phase 9 optional encrypted export and sync foundation is implemented and
-locally verified on Windows. The pushed Phase 9 commit requires owner-run
-Codemagic validation. Phases 0 through 8 and the local model-pack
+Phase 10 global localisation and accessibility completion is implemented and
+locally verified on Windows. The pushed Phase 10 commit requires owner-run
+Codemagic validation. Phases 0 through 9 and the local model-pack
 recommendation/licence records are treated as implemented, with
-owner-confirmed Codemagic `ios-simulator-unsigned` validation through Phase 8
-commit `dff65d3e7773c5ab2c7aeb8b0d133c8030717c08`. Do not begin Phase 10 or
+owner-confirmed Codemagic `ios-simulator-unsigned` validation through Phase 9
+commit `b39ac2b3ec2f5d1b1a8e4d73a2b5fd98b4233926`. Do not begin Phase 11 or
 later work until the owner explicitly approves the next implementation prompt.
 
 ## Locked decisions
@@ -90,8 +90,8 @@ later work until the owner explicitly approves the next implementation prompt.
 - The active continuation plan is
   `docs/planning/phase-7-to-12-continuation-plan.md`. It preserves the original
   Phase 7 through Phase 12 objectives and adds required Phase 6.4 through Phase
-  6.7 integration gates. Phase 9 is implemented in the current working tree;
-  Phase 10 is not started.
+  6.7 integration gates. Phase 10 is implemented in the current working tree;
+  Phase 11 is not started.
 - Phase 7 AI-assisted growth modes are optional, local and replaceable behind
   `LocalAiRuntime`. No cloud AI, model downloads, model weights, backend
   dependency, speech or sync implementation exists.
@@ -153,6 +153,14 @@ later work until the owner explicitly approves the next implementation prompt.
   runtime and deterministic fallback. It does not generate learned-model
   intelligence; it routes deterministic flows, local resources, optional
   signed knowledge retrieval and model-free safety policies.
+- Phase 10 target locale resources must remain key-complete, but non-English
+  strings are draft fallbacks until qualified human review records exist for
+  production locales, especially safety, crisis, legal, privacy, consent,
+  relational-boundary, support, export/sync and daily-tool copy.
+- Phase 10 accessibility support covers deterministic policy for RTL layout,
+  script font fallbacks, large text, reduced motion, screen-reader labels,
+  accessible typography and low-literacy mode. Platform-specific assistive
+  technology testing still belongs in release validation.
 
 ## Completed work
 
@@ -615,6 +623,25 @@ later work until the owner explicitly approves the next implementation prompt.
   implemented controls, backend contract, non-goals and verification coverage.
 - `phaseNineCheck` was added as the Windows verification task for this slice.
   It does not begin Phase 10.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed for the pushed
+  Phase 9 commit `b39ac2b3ec2f5d1b1a8e4d73a2b5fd98b4233926`.
+- Phase 10 global localisation and accessibility policy was added under
+  `shared/src/commonMain/kotlin/org/bettamind/shared/accessibility/GlobalLocalizationAccessibility.kt`.
+- `BettamindLocaleAccessibilityCatalog`,
+  `LocalizationReadinessPolicy`, `LocaleFormattingPolicy` and
+  `AccessibilityReadinessPolicy` now define target-locale script/RTL/font
+  fallback support, translation key completeness and qualified-review gating,
+  locale date/plural behaviour and accessibility preference treatment.
+- Compose Settings now exposes accessibility controls for readable typography,
+  reduced motion and low-literacy copy, with screen-reader state descriptions.
+- Compose resources now include matching Phase 10 accessibility keys across
+  all target locale packs. Non-English entries remain draft fallbacks until
+  qualified review records approve them for production.
+- `docs/design/phase-10-localisation-accessibility.md` documents Phase 10
+  scope, accessibility controls, localisation review boundary and verification
+  coverage.
+- `phaseTenCheck` was added as the Windows verification task for this slice.
+  It does not begin Phase 11 speech.
 
 ## Important files
 
@@ -650,6 +677,7 @@ later work until the owner explicitly approves the next implementation prompt.
 - `shared/src/commonMain/kotlin/org/bettamind/shared/safety/CompassionateSafetyRedirection.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/support/SafetySupportBridge.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/sync/EncryptedExportSync.kt`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/accessibility/GlobalLocalizationAccessibility.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/security/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/growth/`
@@ -662,6 +690,7 @@ later work until the owner explicitly approves the next implementation prompt.
 - `shared/src/commonTest/kotlin/org/bettamind/shared/safety/CompassionateSafetyRedirectionTest.kt`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/support/SafetySupportBridgeTest.kt`
 - `shared/src/commonTest/kotlin/org/bettamind/shared/sync/EncryptedExportSyncTest.kt`
+- `shared/src/commonTest/kotlin/org/bettamind/shared/accessibility/GlobalLocalizationAccessibilityTest.kt`
 - `backend/app/api/sync.py`
 - `backend/app/schemas/sync.py`
 - `backend/tests/test_sync.py`
@@ -687,6 +716,7 @@ later work until the owner explicitly approves the next implementation prompt.
 - `docs/safety/compassionate-safety-redirection.md`
 - `docs/safety/safety-support-bridge.md`
 - `docs/security/phase-9-encrypted-export-sync.md`
+- `docs/design/phase-10-localisation-accessibility.md`
 - `docs/product/phase-6-6-deterministic-daily-tools.md`
 - `codemagic.yaml`
 - `.github/workflows/phase-1-checks.yml`
@@ -943,6 +973,23 @@ later work until the owner explicitly approves the next implementation prompt.
   normal Windows LF-to-CRLF warnings.
 - `git ls-files | rg "\.(tflite|litertlm|gguf|onnx|bin|safetensors|model|mlmodel|task|pt|pth|ckpt|mlpackage)$"`
   found no tracked model-weight artifacts after Phase 9 changes.
+- `.\gradlew.bat --version --no-daemon --console=plain` passed during Phase
+  10 verification after earlier long Gradle compile attempts were diagnosed.
+- `.\gradlew.bat :shared:tasks --all --no-daemon --no-configuration-cache --max-workers=1 --console=plain`
+  passed during Phase 10 verification and showed the expected Windows iOS
+  cinterop target skips.
+- `.\gradlew.bat :shared:compileDebugKotlinAndroid --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after Phase 10 shared Kotlin and Compose resource changes.
+- `.\gradlew.bat :shared:testDebugUnitTest --tests org.bettamind.shared.accessibility.GlobalLocalizationAccessibilityTest --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after Phase 10 localisation/accessibility policy tests were added.
+- XML string-resource parity check parsed all 10 Compose `strings.xml` files
+  and found no source string keys missing after Phase 10 strings were added.
+- `.\gradlew.bat phaseTenCheck --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after Phase 10 changes.
+- `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  completed on Windows after Phase 10 changes, with iOS Native compile/test
+  tasks still skipped because SQLCipher cinterop cannot be processed on
+  `mingw_x64`.
 
 ## Known blockers and limitations
 
@@ -983,14 +1030,19 @@ later work until the owner explicitly approves the next implementation prompt.
   safety-redirection categories, fallback keys, reminder replacements and AI
   metadata should receive owner, safety, legal and qualified localization
   review before production use.
-- Phase 9 shared Kotlin, Compose resources, backend and Gradle task changes
-  cannot be fully validated for iOS on Windows. The future pushed Phase 9
-  commit will require Codemagic `ios-simulator-unsigned`.
+- Phase 10 shared Kotlin, Compose resources and Gradle task changes cannot be
+  fully validated for iOS on Windows. The future pushed Phase 10 commit will
+  require Codemagic `ios-simulator-unsigned`.
 - Phase 9 is a contract foundation. Production sync still needs durable
   encrypted backend persistence, account/device provisioning if offered,
   device key exchange, retention/deletion policy, deployment secrets,
   operational monitoring and release security review. None of those secrets or
   runtime databases should be committed.
+- Phase 10 is a localisation/accessibility foundation. Target locale key
+  coverage is complete at the resource level, but qualified human review is
+  still required before production use of safety, crisis, legal, privacy,
+  consent, relational-boundary, support, export/sync and daily-tool
+  translations.
 - During Phase 8 local verification, initial short-timeout Gradle task runs
   exceeded the tool timeout and left stale Java/Gradle workers, which were
   terminated with `taskkill`. Re-running with longer timeouts passed targeted
@@ -1027,9 +1079,8 @@ later work until the owner explicitly approves the next implementation prompt.
 - Run Codemagic `ios-simulator-unsigned` after any future pushed commit that
   changes shared Kotlin, Compose resources, `iosApp`, Gradle configuration that
   can affect iOS, or Codemagic iOS workflow files.
-- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 9 commit because
-  it changes shared Kotlin, Compose resources, backend code and Gradle
-  verification tasks.
+- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 10 commit because
+  it changes shared Kotlin, Compose resources and Gradle verification tasks.
 - Review Phase 7.5 compassionate safety-redirection reasons, fallback copy,
   unsafe-reminder replacements, AI metadata semantics and post-generation
   validator categories before production localization or store review.
@@ -1039,6 +1090,10 @@ later work until the owner explicitly approves the next implementation prompt.
 - Review Phase 9 export/sync settings copy, backend envelope contract,
   sensitive export preview semantics, daily/relational/harm default exclusions,
   conflict handling and device revocation flow before production sync work.
+- Review Phase 10 accessibility settings copy, low-literacy mode semantics,
+  reduced-motion treatment, screen-reader state descriptions, script font
+  fallback plan and locale readiness gating before production localization or
+  store review.
 - Review Phase 6.5 relational-boundary categories and fallback copy before
   production localization or Phase 7 AI response-mode prompts.
 - Review Phase 6.6 daily-tool copy, reminder defaults, quiet-hours defaults
@@ -1079,6 +1134,6 @@ later work until the owner explicitly approves the next implementation prompt.
 
 ## Next approved task
 
-Run Codemagic `ios-simulator-unsigned` for the pushed Phase 9 commit. Review
-the Phase 9 export/sync contract and copy before production sync work. Do not
-begin Phase 10 automatically.
+Run Codemagic `ios-simulator-unsigned` for the pushed Phase 10 commit. Arrange
+qualified human review for production locale packs before release. Do not begin
+Phase 11 automatically.

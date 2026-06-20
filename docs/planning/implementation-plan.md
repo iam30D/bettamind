@@ -395,6 +395,20 @@ Acceptance criteria:
 - Reduced motion is supported for timers, transitions and grounding exercises.
 - Human review is tracked for safety-critical translations before production.
 
+Status: implemented as a shared localisation and accessibility foundation.
+`BettamindLocaleAccessibilityCatalog`, `LocalizationReadinessPolicy`,
+`LocaleFormattingPolicy` and `AccessibilityReadinessPolicy` cover target locale
+profiles, RTL/script/font fallback metadata, locale-aware date/number/plural
+metadata, resource completeness, qualified human-review gates for
+safety-critical strings, screen-reader label requirements, large-text support,
+reduced-motion static presentation and low-literacy mode. Settings exposes
+accessible typography, reduced motion and simple wording controls. Target
+locale resource keys are complete as draft fallbacks, but safety, crisis,
+legal, privacy and consent translations remain blocked from production until
+qualified human review records are supplied. This phase does not add speech,
+release readiness, TestFlight, store metadata, cloud AI, model artifacts or
+production-approved non-English safety copy.
+
 ## Phase 11: Optional offline speech
 
 Goal: add optional offline speech-to-text and text-to-speech packs.

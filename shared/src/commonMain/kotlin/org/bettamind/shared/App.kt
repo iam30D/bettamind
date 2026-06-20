@@ -35,6 +35,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import org.bettamind.shared.ai.AiGrowthMode
 import org.bettamind.shared.daily.BreathingExerciseCatalog
@@ -71,6 +74,8 @@ fun BettamindApp() {
     var selectedDestination by remember { mutableStateOf(BettamindDestination.Today) }
     var themeMode by remember { mutableStateOf(BettamindThemeMode.Light) }
     var useAccessibleTypography by remember { mutableStateOf(false) }
+    var useReducedMotion by remember { mutableStateOf(false) }
+    var useLowLiteracyCopy by remember { mutableStateOf(false) }
     var growthState by remember { mutableStateOf(DeterministicGrowthEngine.locked()) }
     var privacyLockTimeout by remember { mutableStateOf(PrivacyLockTimeout.OneMinute) }
 
@@ -112,6 +117,10 @@ fun BettamindApp() {
                     onThemeModeChange = { themeMode = it },
                     useAccessibleTypography = useAccessibleTypography,
                     onAccessibleTypographyChange = { useAccessibleTypography = it },
+                    useReducedMotion = useReducedMotion,
+                    onReducedMotionChange = { useReducedMotion = it },
+                    useLowLiteracyCopy = useLowLiteracyCopy,
+                    onLowLiteracyCopyChange = { useLowLiteracyCopy = it },
                     privacyLockTimeout = privacyLockTimeout,
                     onPrivacyLockTimeoutChange = { privacyLockTimeout = it },
                     growthState = growthState,
@@ -156,7 +165,7 @@ private fun AppHeader() {
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                text = stringResource(Res.string.phase_nine_status),
+                text = stringResource(Res.string.phase_ten_status),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -187,6 +196,10 @@ private fun DestinationPanel(
     onThemeModeChange: (BettamindThemeMode) -> Unit,
     useAccessibleTypography: Boolean,
     onAccessibleTypographyChange: (Boolean) -> Unit,
+    useReducedMotion: Boolean,
+    onReducedMotionChange: (Boolean) -> Unit,
+    useLowLiteracyCopy: Boolean,
+    onLowLiteracyCopyChange: (Boolean) -> Unit,
     privacyLockTimeout: PrivacyLockTimeout,
     onPrivacyLockTimeoutChange: (PrivacyLockTimeout) -> Unit,
     growthState: GrowthSessionState,
@@ -221,6 +234,10 @@ private fun DestinationPanel(
                     onThemeModeChange = onThemeModeChange,
                     useAccessibleTypography = useAccessibleTypography,
                     onAccessibleTypographyChange = onAccessibleTypographyChange,
+                    useReducedMotion = useReducedMotion,
+                    onReducedMotionChange = onReducedMotionChange,
+                    useLowLiteracyCopy = useLowLiteracyCopy,
+                    onLowLiteracyCopyChange = onLowLiteracyCopyChange,
                     privacyLockTimeout = privacyLockTimeout,
                     onPrivacyLockTimeoutChange = onPrivacyLockTimeoutChange,
                 )
@@ -670,6 +687,10 @@ private fun SettingsPanel(
     onThemeModeChange: (BettamindThemeMode) -> Unit,
     useAccessibleTypography: Boolean,
     onAccessibleTypographyChange: (Boolean) -> Unit,
+    useReducedMotion: Boolean,
+    onReducedMotionChange: (Boolean) -> Unit,
+    useLowLiteracyCopy: Boolean,
+    onLowLiteracyCopyChange: (Boolean) -> Unit,
     privacyLockTimeout: PrivacyLockTimeout,
     onPrivacyLockTimeoutChange: (PrivacyLockTimeout) -> Unit,
 ) {
@@ -696,38 +717,14 @@ private fun SettingsPanel(
             rightSelected = themeMode == BettamindThemeMode.HighContrast,
             onRightClick = { onThemeModeChange(BettamindThemeMode.HighContrast) },
         )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 48.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                Text(
-                    text = stringResource(Res.string.settings_font_title),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Text(
-                    text = stringResource(
-                        if (useAccessibleTypography) {
-                            Res.string.settings_font_accessible
-                        } else {
-                            Res.string.settings_font_default
-                        },
-                    ),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            Switch(
-                checked = useAccessibleTypography,
-                onCheckedChange = onAccessibleTypographyChange,
-            )
-        }
+        AccessibilitySettingsPanel(
+            useAccessibleTypography = useAccessibleTypography,
+            onAccessibleTypographyChange = onAccessibleTypographyChange,
+            useReducedMotion = useReducedMotion,
+            onReducedMotionChange = onReducedMotionChange,
+            useLowLiteracyCopy = useLowLiteracyCopy,
+            onLowLiteracyCopyChange = onLowLiteracyCopyChange,
+        )
         Text(
             text = stringResource(Res.string.settings_locale_note),
             style = MaterialTheme.typography.bodySmall,
@@ -740,6 +737,96 @@ private fun SettingsPanel(
         RelationalBoundarySettingsPanel()
         HarmSafetySettingsPanel()
         EncryptedExportSyncSettingsPanel()
+    }
+}
+
+@Composable
+private fun AccessibilitySettingsPanel(
+    useAccessibleTypography: Boolean,
+    onAccessibleTypographyChange: (Boolean) -> Unit,
+    useReducedMotion: Boolean,
+    onReducedMotionChange: (Boolean) -> Unit,
+    useLowLiteracyCopy: Boolean,
+    onLowLiteracyCopyChange: (Boolean) -> Unit,
+) {
+    StatusBlock(
+        title = Res.string.accessibility_title,
+        body = Res.string.accessibility_description,
+    ) {
+        SettingsSwitchRow(
+            title = Res.string.settings_font_title,
+            description = if (useAccessibleTypography) {
+                Res.string.settings_font_accessible
+            } else {
+                Res.string.settings_font_default
+            },
+            checked = useAccessibleTypography,
+            onCheckedChange = onAccessibleTypographyChange,
+        )
+        SettingsSwitchRow(
+            title = Res.string.accessibility_reduced_motion_title,
+            description = Res.string.accessibility_reduced_motion_description,
+            checked = useReducedMotion,
+            onCheckedChange = onReducedMotionChange,
+        )
+        SettingsSwitchRow(
+            title = Res.string.accessibility_low_literacy_title,
+            description = Res.string.accessibility_low_literacy_description,
+            checked = useLowLiteracyCopy,
+            onCheckedChange = onLowLiteracyCopyChange,
+        )
+        Text(
+            text = stringResource(Res.string.accessibility_review_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun SettingsSwitchRow(
+    title: StringResource,
+    description: StringResource,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    val titleText = stringResource(title)
+    val stateText = stringResource(
+        if (checked) {
+            Res.string.accessibility_toggle_on
+        } else {
+            Res.string.accessibility_toggle_off
+        },
+    )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                text = titleText,
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                text = stringResource(description),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Switch(
+            modifier = Modifier.semantics {
+                contentDescription = titleText
+                stateDescription = stateText
+            },
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+        )
     }
 }
 

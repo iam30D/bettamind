@@ -84,3 +84,9 @@ tasks.register("phaseNineCheck") {
     description = "Runs the Phase 9 Windows mobile checks available without Xcode."
     dependsOn("phaseEightCheck", ":shared:testDebugUnitTest", ":androidApp:assembleDebug", ":androidApp:lintDebug")
 }
+
+tasks.register("phaseTenCheck") {
+    group = "verification"
+    description = "Runs the Phase 10 Windows mobile checks available without Xcode."
+    dependsOn("phaseNineCheck", ":shared:testDebugUnitTest", ":androidApp:assembleDebug", ":androidApp:lintDebug")
+}

@@ -250,6 +250,16 @@ Required tests:
 - Large-text, reduced-motion and low-literacy review checks.
 - Human-review tracking tests for safety-critical strings.
 
+Status: implemented as a shared localisation and accessibility foundation in
+`shared/src/commonMain/kotlin/org/bettamind/shared/accessibility/GlobalLocalizationAccessibility.kt`.
+The implementation covers target locale profiles, RTL and script fallback
+metadata, locale-aware formatting metadata, resource completeness, qualified
+human-review tracking gates for safety-critical strings, screen-reader surface
+requirements, large text, reduced motion and low-literacy mode. Settings now
+exposes accessibility controls. Target locale keys are complete as draft
+fallbacks, but production approval still requires qualified human-review
+records. It does not begin Phase 11 speech.
+
 ## Phase 11: Optional Offline Speech
 
 Original objective: add optional offline speech-to-text and text-to-speech

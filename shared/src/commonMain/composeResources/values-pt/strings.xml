@@ -117,6 +117,16 @@
     <string name="encrypted_sync_default_note">Bettamind prepares only encrypted, versioned, checksum-verified packages after explicit approval and local authentication.</string>
     <string name="encrypted_sync_privacy_note">Daily, relationship-boundary and harm-safety content is excluded by default; sensitive inclusion needs explicit selection and preview.</string>
     <string name="encrypted_sync_calendar_note">System-calendar handoff remains local and explicit, without broad calendar reading.</string>
+    <string name="phase_ten_status">Global localisation and accessibility foundation</string>
+    <string name="accessibility_title">Accessibility</string>
+    <string name="accessibility_description">Screen-reader labels, large text, reduced motion, script fallbacks and simple wording are validated for the current foundation.</string>
+    <string name="accessibility_reduced_motion_title">Reduced motion</string>
+    <string name="accessibility_reduced_motion_description">Timers, transitions and grounding steps use static step-by-step presentation when reduced motion is on.</string>
+    <string name="accessibility_low_literacy_title">Simple wording</string>
+    <string name="accessibility_low_literacy_description">Use shorter, plain-language copy where an approved simple version is available.</string>
+    <string name="accessibility_review_note">Safety, crisis, legal, privacy and consent translations stay blocked from production until qualified human review is recorded.</string>
+    <string name="accessibility_toggle_on">On</string>
+    <string name="accessibility_toggle_off">Off</string>
     <string name="phase_seven_five_status">Compassionate safety redirection foundation</string>
     <string name="compassionate_safety_privacy_notice">Sensitive safety content stays out of memory, export and notifications by default unless the user explicitly selects it with local authentication.</string>
     <string name="compassionate_safety_ack_none">I can keep this focused on the next humane step.</string>
