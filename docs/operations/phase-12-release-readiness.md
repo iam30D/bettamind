@@ -1,14 +1,19 @@
 # Phase 12 Release Readiness
 
-Date updated: 2026-06-20
+Date updated: 2026-06-25
 
 ## Scope
 
 Phase 12 adds the repository-side release-readiness foundation for Bettamind.
 It does not approve a production release by itself. Production release still
-requires owner-controlled device testing, TestFlight, store metadata review,
-qualified translation review, rollback evidence and Codemagic iOS validation
-for the pushed release-candidate commit.
+requires owner-controlled device testing, TestFlight smoke evidence, store
+metadata review, qualified translation review and rollback evidence.
+
+The owner confirmed Codemagic `ios-simulator-unsigned` passed for the Phase 12
+release-readiness foundation on 2026-06-25. A manual Codemagic
+`ios-testflight-release` workflow is now present for the signed IPA and App
+Store Connect upload path, but it requires owner-managed Apple signing and
+Codemagic secure credentials before it can pass.
 
 ## Implemented Repository Gates
 
@@ -33,7 +38,10 @@ for the pushed release-candidate commit.
   high devices.
 - Record startup, memory, battery, thermal and background behavior evidence on
   physical devices.
-- Run Codemagic `ios-simulator-unsigned` against the pushed Phase 12 commit.
+- Configure the Apple Developer, App Store Connect and Codemagic secure signing
+  setup documented in `docs/operations/testflight-readiness.md`.
+- Run Codemagic `ios-testflight-release` against the pushed release-candidate
+  commit and retain the uploaded build number.
 - Complete TestFlight installation and privacy/safety smoke testing.
 - Review App Store and Play Store metadata, screenshots, privacy labels,
   support claims and safety disclaimers under the publishing entity.

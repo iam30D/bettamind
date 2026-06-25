@@ -3,12 +3,14 @@
 ## Current phase
 
 Phase 12 performance, red-team and release-readiness foundation is implemented
-and locally verified on Windows. Phases 0 through 11 and the local model-pack
+and locally verified on Windows. Phases 0 through 12 and the local model-pack
 recommendation/licence records are treated as implemented, with
-owner-confirmed Codemagic `ios-simulator-unsigned` validation through Phase 11
-commit `5bba3dc74860aaa3077a53d542d15b4357f54f04`. The pushed Phase 12 commit
-will require owner-run Codemagic validation and real release evidence before
-production approval. A static public website has been added under
+owner-confirmed Codemagic `ios-simulator-unsigned` validation for Phase 12 on
+2026-06-25. Real release evidence, including signed TestFlight installation and
+physical-device smoke testing, is still required before production approval. A
+manual Codemagic `ios-testflight-release` workflow has been added for signed
+IPA build and App Store Connect upload after owner Apple/Codemagic setup. A
+static public website has been added under
 `apps/website` as an isolated Astro site for support, privacy, safety, AI
 transparency, data deletion and brand pages; this did not modify mobile app,
 backend, AI, sync or safety-system runtime code.
@@ -184,6 +186,11 @@ backend, AI, sync or safety-system runtime code.
   `ReleaseReadinessPolicy` gates are passed or explicitly accepted with
   evidence; missing physical-device or store evidence cannot be treated as a
   passing automated check.
+- The signed iOS release path is the manual Codemagic
+  `ios-testflight-release` workflow. It uses Codemagic secure Apple signing and
+  App Store Connect integration, fails on placeholder bundle IDs and uploads to
+  App Store Connect without automatically submitting for external beta review
+  or App Store review.
 
 ## Completed work
 
@@ -1123,6 +1130,16 @@ backend, AI, sync or safety-system runtime code.
   explicitly executed and passed the Phase 12 release-readiness test class.
 - `.\gradlew.bat --no-daemon --stacktrace --console=plain phaseTwelveCheck`
   passed after Phase 12 changes.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed for the Phase 12
+  release-readiness foundation on 2026-06-25.
+- `codemagic.yaml` now includes a manual `ios-testflight-release` workflow for
+  App Store signing, signed IPA build and App Store Connect upload after
+  owner-managed Apple/Codemagic setup.
+- `iosApp/iosApp/Info.plist` now uses Xcode version build settings for
+  `CFBundleShortVersionString` and `CFBundleVersion`; Codemagic stamps concrete
+  TestFlight values during the release workflow.
+- `docs/operations/testflight-readiness.md` documents the required secure
+  Codemagic setup and internal TestFlight smoke checklist.
 - `git diff --check` reported no whitespace errors after Phase 12 changes,
   only normal Windows LF-to-CRLF warnings.
 - `rg --files --glob '!**/.git/**' --glob '!**/build/**' | rg "\.(litertlm|tflite|task|gguf|onnx|safetensors|bin|pt|pth|ckpt|mlmodel|mlpackage|keystore|p12|mobileprovision|cer|env|db|sqlite|aab|ipa|xcarchive|wav|mp3|m4a|flac)$"`
@@ -1203,9 +1220,13 @@ backend, AI, sync or safety-system runtime code.
 - Phase 12 is a repository-side release-readiness foundation. Production
   release remains blocked until owner evidence exists for Android physical
   devices, low-resource performance, battery/thermal/memory behavior,
-  Codemagic iOS for the pushed Phase 12 commit, TestFlight, store metadata,
-  privacy labels, screenshots, support/safety claims, qualified translation
-  review and rollback.
+  signed TestFlight installation and smoke testing, store metadata, privacy
+  labels, screenshots, support/safety claims, qualified translation review and
+  rollback.
+- The signed TestFlight workflow cannot pass until the owner creates the final
+  iOS bundle identifier and App Store Connect app record, configures Codemagic
+  integration `bettamind-app-store-connect`, adds matching App Store signing
+  identities and sets the `bettamind-testflight` variable group.
 - Initial Phase 12 Gradle verification hit a Kotlin compile-cache delete
   failure and a short no-daemon timeout. `.\gradlew.bat --stop` stopped two
   daemons; reruns with longer timeouts passed compile, shared tests and
@@ -1254,8 +1275,11 @@ backend, AI, sync or safety-system runtime code.
 - Run Codemagic `ios-simulator-unsigned` after any future pushed commit that
   changes shared Kotlin, Compose resources, `iosApp`, Gradle configuration that
   can affect iOS, or Codemagic iOS workflow files.
-- Run Codemagic `ios-simulator-unsigned` for the pushed Phase 12 commit because
-  it changes shared Kotlin, Compose resources and Gradle verification tasks.
+- Configure the owner Apple Developer, App Store Connect and Codemagic secure
+  setup documented in `docs/operations/testflight-readiness.md`.
+- Run Codemagic `ios-testflight-release` against the pushed release-candidate
+  commit, then record the uploaded App Store Connect build number and
+  TestFlight smoke-test evidence.
 - Review Phase 7.5 compassionate safety-redirection reasons, fallback copy,
   unsafe-reminder replacements, AI metadata semantics and post-generation
   validator categories before production localization or store review.
@@ -1331,10 +1355,12 @@ backend, AI, sync or safety-system runtime code.
 
 ## Next approved task
 
-Deploy the static website through Cloudflare Pages and configure
-`www.bettamind.com`. The Phase 12 owner actions still remain before production
-app release: run Codemagic `ios-simulator-unsigned` for the pushed Phase 12
-commit, complete Android physical-device testing, low-resource startup/memory
-checks, battery/thermal review, TestFlight, store metadata and privacy labels,
-qualified human review for production locale strings and the
-rollback/revocation record.
+Prepare the first internal TestFlight run: configure owner Apple Developer,
+App Store Connect and Codemagic secure signing as documented in
+`docs/operations/testflight-readiness.md`, then run
+`ios-testflight-release` against the pushed release-candidate commit and
+record internal TestFlight smoke evidence. Deploying the static website through
+Cloudflare Pages remains a separate open owner action. Production release still
+requires Android physical-device testing, low-resource startup/memory checks,
+battery/thermal review, store metadata and privacy labels, qualified human
+review for production locale strings and the rollback/revocation record.

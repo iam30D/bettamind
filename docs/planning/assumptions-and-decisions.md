@@ -63,6 +63,11 @@
   contracts, but physical-device performance, battery, thermal, memory,
   Codemagic iOS, TestFlight, store metadata, rollback and qualified
   translation review remain owner-controlled release evidence.
+- Use a manual Codemagic `ios-testflight-release` workflow for the first signed
+  iOS release path. The workflow must rely on Codemagic secure Apple
+  integrations and variable groups, must fail on placeholder bundle IDs, must
+  upload to App Store Connect only when started manually and must not commit
+  signing files or Apple API keys.
 
 ## Deferred decisions
 
@@ -73,7 +78,8 @@
 - Production offline speech adapters, OS voice support matrix, speech-pack
   artifacts, speech-pack licences, trust anchors, signing keys and device-test
   results.
-- Signed release and TestFlight configuration.
+- Owner-controlled Apple Developer, App Store Connect and Codemagic secure
+  signing setup for the TestFlight workflow.
 - Phase 12 production release evidence: Android physical-device matrix,
   low-resource budgets on real devices, TestFlight signoff, store listing
   metadata, privacy-label answers, rollback owner/process, production pack

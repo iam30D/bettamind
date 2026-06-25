@@ -116,16 +116,80 @@ workflows:
       - "**/build/test-results/**"
       - "$HOME/Library/Logs/DiagnosticReports/*.crash"
 
-  ios-signed-release-placeholder:
-    name: Disabled Signed iOS Release Placeholder
+  ios-testflight-release:
+    name: iOS TestFlight Release
     instance_type: mac_mini_m2
-    max_build_duration: 10
+    max_build_duration: 90
+    integrations:
+      app_store_connect: bettamind-app-store-connect
     environment:
       xcode: 16.4
+      groups:
+        - bettamind-testflight
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: $BETTAMIND_IOS_BUNDLE_ID
     triggering:
       events: []
     scripts:
-      - name: Signing intentionally disabled
+      - name: Show tool versions
         script: |
-          echo "Signed iOS release is intentionally disabled in Phase 1."
-          echo "Configure Codemagic secure signing credentials only in a later approved phase."
+          sw_vers
+          xcodebuild -version
+          java -version
+      - name: Validate release environment
+        script: |
+          set -euo pipefail
+          : "${BETTAMIND_IOS_BUNDLE_ID:?Set BETTAMIND_IOS_BUNDLE_ID in Codemagic group bettamind-testflight.}"
+
+          case "$BETTAMIND_IOS_BUNDLE_ID" in
+            dev.bettamind.placeholder|*placeholder*)
+              echo "BETTAMIND_IOS_BUNDLE_ID must be the owner-controlled App Store bundle identifier."
+              exit 1
+              ;;
+          esac
+
+          echo "Bundle identifier: $BETTAMIND_IOS_BUNDLE_ID"
+          echo "Codemagic build number: ${BUILD_NUMBER:-1}"
+      - name: Validate Gradle wrapper
+        script: |
+          test -f gradle/wrapper/gradle-wrapper.jar
+          chmod +x ./gradlew
+          ./gradlew --version
+      - name: Run release readiness checks
+        script: ./gradlew phaseTwelveCheck --stacktrace
+      - name: Resolve iOS Swift packages
+        script: |
+          xcodebuild \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme iosApp \
+            -resolvePackageDependencies
+      - name: Stamp TestFlight build metadata
+        script: |
+          set -euo pipefail
+          /usr/libexec/PlistBuddy \
+            -c "Set :CFBundleVersion ${BUILD_NUMBER:-1}" \
+            iosApp/iosApp/Info.plist
+          /usr/libexec/PlistBuddy \
+            -c "Set :CFBundleShortVersionString ${BETTAMIND_IOS_MARKETING_VERSION:-0.1.0}" \
+            iosApp/iosApp/Info.plist
+      - name: Set up App Store code signing
+        script: xcode-project use-profiles
+      - name: Build signed IPA
+        script: |
+          set -o pipefail
+          xcode-project build-ipa \
+            --project iosApp/iosApp.xcodeproj \
+            --scheme iosApp | tee xcodebuild-ios-testflight.log
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - xcodebuild-ios-testflight.log
+      - "**/build/reports/**"
+      - "**/build/test-results/**"
+      - "$HOME/Library/Developer/Xcode/DerivedData/**/Logs/**/*.xcactivitylog"
+      - "$HOME/Library/Logs/DiagnosticReports/*.crash"
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: false
+        submit_to_app_store: false

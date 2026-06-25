@@ -1,6 +1,6 @@
 # Risk Register
 
-Date updated: 2026-06-20
+Date updated: 2026-06-25
 
 | Risk | Impact | Mitigation | Status |
 | --- | --- | --- | --- |
@@ -9,6 +9,7 @@ Date updated: 2026-06-20
 | No canonical SVG logo in repo | Phase 2 brand work may rely on PNG fallback | Owner must confirm PNG fallback or add SVG under `brand/source/` | Open |
 | iOS cannot be fully checked on Windows | Invalid Xcode project or native iOS dependency issue could go unnoticed locally | Codemagic runs real `xcodebuild` simulator build | Open for each shared/iOS change |
 | Placeholder bundle IDs | Release identifiers could be wrong | Keep placeholders non-production and document owner action | Open |
+| TestFlight workflow lacks owner Apple or Codemagic credentials | Signed IPA build or App Store Connect upload cannot complete | `ios-testflight-release` fails on placeholder bundle IDs, uses Codemagic secure signing and App Store Connect integration, and documents required owner setup in `docs/operations/testflight-readiness.md` | Open until first signed TestFlight upload passes |
 | Dependency compatibility drift | CI may fail after tool updates | Use documented compatible Kotlin, Gradle, AGP and Xcode versions | Open |
 | Backend accidentally becomes mandatory | Violates offline/account-free rule | Keep mobile modules independent of backend | Mitigated in Phase 1 design |
 | Encryption implemented incorrectly | Privacy failure | Phase 3 keeps storage behind explicit contracts, uses Android/iOS SQLCipher, Android Keystore, iOS Keychain and forbids unencrypted fallback storage | Mitigated for Phase 3 spike |
