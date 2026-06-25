@@ -1,0 +1,49 @@
+---
+import PageHero from "@components/PageHero.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Brand"
+  description="Bettamind brand description, public logo preview, app icon preview and usage notes."
+  path="/brand"
+>
+  <PageHero
+    eyebrow="Brand"
+    title="Bettamind brand"
+    description="Bettamind is a private human-growth app for reflection, daily practices, decisions, habits, repair and safer choices."
+  />
+
+  <section class="section">
+    <div class="content-shell">
+      <div class="grid two">
+        <article class="brand-preview logo">
+          <h2>Logo preview</h2>
+          <img src="/assets/bettamind-logo-web.png" alt="Bettamind logo" width="640" height="384" />
+          <p>Use optimized public website assets for web placement. Do not expose or overwrite private master source files.</p>
+        </article>
+        <article class="brand-preview icon">
+          <h2>App icon preview</h2>
+          <img src="/assets/bettamind-app-icon-web.png" alt="Bettamind app icon preview" width="256" height="256" />
+          <p>The app icon preview is derived from the approved reusable generated brand assets in the repository.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-page">
+    <div class="content-shell">
+      <article>
+        <section>
+          <h2>Usage note</h2>
+          <p>The canonical source logo remains under repository brand source control and must not be overwritten by website work. Public web copies are optimized derivatives for this static site.</p>
+        </section>
+
+        <section>
+          <h2>Color mapping</h2>
+          <p>The website maps to the app design tokens: primary #0E5A7A, secondary #2F7D57, accent #A6C83A, background #F7FAF8, text #12201B and surface variant #E4ECE6.</p>
+        </section>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

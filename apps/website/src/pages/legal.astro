@@ -1,0 +1,48 @@
+---
+import PageHero from "@components/PageHero.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { site } from "@data/site";
+---
+
+<BaseLayout
+  title="Legal Notices"
+  description="Bettamind legal notices for open-source licences, fonts, optional model licences and brand notices."
+  path="/legal"
+>
+  <PageHero
+    eyebrow="Legal"
+    title="Legal Notices"
+    description="Public notices for Bettamind brand, third-party software, fonts and optional model packs."
+  />
+
+  <section class="content-page">
+    <div class="content-shell">
+      <article>
+        <section>
+          <h2>Open-source licences</h2>
+          <p>Bettamind uses open-source software in the app and website. Final release builds should include current open-source notices for shipped dependencies.</p>
+        </section>
+
+        <section>
+          <h2>Font licences</h2>
+          <p>The app bundles Noto Sans family fonts and Atkinson Hyperlegible with their applicable font licences. Website typography maps to those app font choices using system and local fallback stacks.</p>
+        </section>
+
+        <section>
+          <h2>Optional model licences</h2>
+          <p>Bettamind core use works without AI model packs. If optional model packs are offered, publisher licence approvals, third-party notices, signed manifests and checksum records must be completed before release.</p>
+        </section>
+
+        <section>
+          <h2>Brand and product notices</h2>
+          <p>Bettamind names, logo assets, app icons, copy, design and product materials are owned by their rights holder unless otherwise stated. See <a href="/brand">Brand</a> for public usage guidance.</p>
+        </section>
+
+        <section>
+          <h2>Contact</h2>
+          <p>Legal notice questions can be sent to <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+        </section>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

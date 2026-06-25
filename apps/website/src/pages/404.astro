@@ -1,0 +1,23 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Page Not Found"
+  description="The requested Bettamind website page could not be found."
+  path="/404"
+>
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow">404</p>
+        <h1>Page not found</h1>
+        <p class="lead">The page may have moved or may not exist.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="/">Go home</a>
+          <a class="button secondary" href="/support">Contact support</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,47 @@
+---
+import { mainNav, site } from "@data/site";
+
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+const isCurrent = (href: string) =>
+  href === "/" ? currentPath === "/" : currentPath.startsWith(href);
+---
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand-link" href="/" aria-label={`${site.name} home`}>
+      <img src="/assets/bettamind-mark-web.png" alt="" width="512" height="512" />
+      <span class="brand-word">{site.name}</span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Primary navigation">
+      <ul class="nav-list">
+        {mainNav.map((item) => (
+          <li>
+            <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <details class="mobile-menu">
+      <summary>Menu</summary>
+      <nav aria-label="Mobile navigation">
+        <ul class="nav-list">
+          {mainNav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </details>
+  </div>
+</header>

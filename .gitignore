@@ -25,6 +25,9 @@ Thumbs.db
 # Builds
 build/
 **/build/
+apps/website/.astro/
+apps/website/dist/
+apps/website/node_modules/
 DerivedData/
 Pods/
 

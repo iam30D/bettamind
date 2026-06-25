@@ -1,0 +1,99 @@
+---
+import PageHero from "@components/PageHero.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { site } from "@data/site";
+---
+
+<BaseLayout
+  title="Privacy Policy"
+  description="Bettamind privacy policy covering account-free core use, encrypted local storage, app lock, optional AI context use, exports and deletion."
+  path="/privacy"
+>
+  <PageHero
+    eyebrow="Privacy"
+    title="Privacy Policy"
+    description="Bettamind is designed for private, local-first use. Core app use does not require an account."
+  />
+
+  <section class="content-page">
+    <div class="content-shell">
+      <article>
+        <p class="meta-note">Last updated: June 25, 2026.</p>
+
+        <section>
+          <h2>Summary</h2>
+          <p>Bettamind is a private human-growth app. Core use works without registration, account creation, advertising, unnecessary tracking or a mandatory backend.</p>
+          <p>Personal daily-tool records are designed to use encrypted local storage. Personal content does not leave the device unless the user chooses a specific export, share or future optional sync action.</p>
+        </section>
+
+        <section>
+          <h2>Account-free core use</h2>
+          <p>Bettamind does not require an account for core use. The app should not ask users to log in before using core reflection and daily tools.</p>
+        </section>
+
+        <section>
+          <h2>Information that may stay on device</h2>
+          <ul>
+            <li>Daily check-ins and practice records.</li>
+            <li>Private reflection and worksheet content where enabled.</li>
+            <li>Reminder preferences and neutral reminder metadata.</li>
+            <li>App privacy lock settings.</li>
+            <li>User-approved memory items, when separately approved.</li>
+            <li>Age-assurance status such as adult, minor or unknown, source, local confirmation time, policy version and optional signal expiry.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Local encrypted storage and app lock</h2>
+          <p>Daily-tool personal records are intended to use encrypted local storage only. There is no unencrypted fallback for personal daily records. The app privacy lock can require local authentication before private content or sensitive actions are available.</p>
+        </section>
+
+        <section>
+          <h2>Memory controls</h2>
+          <p>Permanent memory requires separate approval. Sensitive harmful-intent, crisis or relational-boundary narratives are excluded from memory by default.</p>
+        </section>
+
+        <section>
+          <h2>Optional AI context use</h2>
+          <p>AI is optional. Core app use works without AI. Where optional AI is available, recent context or approved memory may be used only when the user has chosen that mode and consented to the relevant context. Bettamind does not inject the full private vault into AI prompts.</p>
+        </section>
+
+        <section>
+          <h2>Information that may leave the device by user action</h2>
+          <ul>
+            <li>Encrypted export files the user chooses to create.</li>
+            <li>Support summaries the user explicitly previews and shares.</li>
+            <li>System share-sheet content selected by the user.</li>
+            <li>Future optional encrypted sync payloads, only if that feature is offered and the user enables it.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Optional export, sharing and sync</h2>
+          <p>Exports and support sharing are user-controlled. Sensitive sharing should require explicit selection, preview and local step-up authentication where needed. Core use does not require sync. If optional encrypted sync is offered in a release, this policy and store disclosures must describe it accurately.</p>
+        </section>
+
+        <section>
+          <h2>No advertising or sale of personal data</h2>
+          <p>Bettamind does not include advertising, public feeds, public rankings, unnecessary tracking or sale of personal data.</p>
+        </section>
+
+        <section>
+          <h2>Sensitive data handling</h2>
+          <p>Safety-sensitive narratives are treated with extra care. Harmful-intent or crisis narratives are excluded from memory, export, sync and notifications by default unless the user explicitly selects a minimum-detail support summary for sharing.</p>
+        </section>
+
+        <section>
+          <h2>Retention and deletion</h2>
+          <p>Local app data can be deleted through in-app controls where available, device app settings, or app removal depending on platform behavior. Encrypted exports or backups saved outside Bettamind must be deleted by the user from the place where they were saved.</p>
+          <p>See <a href="/data-deletion">Data Deletion</a> for local-data deletion guidance.</p>
+        </section>
+
+        <section>
+          <h2>Contact</h2>
+          <p>Questions about privacy can be sent to <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+        </section>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

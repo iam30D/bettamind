@@ -8,7 +8,10 @@ recommendation/licence records are treated as implemented, with
 owner-confirmed Codemagic `ios-simulator-unsigned` validation through Phase 11
 commit `5bba3dc74860aaa3077a53d542d15b4357f54f04`. The pushed Phase 12 commit
 will require owner-run Codemagic validation and real release evidence before
-production approval.
+production approval. A static public website has been added under
+`apps/website` as an isolated Astro site for support, privacy, safety, AI
+transparency, data deletion and brand pages; this did not modify mobile app,
+backend, AI, sync or safety-system runtime code.
 
 ## Locked decisions
 
@@ -711,6 +714,24 @@ production approval.
 - `phaseTwelveCheck` was added as the Windows verification task for this
   slice. It does not replace Codemagic, TestFlight or physical-device release
   evidence.
+- Static website foundation added under `apps/website` with Astro and
+  TypeScript, static output, required public pages, SEO/Open Graph metadata,
+  sitemap, robots.txt, 404 route, Cloudflare Pages `_headers` and `_redirects`,
+  and no analytics, ads, trackers, cookies, authentication, database or
+  server-side rendering.
+- Website pages created: Home, Features, Privacy Policy, Terms of Use, Safety,
+  AI Transparency, Support, Data Deletion, Accessibility, Legal Notices, Brand,
+  FAQ and 404.
+- Website copy explicitly preserves Bettamind's account-free core use,
+  offline-first core, optional AI, local encrypted storage, user-approved
+  memory, no romantic/sexual companion positioning, no therapy/diagnosis/
+  emergency/legal/financial-advice positioning and no fake account deletion
+  flow.
+- Optimized website image assets were generated from `brand/generated/`
+  without overwriting `brand/source/bettamind-logo-master.png`.
+- `docs/operations/website-cloudflare-pages.md` documents Cloudflare Pages
+  build settings, DNS/custom-domain steps, public store URLs, security headers
+  and policy alignment.
 
 ## Important files
 
@@ -795,6 +816,8 @@ production approval.
 - `docs/product/phase-6-6-deterministic-daily-tools.md`
 - `codemagic.yaml`
 - `.github/workflows/phase-1-checks.yml`
+- `apps/website/`
+- `docs/operations/website-cloudflare-pages.md`
 
 ## Commands that passed
 
@@ -1098,6 +1121,19 @@ production approval.
 - `rg --files --glob '!**/.git/**' --glob '!**/build/**' | rg "\.(litertlm|tflite|task|gguf|onnx|safetensors|bin|pt|pth|ckpt|mlmodel|mlpackage|keystore|p12|mobileprovision|cer|env|db|sqlite|aab|ipa|xcarchive|wav|mp3|m4a|flac)$"`
   found no model, signing, secret, database, audio-pack or store-archive
   artifacts in the working tree after Phase 12 changes.
+- `python apps\website\scripts\generate-assets.py` generated optimized public
+  website brand assets from `brand/generated/`.
+- From `apps/website/`: `npm install --package-lock-only --ignore-scripts
+  --no-audit --no-fund` generated `package-lock.json`.
+- From `apps/website/`: `npm ci --ignore-scripts --no-audit --no-fund`
+  completed after deleting a corrupted partial `node_modules` install.
+- From `apps/website/`: `npm run build` passed with Astro check reporting 0
+  errors, 0 warnings and 0 hints, then built 13 static pages and the sitemap.
+- From `apps/website/`: `npm run verify` passed, rebuilding the site and
+  verifying 13 HTML files, required routes, sitemap, internal links and
+  wording guards.
+- `rg -n "[^\x00-\x7F]" apps\website docs\operations\website-cloudflare-pages.md .gitignore`
+  returned no non-ASCII matches.
 
 ## Known blockers and limitations
 
@@ -1192,6 +1228,9 @@ production approval.
   bundled JBR at `C:\Program Files\JetBrains\PyCharm 2025.2.3\jbr`.
 - Local Windows Gradle checks require a non-committed `local.properties` with
   `sdk.dir=C\:\\Users\\HP\\AppData\\Local\\Android\\Sdk`.
+- Website production deployment is not complete until the owner creates the
+  Cloudflare Pages project, configures `www.bettamind.com`, verifies HTTPS and
+  uses the deployed public URLs in store metadata.
 
 ## Manual owner actions
 
@@ -1265,11 +1304,22 @@ production approval.
 - Arrange qualified human review for production translations, especially any
   safety, crisis, legal, privacy, consent, relational-boundary or daily-tool
   copy.
+- Create the Cloudflare Pages project `bettamind-website` with root directory
+  `apps/website`, build command `npm ci && npm run verify`, output directory
+  `dist`, production branch `main` and custom domain `www.bettamind.com`.
+- Configure DNS for `www.bettamind.com`, redirect the apex domain to the
+  canonical `www` host if used, confirm HTTPS and then use the deployed
+  support, privacy and data-deletion URLs in App Store and Google Play
+  metadata.
+- Review website legal, privacy, safety, AI transparency and support copy
+  against the exact shipped app and store disclosures before public release.
 
 ## Next approved task
 
-Run Codemagic `ios-simulator-unsigned` for the pushed Phase 12 commit. Before
-production release, complete Android physical-device testing, low-resource
-startup/memory checks, battery/thermal review, TestFlight, store metadata and
-privacy labels, qualified human review for production locale strings and the
+Deploy the static website through Cloudflare Pages and configure
+`www.bettamind.com`. The Phase 12 owner actions still remain before production
+app release: run Codemagic `ios-simulator-unsigned` for the pushed Phase 12
+commit, complete Android physical-device testing, low-resource startup/memory
+checks, battery/thermal review, TestFlight, store metadata and privacy labels,
+qualified human review for production locale strings and the
 rollback/revocation record.

@@ -1,0 +1,40 @@
+---
+import PageHero from "@components/PageHero.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+
+const faqs = [
+  ["Does Bettamind require an account?", "No. Bettamind core use works without creating an account."],
+  ["Does Bettamind work offline?", "Yes. Core use is offline-first and remains useful without a backend."],
+  ["Is Bettamind therapy?", "No. Bettamind is not therapy, medical care, diagnosis or a replacement for professional support."],
+  ["Does Bettamind store my private information?", "Personal daily-tool records are designed for encrypted local storage. Personal content stays on device unless the user chooses a specific export, share or future optional sync action."],
+  ["Can I delete my data?", "Yes. Bettamind should provide local deletion controls where available. Exports or backups saved outside the app must be deleted by the user from the place where they were saved."],
+  ["Is AI required?", "No. AI is optional and core use works without AI."],
+  ["Is Bettamind a romantic AI companion?", "No. Bettamind is not a romantic or sexual companion, spouse, soulmate, exclusive partner or replacement for human relationships."],
+  ["What should I do in an emergency?", "Contact local emergency services or a trusted local crisis resource. Bettamind is not an emergency service and does not automatically contact anyone."]
+];
+---
+
+<BaseLayout
+  title="FAQ"
+  description="Frequently asked questions about Bettamind account-free use, offline behavior, privacy, AI, deletion, safety and emergencies."
+  path="/faq"
+>
+  <PageHero
+    eyebrow="FAQ"
+    title="Questions and answers"
+    description="Short answers about account-free use, offline behavior, privacy, AI, data deletion and safety boundaries."
+  />
+
+  <section class="section">
+    <div class="content-shell">
+      <div class="grid two">
+        {faqs.map(([question, answer]) => (
+          <article class="panel">
+            <h2>{question}</h2>
+            <p>{answer}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

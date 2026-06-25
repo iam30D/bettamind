@@ -1,0 +1,28 @@
+---
+import { footerLinks, site } from "@data/site";
+---
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <a class="brand-link" href="/" aria-label={`${site.name} home`}>
+        <img src="/assets/bettamind-mark-white-web.png" alt="" width="512" height="512" />
+        <span class="brand-word">{site.name}</span>
+      </a>
+      <a href={`mailto:${site.email}`}>{site.email}</a>
+    </div>
+
+    <nav aria-label="Footer navigation">
+      <ul class="footer-links">
+        {footerLinks.map((item) => (
+          <li><a href={item.href}>{item.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <p class="footer-meta">
+      Bettamind is a private human-growth app. It is not therapy, medical diagnosis,
+      emergency service, legal advice, financial advice, or a romantic or sexual companion.
+    </p>
+  </div>
+</footer>

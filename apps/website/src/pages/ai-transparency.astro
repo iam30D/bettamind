@@ -1,0 +1,52 @@
+---
+import PageHero from "@components/PageHero.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="AI Transparency"
+  description="Bettamind AI transparency covering optional AI, no-model core use, memory/context limits and safety checks."
+  path="/ai-transparency"
+>
+  <PageHero
+    eyebrow="AI transparency"
+    title="AI is optional"
+    description="Bettamind core use works without AI. Where optional AI is available, it must remain bounded by privacy, safety and user-choice controls."
+  />
+
+  <section class="content-page">
+    <div class="content-shell">
+      <article>
+        <section>
+          <h2>Core app works without AI</h2>
+          <p>Bettamind is useful without a model pack, backend AI or cloud AI. Deterministic tools provide reflection, check-ins, practices, reminders, worksheets, support controls and privacy decisions.</p>
+        </section>
+
+        <section>
+          <h2>AI may be wrong</h2>
+          <p>AI output may be incorrect, incomplete, inconsistent or unsuitable. It is not human judgment and should not be treated as medical, legal, financial, emergency or therapeutic advice.</p>
+        </section>
+
+        <section>
+          <h2>Not a human or companion</h2>
+          <p>AI in Bettamind is not a human, therapist, doctor, emergency responder, romantic partner or sexual companion.</p>
+        </section>
+
+        <section>
+          <h2>Memory and recent context</h2>
+          <p>Approved memory and recent context may be used only when the user chooses a mode that needs that context and has approved its use. Bettamind does not inject the full private vault into AI prompts.</p>
+        </section>
+
+        <section>
+          <h2>Safety checks</h2>
+          <p>Deterministic relational-boundary, harmful-intent and safety-redirection checks are designed to run before AI generation and after AI output before anything is displayed, stored, exported, synced, notified, spoken or used by an avatar.</p>
+        </section>
+
+        <section>
+          <h2>Local and cloud AI</h2>
+          <p>Bettamind is designed for optional local or on-device AI where supported by approved, removable model packs. This website does not claim cloud AI is used. If any release adds cloud AI, the app and this page must disclose that clearly before use.</p>
+        </section>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

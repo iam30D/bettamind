@@ -1,0 +1,76 @@
+---
+import PageHero from "@components/PageHero.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { site } from "@data/site";
+---
+
+<BaseLayout
+  title="Support"
+  description="Bettamind support information, contact email, common help topics and security issue reporting."
+  path="/support"
+>
+  <PageHero
+    eyebrow="Support"
+    title="Support"
+    description="For help with Bettamind, email support. Do not include sensitive private notes unless you choose to share them."
+  >
+    <Fragment slot="actions">
+      <a class="button primary" href={`mailto:${site.email}`}>Email support</a>
+    </Fragment>
+  </PageHero>
+
+  <section class="content-page">
+    <div class="content-shell">
+      <article>
+        <section>
+          <h2>Contact</h2>
+          <p>Email <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+          <p>Expected response: we aim to respond within 3 business days after public launch.</p>
+        </section>
+
+        <section>
+          <h2>Common help topics</h2>
+          <ul>
+            <li>Getting started without creating an account.</li>
+            <li>Using app privacy lock.</li>
+            <li>Deleting local app data.</li>
+            <li>Creating or restoring encrypted exports.</li>
+            <li>Understanding optional AI and no-model use.</li>
+            <li>Reporting accessibility or safety copy issues.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>App privacy lock help</h2>
+          <p>If privacy lock is enabled, follow the in-app recovery and reset options available for the release you are using. Bettamind should not ask you to send private notes to regain access.</p>
+        </section>
+
+        <section>
+          <h2>Local data deletion help</h2>
+          <p>See <a href="/data-deletion">Data Deletion</a> for account-free local deletion guidance. Encrypted exports or backups saved outside Bettamind must be deleted from the place where you saved them.</p>
+        </section>
+
+        <section>
+          <h2>Export and restore help</h2>
+          <p>When asking for export or restore help, include the platform, app version, what you tried and any non-sensitive error message. Do not send export files unless support specifically asks and you choose to share them.</p>
+        </section>
+
+        <section>
+          <h2>What to include when emailing</h2>
+          <ul>
+            <li>Platform: Android or iOS.</li>
+            <li>App version and build number.</li>
+            <li>Device model and operating system version.</li>
+            <li>Steps to reproduce the issue.</li>
+            <li>Non-sensitive screenshots or error text, if useful.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Security reporting</h2>
+          <p>Security issues can be reported to <a href={`mailto:${site.email}`}>{site.email}</a> unless a separate security address is published later. Please avoid sending real personal content in the first report.</p>
+        </section>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

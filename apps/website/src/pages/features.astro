@@ -1,0 +1,49 @@
+---
+import PageHero from "@components/PageHero.astro";
+import SectionHeading from "@components/SectionHeading.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+
+const features = [
+  ["Private reflection", "Guided prompts help users notice situations, choices, consequences, repair opportunities and growth steps."],
+  ["Daily check-ins", "Local check-ins support mood, energy, stress and sleep awareness without public feeds or rankings."],
+  ["Practice timer", "Timers support breathing, grounding, pause-and-choose practices and recovery after interruption."],
+  ["Reminders", "Local reminders are optional, neutral and designed to avoid exposing private content on the lock screen."],
+  ["Private calendar", "In-app planning stays private. Any system-calendar handoff requires explicit approval."],
+  ["Local trends", "Trend summaries are local and deterministic, with no human-worth score or manipulative streak."],
+  ["Worksheets", "Structured worksheets support values, repair, difficult conversations, boundaries and safer choices."],
+  ["App privacy lock", "Private content can be protected behind local authentication and timeout settings."],
+  ["User-approved memory", "Permanent memory requires separate approval. Sensitive safety narratives are excluded by default."],
+  ["Optional AI", "Core use works without AI. Optional AI output is checked by deterministic safety and relational-boundary rules."],
+  ["Support and export controls", "Sensitive sharing requires explicit selection, preview and local step-up authentication where needed."],
+  ["Offline-first behavior", "Core tools remain useful without network access, account creation or a mandatory backend."]
+];
+---
+
+<BaseLayout
+  title="Features"
+  description="Bettamind features for private reflection, daily tools, optional AI, app privacy lock, support controls and offline-first use."
+  path="/features"
+>
+  <PageHero
+    eyebrow="Features"
+    title="Private tools for better choices"
+    description="Bettamind combines deterministic daily tools, privacy controls and safety boundaries for adults who want practical reflection without account-required core use."
+  />
+
+  <section class="section">
+    <div class="content-shell">
+      <SectionHeading
+        title="Core capabilities"
+        text="These features are framed as practical app tools, not therapy, diagnosis, emergency response or guaranteed outcomes."
+      />
+      <div class="grid">
+        {features.map(([title, text]) => (
+          <article class="panel">
+            <h3>{title}</h3>
+            <p>{text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

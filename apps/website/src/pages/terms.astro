@@ -1,0 +1,65 @@
+---
+import PageHero from "@components/PageHero.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { site } from "@data/site";
+---
+
+<BaseLayout
+  title="Terms of Use"
+  description="Bettamind terms covering acceptable use, safety limits, AI limitations, responsibility, availability and intellectual property."
+  path="/terms"
+>
+  <PageHero
+    eyebrow="Terms"
+    title="Terms of Use"
+    description="These terms explain the boundaries for using Bettamind. They should be reviewed before public release and kept aligned with shipped app behavior."
+  />
+
+  <section class="content-page">
+    <div class="content-shell">
+      <article>
+        <p class="meta-note">Last updated: June 25, 2026.</p>
+
+        <section>
+          <h2>Use of Bettamind</h2>
+          <p>Bettamind is a private human-growth app for reflection, daily practices, decisions, habits, repair and safer choices. The MVP is for adults aged 18 and above.</p>
+        </section>
+
+        <section>
+          <h2>Not professional or emergency care</h2>
+          <p>Bettamind is not medical care, therapy, medical diagnosis, legal advice, financial advice or an emergency service. In an emergency, contact local emergency services or a trusted local crisis resource.</p>
+        </section>
+
+        <section>
+          <h2>Acceptable use</h2>
+          <p>Users must not use Bettamind to plan, enable or conceal harm, abuse, exploitation, weapons, criminal activity, stalking, coercion, fraud or illegal behavior.</p>
+        </section>
+
+        <section>
+          <h2>AI limitations</h2>
+          <p>AI, where available, is optional and may be wrong, incomplete or unsuitable. Users remain responsible for their decisions and should not rely on AI output as professional advice.</p>
+        </section>
+
+        <section>
+          <h2>User responsibility</h2>
+          <p>Bettamind can support reflection and safer choices, but it does not make decisions for users. Users remain responsible for actions they take inside or outside the app.</p>
+        </section>
+
+        <section>
+          <h2>Availability</h2>
+          <p>App features, supported platforms, optional model packs, support channels and release availability may change over time. Core app design remains account-free and offline-first.</p>
+        </section>
+
+        <section>
+          <h2>Intellectual property</h2>
+          <p>Bettamind names, logos, product content, design and software are protected by applicable intellectual-property rights. Open-source notices and third-party licence information are listed on the <a href="/legal">Legal Notices</a> page where applicable.</p>
+        </section>
+
+        <section>
+          <h2>Contact</h2>
+          <p>Questions about these terms can be sent to <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+        </section>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,70 @@
+---
+import PageHero from "@components/PageHero.astro";
+import SectionHeading from "@components/SectionHeading.astro";
+import StoreBadges from "@components/StoreBadges.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { appFacts, site } from "@data/site";
+---
+
+<BaseLayout title="Bettamind" description={site.description} path="/">
+  <PageHero
+    eyebrow="Private human-growth app"
+    title="Bettamind"
+    description="Bettamind helps adults reflect, act better, repair, build habits, understand patterns and make safer choices. Core use works offline and does not require creating an account."
+  >
+    <Fragment slot="actions">
+      <a class="button primary" href="/features">Explore features</a>
+      <a class="button secondary" href="/privacy">Read privacy policy</a>
+    </Fragment>
+    <StoreBadges />
+  </PageHero>
+
+  <section class="section alt">
+    <div class="content-shell">
+      <SectionHeading
+        title="Built for private daily use"
+        text="Bettamind is designed around practical reflection and deterministic daily tools, with optional AI only where the user chooses to use it."
+      />
+      <ul class="check-list">
+        {appFacts.map((fact) => <li>{fact}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="content-shell">
+      <SectionHeading
+        eyebrow="What it supports"
+        title="Reflection, action and repair without hype"
+        text="The app focuses on private check-ins, worksheets, practice timers, reminders, local trends, approved memory controls, support/export controls and safety boundaries."
+      />
+      <div class="grid">
+        <article class="panel">
+          <h3>Reflect clearly</h3>
+          <p>Use structured prompts to notice choices, consequences, patterns and next steps without turning private notes into public content.</p>
+        </article>
+        <article class="panel">
+          <h3>Practice daily</h3>
+          <p>Use deterministic tools for check-ins, grounding, breathing, habits, reminders and private calendar planning.</p>
+        </article>
+        <article class="panel">
+          <h3>Keep control</h3>
+          <p>Use app privacy lock, encrypted local storage, user-approved memory and explicit export or sharing controls.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="content-shell">
+      <SectionHeading
+        title="Private by default"
+        text="Core use remains useful without registration, backend services or AI. Personal content stays on the device unless the user chooses an export, share or future optional sync action."
+      />
+      <div class="actions-row">
+        <a class="button primary" href="/safety">Safety approach</a>
+        <a class="button secondary" href="/data-deletion">Data deletion</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

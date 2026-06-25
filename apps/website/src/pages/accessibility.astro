@@ -1,0 +1,58 @@
+---
+import PageHero from "@components/PageHero.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { site } from "@data/site";
+---
+
+<BaseLayout
+  title="Accessibility"
+  description="Bettamind accessibility commitment covering readable text, keyboard support, screen readers, reduced motion and contrast."
+  path="/accessibility"
+>
+  <PageHero
+    eyebrow="Accessibility"
+    title="Accessible design"
+    description="Bettamind aims to be readable, navigable and usable across common accessibility needs."
+  />
+
+  <section class="content-page">
+    <div class="content-shell">
+      <article>
+        <section>
+          <h2>Commitment</h2>
+          <p>Bettamind is designed with accessible typography, sufficient color contrast, semantic structure and clear interaction states.</p>
+        </section>
+
+        <section>
+          <h2>Readable text</h2>
+          <p>The app and website prioritize readable text, clear headings and plain language. The app includes accessibility-oriented typography settings.</p>
+        </section>
+
+        <section>
+          <h2>Keyboard support</h2>
+          <p>This website is built with semantic links and controls, visible focus states and keyboard-accessible navigation.</p>
+        </section>
+
+        <section>
+          <h2>Screen-reader support</h2>
+          <p>The website uses semantic HTML, descriptive page titles and alt text for public brand images. App screen-reader support remains part of platform release validation.</p>
+        </section>
+
+        <section>
+          <h2>Reduced motion</h2>
+          <p>The website respects reduced-motion preferences. The app includes reduced-motion policy support for timers, transitions and grounding presentations.</p>
+        </section>
+
+        <section>
+          <h2>Color contrast</h2>
+          <p>The website maps to the approved Bettamind color tokens and uses high-contrast text, links and focus outlines.</p>
+        </section>
+
+        <section>
+          <h2>Contact</h2>
+          <p>Report accessibility issues to <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+        </section>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

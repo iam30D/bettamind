@@ -1,0 +1,53 @@
+---
+import PageHero from "@components/PageHero.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { site } from "@data/site";
+---
+
+<BaseLayout
+  title="Data Deletion"
+  description="How Bettamind users can delete local app data when core use does not require account creation."
+  path="/data-deletion"
+>
+  <PageHero
+    eyebrow="Data deletion"
+    title="Delete local app data"
+    description="Bettamind core use does not require an account, so this page explains local app data deletion instead of account deletion."
+  />
+
+  <section class="content-page">
+    <div class="content-shell">
+      <article>
+        <section>
+          <h2>No account required for core use</h2>
+          <p>Bettamind does not require users to create an account for core app use. Account-free core use does not include a login area or account deletion form.</p>
+        </section>
+
+        <section>
+          <h2>Delete data inside the app</h2>
+          <p>Where available in the release you use, delete local app data from Bettamind settings or the relevant feature settings. App privacy lock or local authentication may be required before sensitive deletion actions.</p>
+        </section>
+
+        <section>
+          <h2>Delete app data through the platform</h2>
+          <p>Device settings may allow clearing app data. Deleting the app may remove local data depending on Android or iOS behavior, backup settings and any files you saved outside the app.</p>
+        </section>
+
+        <section>
+          <h2>Exports and backups</h2>
+          <p>Encrypted exports, backups or shared files saved outside Bettamind must be deleted by the user from the location where they were saved, such as device storage, cloud storage or another app.</p>
+        </section>
+
+        <section>
+          <h2>Future optional sync or account support</h2>
+          <p>If optional sync or account support is added later, this page must be updated with the correct account and server-data deletion steps before that feature is offered.</p>
+        </section>
+
+        <section>
+          <h2>Help</h2>
+          <p>For help deleting local app data, email <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+        </section>
+      </article>
+    </div>
+  </section>
+</BaseLayout>
