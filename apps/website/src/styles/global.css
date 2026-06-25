@@ -17,6 +17,7 @@
   --radius-md: 10px;
   --content-max: 1120px;
   --font-sans: "Noto Sans", "Atkinson Hyperlegible", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-ui: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", "Noto Sans", "Atkinson Hyperlegible", sans-serif;
 }
 
 * {
@@ -145,6 +146,7 @@ li + li {
 
 .brand-word {
   color: var(--color-primary-strong);
+  font-family: var(--font-ui);
   font-size: 1.2rem;
   font-weight: 900;
 }
@@ -161,7 +163,9 @@ li + li {
   border-radius: var(--radius-sm);
   color: var(--color-muted);
   display: inline-flex;
+  font-family: var(--font-ui);
   font-size: 0.95rem;
+  line-height: 1.15;
   padding: 0.6rem 0.75rem;
   text-decoration: none;
 }
@@ -203,9 +207,11 @@ li + li {
 
 .eyebrow {
   color: var(--color-secondary);
+  font-family: var(--font-ui);
   font-size: 0.82rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
+  line-height: 1.15;
   margin-block-end: 0.8rem;
   text-transform: uppercase;
 }
@@ -251,8 +257,10 @@ h3 {
   border: 2px solid transparent;
   border-radius: var(--radius-sm);
   display: inline-flex;
+  font-family: var(--font-ui);
   font-weight: 800;
   justify-content: center;
+  line-height: 1.15;
   min-height: 48px;
   padding: 0.72rem 1rem;
   text-decoration: none;
@@ -288,8 +296,10 @@ h3 {
   color: #ffffff;
   display: inline-flex;
   flex-direction: column;
+  font-family: var(--font-ui);
   font-weight: 800;
   justify-content: center;
+  line-height: 1.15;
   min-height: 58px;
   min-width: 154px;
   padding: 0.6rem 1rem;
@@ -479,6 +489,10 @@ h3 {
   color: #d7e3dc;
 }
 
+.footer-links a {
+  font-family: var(--font-ui);
+}
+
 .footer-meta {
   color: #c9d4cd;
   font-size: 0.92rem;
@@ -497,7 +511,9 @@ h3 {
     border: 1px solid var(--color-outline);
     border-radius: var(--radius-sm);
     cursor: pointer;
+    font-family: var(--font-ui);
     font-weight: 800;
+    line-height: 1.15;
     list-style: none;
     padding: 0.55rem 0.8rem;
   }

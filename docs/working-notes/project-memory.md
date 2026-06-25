@@ -1160,6 +1160,13 @@ backend, AI, sync or safety-system runtime code.
   `_redirects` fix and deploy-command documentation update.
 - `rg -n "[^\x00-\x7F]" apps\website docs\operations\website-cloudflare-pages.md .gitignore`
   returned no non-ASCII matches.
+- Website UI-label typography was refined so buttons, navigation labels,
+  eyebrow labels, store badges, mobile menu labels and footer links use a
+  native `ui-sans-serif`/system UI stack instead of inheriting the body-first
+  Noto Sans stack. Long-form website copy remains on the existing readable
+  Noto Sans fallback stack.
+- From `apps/website/`: `npm run verify` passed after the website UI-label
+  typography refinement.
 
 ## Known blockers and limitations
 
