@@ -1162,7 +1162,7 @@ backend, AI, sync or safety-system runtime code.
   returned no non-ASCII matches.
 - Website UI-label typography was refined so buttons, navigation labels,
   eyebrow labels, store badges, mobile menu labels and footer links use a
-  native `ui-sans-serif`/system UI stack instead of inheriting the body-first
+  `Bahnschrift`/Aptos/Segoe UI-first stack instead of inheriting the body-first
   Noto Sans stack. Long-form website copy remains on the existing readable
   Noto Sans fallback stack.
 - From `apps/website/`: `npm run verify` passed after the website UI-label
