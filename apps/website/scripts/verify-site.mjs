@@ -22,6 +22,10 @@ const requiredRoutes = [
 ];
 
 const redirectsFile = join(root, "public", "_redirects");
+const requiredFontFiles = [
+  "fonts/bettamind-atkinson-regular.ttf",
+  "fonts/bettamind-atkinson-bold.ttf"
+];
 
 const routeFromHref = (href) => {
   const clean = href.split("#")[0].split("?")[0];
@@ -61,6 +65,12 @@ if (!existsSync(join(dist, "sitemap-index.xml"))) {
 
 if (!existsSync(join(dist, "robots.txt"))) {
   fail("Missing robots.txt.");
+}
+
+for (const fontFile of requiredFontFiles) {
+  if (!existsSync(join(dist, fontFile))) {
+    fail(`Missing required website font asset: ${fontFile}`);
+  }
 }
 
 if (existsSync(redirectsFile)) {

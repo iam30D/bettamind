@@ -1162,11 +1162,11 @@ backend, AI, sync or safety-system runtime code.
   returned no non-ASCII matches.
 - Website UI-label typography was refined so buttons, navigation labels,
   eyebrow labels, store badges, mobile menu labels and footer links use a
-  `Bahnschrift`/Aptos/Segoe UI-first stack instead of inheriting the body-first
-  Noto Sans stack. Long-form website copy remains on the existing readable
-  Noto Sans fallback stack.
-- From `apps/website/`: `npm run verify` passed after the website UI-label
-  typography refinement.
+  website-served Atkinson Hyperlegible stack instead of inheriting the
+  body-first Noto Sans stack or relying on Windows-installed fonts. Long-form
+  website copy remains on the existing readable Noto Sans fallback stack.
+- From `apps/website/`: `npm run verify` passed after the website-served
+  Atkinson Hyperlegible UI-label typography refinement.
 
 ## Known blockers and limitations
 
