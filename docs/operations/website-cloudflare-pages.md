@@ -22,9 +22,16 @@ backend, AI, sync or safety-system runtime.
 - Production branch: `main`
 - Framework preset: Astro, or none with the command above
 - Environment variables: none required
+- Deploy command: leave blank for Cloudflare Pages Git deployments
 
 Do not store Cloudflare tokens, API keys or account credentials in the
 repository.
+
+Do not configure `npx wrangler deploy` as a Pages deploy command. That command
+deploys a Worker and may mutate the Astro setup toward server/adapter output.
+The website is intentionally static; Pages should publish the generated `dist`
+directory. For a manual upload outside the Git integration, build first and run
+`wrangler pages deploy dist --project-name=bettamind-website`.
 
 ## DNS Steps
 
@@ -33,8 +40,9 @@ repository.
 3. Run the production build once from the production branch.
 4. Add `www.bettamind.com` as the custom domain in Cloudflare Pages.
 5. Follow Cloudflare's displayed DNS instruction for the `www` record.
-6. If the apex domain `bettamind.com` is used, redirect it to
-   `https://www.bettamind.com`.
+6. If the apex domain `bettamind.com` is used, configure an apex-to-`www`
+   redirect with a Cloudflare Redirect Rule or Bulk Redirect, because
+   `_redirects` source paths must be relative.
 7. Confirm HTTPS is active before using the URLs in store metadata.
 
 ## Security Headers and Redirects
@@ -46,8 +54,8 @@ The site ships Cloudflare Pages files:
 
 Headers include a restrictive Content Security Policy, content-type sniffing
 protection, referrer policy, permissions policy and frame protections. The
-redirect file maps `https://bettamind.com/*` to the canonical `www` host and
-redirects `/home` to `/`.
+redirect file only contains relative-path redirects such as `/home` to `/`.
+Host-level canonical redirects belong in Cloudflare zone rules.
 
 ## Public Store URLs
 

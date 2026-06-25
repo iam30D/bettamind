@@ -732,6 +732,13 @@ backend, AI, sync or safety-system runtime code.
 - `docs/operations/website-cloudflare-pages.md` documents Cloudflare Pages
   build settings, DNS/custom-domain steps, public store URLs, security headers
   and policy alignment.
+- Cloudflare website deploy log from 2026-06-25 showed the static build and
+  verification passed, then deploy failed because `_redirects` used an
+  absolute source URL and the configured deploy command was `npx wrangler
+  deploy`, which treated the static Astro site as a Worker. `_redirects` now
+  contains only relative path redirects, website verification checks
+  `_redirects` source paths, and docs now say to leave the Cloudflare Pages
+  deploy command blank for Git deployments.
 
 ## Important files
 
@@ -1132,6 +1139,8 @@ backend, AI, sync or safety-system runtime code.
 - From `apps/website/`: `npm run verify` passed, rebuilding the site and
   verifying 13 HTML files, required routes, sitemap, internal links and
   wording guards.
+- From `apps/website/`: `npm run verify` passed after the Cloudflare
+  `_redirects` fix and deploy-command documentation update.
 - `rg -n "[^\x00-\x7F]" apps\website docs\operations\website-cloudflare-pages.md .gitignore`
   returned no non-ASCII matches.
 
@@ -1231,6 +1240,11 @@ backend, AI, sync or safety-system runtime code.
 - Website production deployment is not complete until the owner creates the
   Cloudflare Pages project, configures `www.bettamind.com`, verifies HTTPS and
   uses the deployed public URLs in store metadata.
+- Website Cloudflare Pages Git deployment should use build command
+  `npm ci && npm run verify`, output directory `dist`, root directory
+  `apps/website` and no deploy command. The apex `bettamind.com` to
+  `www.bettamind.com` redirect must be configured as a Cloudflare zone redirect
+  rule, not in `_redirects`.
 
 ## Manual owner actions
 
@@ -1306,7 +1320,8 @@ backend, AI, sync or safety-system runtime code.
   copy.
 - Create the Cloudflare Pages project `bettamind-website` with root directory
   `apps/website`, build command `npm ci && npm run verify`, output directory
-  `dist`, production branch `main` and custom domain `www.bettamind.com`.
+  `dist`, no deploy command, production branch `main` and custom domain
+  `www.bettamind.com`.
 - Configure DNS for `www.bettamind.com`, redirect the apex domain to the
   canonical `www` host if used, confirm HTTPS and then use the deployed
   support, privacy and data-deletion URLs in App Store and Google Play

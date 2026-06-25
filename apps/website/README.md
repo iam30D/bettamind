@@ -48,11 +48,18 @@ Suggested settings:
 - Output directory: `dist`
 - Production branch: `main`
 - Custom domain: `www.bettamind.com`
+- Deploy command: leave blank for Cloudflare Pages Git deployments
 
 No environment variables are required.
 
 Cloudflare tokens, API keys and deployment secrets must not be stored in the
 repository.
+
+Do not set `npx wrangler deploy` as the Pages deploy command. That command
+treats the static Astro site as a Worker and may auto-add a Cloudflare adapter.
+Cloudflare Pages should deploy the static `dist` output directly. If a manual
+CLI upload is needed later, use `wrangler pages deploy dist
+--project-name=bettamind-website` after a successful build.
 
 ## Legal Page Updates
 

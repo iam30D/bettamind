@@ -21,6 +21,8 @@ const requiredRoutes = [
   "404.html"
 ];
 
+const redirectsFile = join(root, "public", "_redirects");
+
 const routeFromHref = (href) => {
   const clean = href.split("#")[0].split("?")[0];
   if (!clean || clean === "/") {
@@ -59,6 +61,20 @@ if (!existsSync(join(dist, "sitemap-index.xml"))) {
 
 if (!existsSync(join(dist, "robots.txt"))) {
   fail("Missing robots.txt.");
+}
+
+if (existsSync(redirectsFile)) {
+  const redirects = readFileSync(redirectsFile, "utf8").split(/\r?\n/);
+  redirects.forEach((line, index) => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) {
+      return;
+    }
+    const [source] = trimmed.split(/\s+/);
+    if (!source.startsWith("/")) {
+      fail(`Invalid _redirects source on line ${index + 1}: ${source}. Use a relative path source.`);
+    }
+  });
 }
 
 const htmlFiles = listFiles(dist).filter((file) => file.endsWith(".html"));
