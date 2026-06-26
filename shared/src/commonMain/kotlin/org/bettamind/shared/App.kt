@@ -1,6 +1,5 @@
 package org.bettamind.shared
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -52,7 +51,6 @@ import org.bettamind.shared.generated.resources.Res
 import org.bettamind.shared.generated.resources.*
 import org.bettamind.shared.privacy.PrivacyLockTimeout
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 private enum class BettamindDestination(
@@ -151,10 +149,12 @@ private fun AppHeader() {
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Image(
-            painter = painterResource(Res.drawable.bettamind_mark),
-            contentDescription = null,
-            modifier = Modifier.size(64.dp),
+        Box(
+            modifier = Modifier
+                .size(64.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary)
+                .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape),
         )
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),

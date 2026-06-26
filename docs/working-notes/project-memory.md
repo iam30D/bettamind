@@ -32,8 +32,12 @@ Swift Package integration already produces
 `Bettamind.app/Frameworks/SQLCipher.framework`, causing a duplicate output. The
 manual embed phase has been removed; the release workflow keeps the signed IPA
 inspection step to prove the framework is present and expose `otool`
-dependencies. A
-static public website has been added under
+dependencies. The attached TestFlight crash report for build 8 showed
+`EXC_CRASH`/`SIGABRT` from Bettamind itself, with
+`SQLCipher.framework` already loaded and no dyld error message, so the next
+release-candidate patch removes first-render Compose font and decorative image
+resource loading while the iOS launch abort is isolated. A static public
+website has been added under
 `apps/website` as an isolated Astro site for support, privacy, safety, AI
 transparency, data deletion and brand pages; this did not modify mobile app,
 backend, AI, sync or safety-system runtime code.
@@ -230,6 +234,11 @@ backend, AI, sync or safety-system runtime code.
   and TestFlight builds. The release workflow publishes `ipa-contents.log`,
   `ipa-bettamind-otool.log` and `ipa-shared-otool.log` to make launch-time
   framework dependencies inspectable.
+- During the build 8 TestFlight launch-crash investigation, bundled Compose
+  font families and the decorative header image were temporarily removed from
+  first render. This keeps startup resource-free for the next smoke build; the
+  brand mark and custom font stack should be restored only after iOS launch is
+  stable or the failing resource path is symbolicated.
 
 ## Completed work
 
@@ -1253,6 +1262,12 @@ backend, AI, sync or safety-system runtime code.
 - `.\gradlew.bat :shared:testDebugUnitTest --no-daemon
   --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
   passed after the iOS bundle-ID config fix.
+- `.\gradlew.bat :shared:compileKotlinMetadata --no-daemon --console=plain`
+  passed after the build 8 TestFlight launch-crash resource-loading patch.
+  Windows still disabled iOS native cinterop targets, as expected.
+- `git diff --check` reported no whitespace errors after the build 8
+  TestFlight launch-crash resource-loading patch, only normal Windows
+  LF-to-CRLF warnings.
 
 ## Known blockers and limitations
 
@@ -1335,6 +1350,11 @@ backend, AI, sync or safety-system runtime code.
   within the tool timeout. This is unresolved locally and must be validated by
   Codemagic because the actual release requirement is an iOS 26 SDK archive on
   macOS.
+- After the build 8 TestFlight launch-crash resource-loading patch, local
+  Windows `:androidApp:assembleDebug` and
+  `:shared:compileDebugKotlinAndroid` attempts timed out without useful Gradle
+  output. Stale Java processes from those attempts were terminated. Android and
+  iOS release validation still need Codemagic or a stable local Gradle rerun.
 - The first TestFlight build installed but crashed on launch on a physical
   iPhone. A missing embedded SQLCipher dynamic framework was suspected, but
   Xcode 26 later reported duplicate output for the SQLCipher framework when a

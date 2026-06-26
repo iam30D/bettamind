@@ -6,11 +6,6 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import org.bettamind.shared.generated.resources.Res
-import org.bettamind.shared.generated.resources.*
-import org.jetbrains.compose.resources.Font
 
 enum class BettamindThemeMode {
     Light,
@@ -107,46 +102,7 @@ private fun BettamindThemeMode.colorScheme() = when (this) {
     )
 }
 
+// Keep launch typography resource-free while the iOS TestFlight abort is isolated.
+@Suppress("UNUSED_PARAMETER")
 @Composable
-private fun bettamindTypography(useAccessibleTypography: Boolean): Typography {
-    val family = if (useAccessibleTypography) {
-        FontFamily(
-            Font(Res.font.atkinson_hyperlegible_regular, weight = FontWeight.Normal),
-            Font(Res.font.atkinson_hyperlegible_bold, weight = FontWeight.Bold),
-            Font(Res.font.noto_sans_variable, weight = FontWeight.Normal),
-            Font(Res.font.noto_sans_arabic_variable, weight = FontWeight.Normal),
-            Font(Res.font.noto_sans_devanagari_variable, weight = FontWeight.Normal),
-            Font(Res.font.noto_sans_sc_variable, weight = FontWeight.Normal),
-        )
-    } else {
-        FontFamily(
-            Font(Res.font.noto_sans_variable, weight = FontWeight.Normal),
-            Font(Res.font.noto_sans_variable, weight = FontWeight.Medium),
-            Font(Res.font.noto_sans_variable, weight = FontWeight.SemiBold),
-            Font(Res.font.noto_sans_variable, weight = FontWeight.Bold),
-            Font(Res.font.noto_sans_arabic_variable, weight = FontWeight.Normal),
-            Font(Res.font.noto_sans_devanagari_variable, weight = FontWeight.Normal),
-            Font(Res.font.noto_sans_sc_variable, weight = FontWeight.Normal),
-        )
-    }
-
-    return Typography().withFontFamily(family)
-}
-
-private fun Typography.withFontFamily(fontFamily: FontFamily): Typography = copy(
-    displayLarge = displayLarge.copy(fontFamily = fontFamily),
-    displayMedium = displayMedium.copy(fontFamily = fontFamily),
-    displaySmall = displaySmall.copy(fontFamily = fontFamily),
-    headlineLarge = headlineLarge.copy(fontFamily = fontFamily),
-    headlineMedium = headlineMedium.copy(fontFamily = fontFamily),
-    headlineSmall = headlineSmall.copy(fontFamily = fontFamily),
-    titleLarge = titleLarge.copy(fontFamily = fontFamily),
-    titleMedium = titleMedium.copy(fontFamily = fontFamily),
-    titleSmall = titleSmall.copy(fontFamily = fontFamily),
-    bodyLarge = bodyLarge.copy(fontFamily = fontFamily),
-    bodyMedium = bodyMedium.copy(fontFamily = fontFamily),
-    bodySmall = bodySmall.copy(fontFamily = fontFamily),
-    labelLarge = labelLarge.copy(fontFamily = fontFamily),
-    labelMedium = labelMedium.copy(fontFamily = fontFamily),
-    labelSmall = labelSmall.copy(fontFamily = fontFamily),
-)
+private fun bettamindTypography(useAccessibleTypography: Boolean): Typography = Typography()
