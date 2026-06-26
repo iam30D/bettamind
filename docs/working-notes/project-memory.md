@@ -846,6 +846,11 @@ evidence. This does not complete owner-controlled production gates.
 - Owner evidence templates were added at
   `docs/operations/release-evidence-template.md` and
   `docs/operations/model-pack-owner-evidence-template.md`.
+- Codemagic `ios-simulator-unsigned` for commit `bdefd13` failed in
+  `:shared:compileKotlinIosSimulatorArm64` because
+  `BettamindIosServices.kt` used `NSDate().timeIntervalSince1970` as a
+  property. The iOS source now calls `NSDate().timeIntervalSince1970()` so the
+  Kotlin/Native macOS compiler can resolve the API.
 - Optimized website image assets were generated from `brand/generated/`
   without overwriting `brand/source/bettamind-logo-master.png`.
 - `docs/operations/website-cloudflare-pages.md` documents Cloudflare Pages
