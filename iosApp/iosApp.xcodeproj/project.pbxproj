@@ -79,7 +79,6 @@
                 A10000000000000000000050 /* Build shared Kotlin framework */,
                 A10000000000000000000031 /* Sources */,
                 A10000000000000000000030 /* Frameworks */,
-                A10000000000000000000033 /* Embed SQLCipher framework */,
                 A10000000000000000000032 /* Resources */,
             );
             buildRules = (
@@ -142,28 +141,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-        A10000000000000000000033 /* Embed SQLCipher framework */ = {
-            isa = PBXShellScriptBuildPhase;
-            alwaysOutOfDate = 1;
-            buildActionMask = 2147483647;
-            files = (
-            );
-            inputFileListPaths = (
-            );
-            inputPaths = (
-                "$(SRCROOT)/../shared/build/sqlcipher/SQLCipher.xcframework/ios-arm64/SQLCipher.framework",
-                "$(SRCROOT)/../shared/build/sqlcipher/SQLCipher.xcframework/ios-arm64_x86_64-simulator/SQLCipher.framework",
-            );
-            name = "Embed SQLCipher framework";
-            outputFileListPaths = (
-            );
-            outputPaths = (
-                "$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SQLCipher.framework",
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-            shellPath = /bin/sh;
-            shellScript = "set -euo pipefail\ncase \"$SDK_NAME\" in\n  iphoneos*)\n    SQLCIPHER_SLICE=\"ios-arm64\"\n    ;;\n  iphonesimulator*)\n    SQLCIPHER_SLICE=\"ios-arm64_x86_64-simulator\"\n    ;;\n  *)\n    echo \"Unsupported SQLCipher SDK: $SDK_NAME\"\n    exit 1\n    ;;\nesac\n\nSQLCIPHER_FRAMEWORK=\"$SRCROOT/../shared/build/sqlcipher/SQLCipher.xcframework/$SQLCIPHER_SLICE/SQLCipher.framework\"\nDESTINATION=\"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/SQLCipher.framework\"\n\ntest -d \"$SQLCIPHER_FRAMEWORK\"\nmkdir -p \"$(dirname \"$DESTINATION\")\"\nrm -rf \"$DESTINATION\"\nmkdir -p \"$DESTINATION\"\nrsync -a \\\n  --exclude Headers \\\n  --exclude PrivateHeaders \\\n  --exclude Modules \\\n  --exclude \"*.tbd\" \\\n  \"$SQLCIPHER_FRAMEWORK/\" \\\n  \"$DESTINATION/\"\n\nif [ \"${CODE_SIGNING_ALLOWED:-NO}\" = \"YES\" ] && [ -n \"${EXPANDED_CODE_SIGN_IDENTITY:-}\" ]; then\n  codesign --force --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" --preserve-metadata=identifier,entitlements,flags \"$DESTINATION\"\nfi\n";
-        };
         A10000000000000000000050 /* Build shared Kotlin framework */ = {
             isa = PBXShellScriptBuildPhase;
             alwaysOutOfDate = 1;

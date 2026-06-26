@@ -26,11 +26,13 @@ immediately on iPhone launch. The iOS Xcode project linked the SQLCipher Swift
 Package but did not explicitly embed and codesign `SQLCipher.framework`, which
 can cause an immediate dynamic-loader termination on device. A first attempted
 Xcode copy-files embed phase was invalid because Xcode looked for a package
-product path named `SQLCipher` instead of the concrete framework bundle. The
-project now uses a slice-aware run-script phase to copy the pinned
-`SQLCipher.framework` from `shared/build/sqlcipher/SQLCipher.xcframework` into
-the app bundle, and the release workflow inspects the signed IPA for embedded
-framework contents and `otool` dependencies. A
+product path named `SQLCipher` instead of the concrete framework bundle. A
+second manual run-script embed phase then failed under Xcode 26 because the
+Swift Package integration already produces
+`Bettamind.app/Frameworks/SQLCipher.framework`, causing a duplicate output. The
+manual embed phase has been removed; the release workflow keeps the signed IPA
+inspection step to prove the framework is present and expose `otool`
+dependencies. A
 static public website has been added under
 `apps/website` as an isolated Astro site for support, privacy, safety, AI
 transparency, data deletion and brand pages; this did not modify mobile app,
@@ -1231,9 +1233,10 @@ backend, AI, sync or safety-system runtime code.
   Gradle daemons were stopped cleanly with `.\gradlew.bat --stop`. Required
   proof for this release-toolchain change is Codemagic macOS using Xcode 26.0.
 - After the first TestFlight install crashed immediately on iPhone launch,
-  `iosApp/iosApp.xcodeproj/project.pbxproj` was updated with a slice-aware
-  run-script phase that embeds and codesigns the pinned SQLCipher framework,
-  and `codemagic.yaml` gained a signed IPA framework inspection step.
+  `codemagic.yaml` gained a signed IPA framework inspection step. A manual
+  SQLCipher embed phase was tried and then removed after Xcode 26 reported
+  duplicate output for `Bettamind.app/Frameworks/SQLCipher.framework`, proving
+  the Swift Package integration already produces that framework.
 - `git diff --check` reported no whitespace errors after the iOS bundle-ID
   config fix, only normal Windows LF-to-CRLF warnings.
 - `rg --files --glob '!**/.git/**' --glob '!**/build/**' | rg
@@ -1333,10 +1336,11 @@ backend, AI, sync or safety-system runtime code.
   Codemagic because the actual release requirement is an iOS 26 SDK archive on
   macOS.
 - The first TestFlight build installed but crashed on launch on a physical
-  iPhone. The likely immediate cause is a missing embedded SQLCipher dynamic
-  framework in the signed app bundle. If the next build still crashes, collect
-  the device/TestFlight crash report and inspect the first `Exception Type`,
-  `Termination Reason` and `Dyld Error Message` lines.
+  iPhone. A missing embedded SQLCipher dynamic framework was suspected, but
+  Xcode 26 later reported duplicate output for the SQLCipher framework when a
+  manual embed phase was added. If the next build passes IPA inspection but
+  still crashes, collect the device/TestFlight crash report and inspect the
+  first `Exception Type`, `Termination Reason` and `Dyld Error Message` lines.
 - During Phase 8 local verification, initial short-timeout Gradle task runs
   exceeded the tool timeout and left stale Java/Gradle workers, which were
   terminated with `taskkill`. Re-running with longer timeouts passed targeted
@@ -1464,8 +1468,8 @@ backend, AI, sync or safety-system runtime code.
 
 Prepare the first internal TestFlight run: configure owner Apple Developer,
 App Store Connect and Codemagic secure signing as documented in
-`docs/operations/testflight-readiness.md`, push the SQLCipher embed fix, then
-run `ios-testflight-release` against the pushed release-candidate commit and
+`docs/operations/testflight-readiness.md`, push the SQLCipher duplicate-output
+fix, then run `ios-testflight-release` against the pushed release-candidate commit and
 record internal TestFlight smoke evidence. Deploying the static website through
 Cloudflare Pages remains a separate open owner action. Production release still
 requires Android physical-device testing, low-resource startup/memory checks,
