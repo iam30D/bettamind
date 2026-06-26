@@ -10,6 +10,12 @@ owner-confirmed Codemagic `ios-simulator-unsigned` validation for Phase 12 on
 physical-device smoke testing, is still required before production approval. A
 manual Codemagic `ios-testflight-release` workflow has been added for signed
 IPA build and App Store Connect upload after owner Apple/Codemagic setup. A
+Codemagic release archive for commit `ff45a41` reached the signed IPA step but
+failed during `xcode-project build-ipa`; the likely cause was the checked-in
+iOS Xcode config still defaulting to `dev.bettamind.placeholder` while
+Codemagic fetched the App Store profile for `com.corenovaness.bettamind`.
+The iOS Debug and Release xcconfig bundle-ID defaults are now updated to
+`com.corenovaness.bettamind`. A
 static public website has been added under
 `apps/website` as an isolated Astro site for support, privacy, safety, AI
 transparency, data deletion and brand pages; this did not modify mobile app,
@@ -20,6 +26,7 @@ backend, AI, sync or safety-system runtime code.
 - Mobile stack: Kotlin Multiplatform and Compose Multiplatform.
 - Primary development environment: Windows.
 - iOS validation: Codemagic macOS using the real `iosApp` Xcode project.
+- Owner-confirmed iOS bundle ID: `com.corenovaness.bettamind`.
 - Optional backend: FastAPI.
 - Core mobile use remains offline, account-free, backend-independent and useful
   without AI.
@@ -191,6 +198,10 @@ backend, AI, sync or safety-system runtime code.
   App Store Connect integration, fails on placeholder bundle IDs and uploads to
   App Store Connect without automatically submitting for external beta review
   or App Store review.
+- `iosApp/Config/Debug.xcconfig` and `iosApp/Config/Release.xcconfig` default
+  `BETTAMIND_IOS_BUNDLE_ID` to `com.corenovaness.bettamind` so archive signing
+  can match the App Store provisioning profile. The Codemagic
+  `bettamind-testflight` group should use the same value.
 
 ## Completed work
 
@@ -1167,6 +1178,28 @@ backend, AI, sync or safety-system runtime code.
   website copy remains on the existing readable Noto Sans fallback stack.
 - From `apps/website/`: `npm run verify` passed after the website-served
   Atkinson Hyperlegible UI-label typography refinement.
+- Owner confirmed the iOS bundle identifier
+  `com.corenovaness.bettamind`. `iosApp/Config/Debug.xcconfig`,
+  `iosApp/Config/Release.xcconfig`, release-readiness docs and planning docs
+  now use that identifier.
+- `codemagic.yaml` now uses `com.corenovaness.bettamind` for the
+  `ios-simulator-unsigned` default iOS bundle ID as well.
+- `git diff --check` reported no whitespace errors after the iOS bundle-ID
+  config fix, only normal Windows LF-to-CRLF warnings.
+- `rg --files --glob '!**/.git/**' --glob '!**/build/**' | rg
+  "\.(litertlm|tflite|task|gguf|onnx|safetensors|bin|pt|pth|ckpt|mlmodel|mlpackage|keystore|p12|mobileprovision|cer|env|db|sqlite|aab|ipa|xcarchive|wav|mp3|m4a|flac)$"`
+  found no model, signing, secret, database, audio-pack or store-archive
+  artifacts after the iOS bundle-ID config fix.
+- `.\gradlew.bat :shared:testDebugUnitTest --tests
+  org.bettamind.shared.release.ReleaseReadinessTest --no-daemon
+  --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the iOS bundle-ID config fix.
+- `.\gradlew.bat :androidApp:assembleDebug :androidApp:lintDebug
+  --no-daemon --no-configuration-cache --max-workers=1 --stacktrace
+  --console=plain` passed after the iOS bundle-ID config fix.
+- `.\gradlew.bat :shared:testDebugUnitTest --no-daemon
+  --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the iOS bundle-ID config fix.
 
 ## Known blockers and limitations
 
@@ -1230,14 +1263,21 @@ backend, AI, sync or safety-system runtime code.
   signed TestFlight installation and smoke testing, store metadata, privacy
   labels, screenshots, support/safety claims, qualified translation review and
   rollback.
-- The signed TestFlight workflow cannot pass until the owner creates the final
-  iOS bundle identifier and App Store Connect app record, configures Codemagic
-  integration `bettamind-app-store-connect`, adds matching App Store signing
-  identities and sets the `bettamind-testflight` variable group.
+- The signed TestFlight workflow cannot pass until the owner confirms the
+  App Store Connect app record, Codemagic integration
+  `bettamind-app-store-connect`, matching App Store signing identities and the
+  `bettamind-testflight` variable group all use
+  `com.corenovaness.bettamind`.
 - Initial Phase 12 Gradle verification hit a Kotlin compile-cache delete
   failure and a short no-daemon timeout. `.\gradlew.bat --stop` stopped two
   daemons; reruns with longer timeouts passed compile, shared tests and
   `phaseTwelveCheck`.
+- A later local `.\gradlew.bat phaseTwelveCheck --no-daemon
+  --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  run after the iOS bundle-ID config fix exceeded the 10-minute tool timeout.
+  The remaining Java worker exited on its own. Targeted release-readiness
+  tests, full shared Android unit tests, Android assemble and Android lint
+  passed afterward.
 - During Phase 8 local verification, initial short-timeout Gradle task runs
   exceeded the tool timeout and left stale Java/Gradle workers, which were
   terminated with `taskkill`. Re-running with longer timeouts passed targeted
@@ -1320,8 +1360,9 @@ backend, AI, sync or safety-system runtime code.
   a later hardening pass after an audited Argon2id provider is selected.
 - Provide `brand/source/bettamind-logo-master.svg` if a vector master exists,
   then regenerate assets from that source in a later approved pass.
-- Replace placeholder Android application ID and iOS bundle ID with owner-owned
-  values before release work.
+- Replace the placeholder Android application ID with an owner-owned value
+  before Android release work. The iOS bundle ID is already owner-confirmed as
+  `com.corenovaness.bettamind`.
 - Provide owner-approved production knowledge-pack trust anchors and content
   governance before accepting real public packs.
 - Provide owner-approved production model choices, licences, trust anchors and
@@ -1364,8 +1405,8 @@ backend, AI, sync or safety-system runtime code.
 
 Prepare the first internal TestFlight run: configure owner Apple Developer,
 App Store Connect and Codemagic secure signing as documented in
-`docs/operations/testflight-readiness.md`, then run
-`ios-testflight-release` against the pushed release-candidate commit and
+`docs/operations/testflight-readiness.md`, push the iOS bundle-ID config fix,
+then run `ios-testflight-release` against the pushed release-candidate commit and
 record internal TestFlight smoke evidence. Deploying the static website through
 Cloudflare Pages remains a separate open owner action. Production release still
 requires Android physical-device testing, low-resource startup/memory checks,

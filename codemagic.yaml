@@ -7,7 +7,7 @@ workflows:
       xcode: 16.4
       vars:
         BETTAMIND_ANDROID_APPLICATION_ID: dev.bettamind.placeholder
-        BETTAMIND_IOS_BUNDLE_ID: dev.bettamind.placeholder
+        BETTAMIND_IOS_BUNDLE_ID: com.corenovaness.bettamind
     scripts:
       - name: Show tool versions
         script: |

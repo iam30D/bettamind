@@ -4,7 +4,9 @@
 
 - The definitive setup prompt is the controlling source because the cloned repo
   was empty.
-- Android and iOS production identifiers have not been supplied yet.
+- Android production identifier has not been supplied yet.
+- The owner-confirmed iOS bundle identifier is
+  `com.corenovaness.bettamind`.
 - The owner will provide the canonical Bettamind logo before Phase 2.
 - Codemagic will provide macOS, Xcode and network access for dependency
   resolution.
@@ -19,8 +21,10 @@
 - Use a single shared KMP module in Phase 1 and package-level architecture
   foundations inside it. More Gradle modules may be added when product features
   need stricter build boundaries.
-- Keep placeholder bundle identifiers in configuration only so debug builds can
-  compile before the owner confirms legal identifiers.
+- Keep the Android placeholder identifier non-production until the owner
+  confirms the Android legal namespace.
+- Use `com.corenovaness.bettamind` as the checked-in iOS bundle identifier now
+  that the owner has confirmed the Apple App ID and App Store profile.
 - Keep the FastAPI backend optional and independent from mobile startup.
 - Use `net.zetetic:sqlcipher-android:4.16.0` plus
   `androidx.sqlite:sqlite:2.6.2` for the Phase 3 Android SQLCipher proof.
@@ -72,7 +76,8 @@
 ## Deferred decisions
 
 - Final Android application ID.
-- Final iOS bundle identifier.
+- Final iOS bundle identifier is no longer deferred:
+  `com.corenovaness.bettamind`.
 - Production local AI runtime build, exact model artifacts, model licences,
   trust anchors, signing keys, device-test results and delivery channels.
 - Production offline speech adapters, OS voice support matrix, speech-pack

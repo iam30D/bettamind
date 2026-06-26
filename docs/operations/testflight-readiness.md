@@ -1,6 +1,6 @@
 # TestFlight Readiness
 
-Date updated: 2026-06-25
+Date updated: 2026-06-26
 
 ## Current status
 
@@ -10,6 +10,11 @@ contains a manual Codemagic `ios-testflight-release` workflow that can build a
 signed iOS IPA and upload it to App Store Connect after the owner completes the
 secure Apple and Codemagic setup below.
 
+The owner-confirmed iOS bundle identifier is
+`com.corenovaness.bettamind`. The checked-in iOS Debug and Release build
+configuration files use this identifier so Xcode archive signing can match the
+App Store provisioning profile.
+
 This does not approve a production App Store release. TestFlight is the next
 required release-validation gate before any production approval.
 
@@ -18,6 +23,8 @@ required release-validation gate before any production approval.
 - The workflow is manual-only: `triggering.events` is empty.
 - The workflow fails if `BETTAMIND_IOS_BUNDLE_ID` is missing or still uses the
   `dev.bettamind.placeholder` identifier.
+- The Xcode target defaults to `com.corenovaness.bettamind`; Codemagic should
+  use the same value in the `bettamind-testflight` variable group.
 - App Store signing files are fetched through Codemagic `ios_signing` with
   `distribution_type: app_store`.
 - The IPA is uploaded through the Codemagic App Store Connect integration named
@@ -37,18 +44,18 @@ provisioning profiles, API keys, `.p8` files or exported archives.
 
 1. Enroll or confirm Apple Developer Program membership for the publishing
    entity.
-2. Create the final owner-controlled iOS bundle identifier in Apple Developer
-   and App Store Connect.
+2. Confirm the owner-controlled iOS bundle identifier
+   `com.corenovaness.bettamind` in Apple Developer and App Store Connect.
 3. Create the App Store Connect app record for Bettamind before automated
    publishing.
 4. In Codemagic Team integrations, add the Apple Developer Portal integration
    using a dedicated App Store Connect API key named
    `bettamind-app-store-connect`.
 5. In Codemagic code signing identities, provide or fetch the Apple
-   Distribution certificate and App Store provisioning profile for the final
-   bundle identifier.
+   Distribution certificate and App Store provisioning profile for
+   `com.corenovaness.bettamind`.
 6. Create a Codemagic variable group named `bettamind-testflight` with:
-   - `BETTAMIND_IOS_BUNDLE_ID`: final App Store bundle identifier.
+   - `BETTAMIND_IOS_BUNDLE_ID`: `com.corenovaness.bettamind`.
    - `BETTAMIND_IOS_MARKETING_VERSION`: optional, for example `0.1.0`.
 7. Start `ios-testflight-release` manually against the pushed release-candidate
    commit.

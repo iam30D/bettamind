@@ -5,8 +5,9 @@
 - Product name: Bettamind.
 - Canonical logo path: `brand/source/bettamind-logo-master.svg`.
 - PNG fallback path: `brand/source/bettamind-logo-master.png`.
-- Android application ID and iOS bundle ID remain owner-supplied configuration
-  values until a legal namespace or owned domain is confirmed.
+- Android application ID remains an owner-supplied configuration value until a
+  legal namespace or owned domain is confirmed.
+- iOS bundle ID: `com.corenovaness.bettamind`.
 
 ## Mobile stack
 
