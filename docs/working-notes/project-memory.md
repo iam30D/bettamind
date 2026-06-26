@@ -36,8 +36,11 @@ dependencies. The attached TestFlight crash report for build 8 showed
 `EXC_CRASH`/`SIGABRT` from Bettamind itself, with
 `SQLCipher.framework` already loaded and no dyld error message, so the next
 release-candidate patch removes first-render Compose font and decorative image
-resource loading while the iOS launch abort is isolated. A static public
-website has been added under
+resource loading while the iOS launch abort is isolated. Build 9 still crashed
+on launch with the same `EXC_CRASH`/`SIGABRT` shape and no dyld error; the
+workflow now collects and publishes zipped iOS dSYMs plus UUID logs so the
+next crash report can be symbolicated. A static public website has been added
+under
 `apps/website` as an isolated Astro site for support, privacy, safety, AI
 transparency, data deletion and brand pages; this did not modify mobile app,
 backend, AI, sync or safety-system runtime code.
@@ -239,6 +242,10 @@ backend, AI, sync or safety-system runtime code.
   first render. This keeps startup resource-free for the next smoke build; the
   brand mark and custom font stack should be restored only after iOS launch is
   stable or the failing resource path is symbolicated.
+- Codemagic `ios-testflight-release` publishes
+  `build/ios/dsyms/Bettamind-dSYMs.zip`, `dsym-files.log` and
+  `dsym-uuids.log` after archive creation. Use those artifacts with the
+  matching TestFlight `.ips` crash report to symbolicate iOS launch crashes.
 
 ## Completed work
 

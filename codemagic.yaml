@@ -203,8 +203,39 @@ workflows:
           else
             echo "Shared.framework is not embedded as a dynamic framework." | tee ipa-shared-otool.log
           fi
+      - name: Collect iOS debug symbols
+        script: |
+          set -euo pipefail
+          rm -rf build/ios/dsyms
+          mkdir -p build/ios/dsyms
+
+          ARCHIVE_PATH="$(find build/ios/xcarchive -name "*.xcarchive" -type d -print -quit)"
+          if [ -z "$ARCHIVE_PATH" ]; then
+            echo "No xcarchive found under build/ios/xcarchive." | tee build/ios/dsyms/dsym-files.log
+            exit 0
+          fi
+
+          DSYM_DIR="$ARCHIVE_PATH/dSYMs"
+          if [ ! -d "$DSYM_DIR" ]; then
+            echo "No dSYMs directory found at $DSYM_DIR." | tee build/ios/dsyms/dsym-files.log
+            exit 0
+          fi
+
+          find "$DSYM_DIR" -maxdepth 1 -name "*.dSYM" -type d -print | sort | tee build/ios/dsyms/dsym-files.log
+          if [ ! -s build/ios/dsyms/dsym-files.log ]; then
+            echo "No dSYM bundles found under $DSYM_DIR." | tee -a build/ios/dsyms/dsym-files.log
+            exit 0
+          fi
+
+          DSYM_ZIP="$PWD/build/ios/dsyms/Bettamind-dSYMs.zip"
+          DSYM_UUID_LOG="$PWD/build/ios/dsyms/dsym-uuids.log"
+          cd "$DSYM_DIR"
+          dwarfdump --uuid ./*.dSYM | tee "$DSYM_UUID_LOG"
+          zip -qry "$DSYM_ZIP" ./*.dSYM
     artifacts:
       - build/ios/ipa/*.ipa
+      - build/ios/dsyms/*.zip
+      - build/ios/dsyms/*.log
       - xcodebuild-ios-testflight.log
       - ipa-contents.log
       - ipa-bettamind-otool.log
