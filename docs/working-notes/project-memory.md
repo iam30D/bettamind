@@ -21,7 +21,12 @@ and version code 4, then failed only during App Store Connect publishing
 because Xcode 16.4 produced an iOS 18.5 SDK build and App Store Connect now
 requires iOS 26 SDK or later. Codemagic iOS workflows are now updated to Xcode
 26.0, and Kotlin is updated to 2.2.21 to match JetBrains' documented Xcode
-26.0 compatibility. A
+26.0 compatibility. The first installed TestFlight build then crashed
+immediately on iPhone launch. The iOS Xcode project linked the SQLCipher Swift
+Package but did not explicitly embed and codesign `SQLCipher.framework`, which
+can cause an immediate dynamic-loader termination on device. The project now
+adds an Embed Frameworks phase for SQLCipher and the release workflow inspects
+the signed IPA for embedded framework contents and `otool` dependencies. A
 static public website has been added under
 `apps/website` as an isolated Astro site for support, privacy, safety, AI
 transparency, data deletion and brand pages; this did not modify mobile app,
@@ -215,6 +220,10 @@ backend, AI, sync or safety-system runtime code.
   uploads. Kotlin 2.2.21 is the current project patch because JetBrains'
   Kotlin Multiplatform compatibility table documents Xcode 26.0 support for
   that version.
+- SQLCipher must be embedded and codesigned in the iOS app bundle for device
+  and TestFlight builds. The release workflow publishes `ipa-contents.log`,
+  `ipa-bettamind-otool.log` and `ipa-shared-otool.log` to make launch-time
+  framework dependencies inspectable.
 
 ## Completed work
 
@@ -1217,6 +1226,10 @@ backend, AI, sync or safety-system runtime code.
   --no-configuration-cache --max-workers=1 --stacktrace --console=plain`.
   Gradle daemons were stopped cleanly with `.\gradlew.bat --stop`. Required
   proof for this release-toolchain change is Codemagic macOS using Xcode 26.0.
+- After the first TestFlight install crashed immediately on iPhone launch,
+  `iosApp/iosApp.xcodeproj/project.pbxproj` was updated to embed and codesign
+  the SQLCipher Swift Package framework, and `codemagic.yaml` gained a signed
+  IPA framework inspection step.
 - `git diff --check` reported no whitespace errors after the iOS bundle-ID
   config fix, only normal Windows LF-to-CRLF warnings.
 - `rg --files --glob '!**/.git/**' --glob '!**/build/**' | rg
@@ -1315,6 +1328,11 @@ backend, AI, sync or safety-system runtime code.
   within the tool timeout. This is unresolved locally and must be validated by
   Codemagic because the actual release requirement is an iOS 26 SDK archive on
   macOS.
+- The first TestFlight build installed but crashed on launch on a physical
+  iPhone. The likely immediate cause is a missing embedded SQLCipher dynamic
+  framework in the signed app bundle. If the next build still crashes, collect
+  the device/TestFlight crash report and inspect the first `Exception Type`,
+  `Termination Reason` and `Dyld Error Message` lines.
 - During Phase 8 local verification, initial short-timeout Gradle task runs
   exceeded the tool timeout and left stale Java/Gradle workers, which were
   terminated with `taskkill`. Re-running with longer timeouts passed targeted
@@ -1442,9 +1460,8 @@ backend, AI, sync or safety-system runtime code.
 
 Prepare the first internal TestFlight run: configure owner Apple Developer,
 App Store Connect and Codemagic secure signing as documented in
-`docs/operations/testflight-readiness.md`, push the Xcode 26.0/Kotlin 2.2.21
-toolchain fix, then run `ios-testflight-release` against the pushed
-release-candidate commit and
+`docs/operations/testflight-readiness.md`, push the SQLCipher embed fix, then
+run `ios-testflight-release` against the pushed release-candidate commit and
 record internal TestFlight smoke evidence. Deploying the static website through
 Cloudflare Pages remains a separate open owner action. Production release still
 requires Android physical-device testing, low-resource startup/memory checks,

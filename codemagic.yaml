@@ -181,9 +181,34 @@ workflows:
           xcode-project build-ipa \
             --project iosApp/iosApp.xcodeproj \
             --scheme iosApp | tee xcodebuild-ios-testflight.log
+      - name: Inspect signed IPA frameworks
+        script: |
+          set -euo pipefail
+          IPA_PATH="$(find build/ios/ipa -name "*.ipa" -print -quit)"
+          test -f "$IPA_PATH"
+
+          rm -rf build/ios/ipa-inspection
+          mkdir -p build/ios/ipa-inspection
+          unzip -q "$IPA_PATH" -d build/ios/ipa-inspection
+
+          APP_PATH="$(find build/ios/ipa-inspection/Payload -maxdepth 1 -name "*.app" -type d -print -quit)"
+          test -d "$APP_PATH"
+
+          find "$APP_PATH" -maxdepth 3 -type f | sort | tee ipa-contents.log
+          test -d "$APP_PATH/Frameworks/SQLCipher.framework"
+
+          otool -L "$APP_PATH/Bettamind" | tee ipa-bettamind-otool.log
+          if [ -f "$APP_PATH/Frameworks/Shared.framework/Shared" ]; then
+            otool -L "$APP_PATH/Frameworks/Shared.framework/Shared" | tee ipa-shared-otool.log
+          else
+            echo "Shared.framework is not embedded as a dynamic framework." | tee ipa-shared-otool.log
+          fi
     artifacts:
       - build/ios/ipa/*.ipa
       - xcodebuild-ios-testflight.log
+      - ipa-contents.log
+      - ipa-bettamind-otool.log
+      - ipa-shared-otool.log
       - "**/build/reports/**"
       - "**/build/test-results/**"
       - "$HOME/Library/Developer/Xcode/DerivedData/**/Logs/**/*.xcactivitylog"

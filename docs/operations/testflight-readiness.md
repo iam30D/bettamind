@@ -72,6 +72,9 @@ provisioning profiles, API keys, `.p8` files or exported archives.
 
 - Install the build from TestFlight on at least one owner-controlled physical
   iPhone.
+- If the app terminates on launch, collect the TestFlight/device crash report
+  and record the first `Exception Type`, `Termination Reason` and any
+  `Dyld Error Message` lines before replacing the build.
 - Confirm first launch does not require an account.
 - Confirm core offline paths open and remain useful without backend or AI.
 - Confirm privacy-lock and encrypted local-storage paths still work.
