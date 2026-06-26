@@ -24,9 +24,13 @@ requires iOS 26 SDK or later. Codemagic iOS workflows are now updated to Xcode
 26.0 compatibility. The first installed TestFlight build then crashed
 immediately on iPhone launch. The iOS Xcode project linked the SQLCipher Swift
 Package but did not explicitly embed and codesign `SQLCipher.framework`, which
-can cause an immediate dynamic-loader termination on device. The project now
-adds an Embed Frameworks phase for SQLCipher and the release workflow inspects
-the signed IPA for embedded framework contents and `otool` dependencies. A
+can cause an immediate dynamic-loader termination on device. A first attempted
+Xcode copy-files embed phase was invalid because Xcode looked for a package
+product path named `SQLCipher` instead of the concrete framework bundle. The
+project now uses a slice-aware run-script phase to copy the pinned
+`SQLCipher.framework` from `shared/build/sqlcipher/SQLCipher.xcframework` into
+the app bundle, and the release workflow inspects the signed IPA for embedded
+framework contents and `otool` dependencies. A
 static public website has been added under
 `apps/website` as an isolated Astro site for support, privacy, safety, AI
 transparency, data deletion and brand pages; this did not modify mobile app,
@@ -1227,9 +1231,9 @@ backend, AI, sync or safety-system runtime code.
   Gradle daemons were stopped cleanly with `.\gradlew.bat --stop`. Required
   proof for this release-toolchain change is Codemagic macOS using Xcode 26.0.
 - After the first TestFlight install crashed immediately on iPhone launch,
-  `iosApp/iosApp.xcodeproj/project.pbxproj` was updated to embed and codesign
-  the SQLCipher Swift Package framework, and `codemagic.yaml` gained a signed
-  IPA framework inspection step.
+  `iosApp/iosApp.xcodeproj/project.pbxproj` was updated with a slice-aware
+  run-script phase that embeds and codesigns the pinned SQLCipher framework,
+  and `codemagic.yaml` gained a signed IPA framework inspection step.
 - `git diff --check` reported no whitespace errors after the iOS bundle-ID
   config fix, only normal Windows LF-to-CRLF warnings.
 - `rg --files --glob '!**/.git/**' --glob '!**/build/**' | rg
