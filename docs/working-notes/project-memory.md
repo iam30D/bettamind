@@ -58,7 +58,11 @@ no-model AI growth fallbacks, and Support exposes deterministic local support
 assessment. Qwen2.5 1.5B Instruct is the first optional model-pack target, but
 production model-pack status stays blocked until the owner supplies a real
 `.litertlm` artifact, signed manifest, Ed25519 public trust anchor and device
-evidence. This does not complete owner-controlled production gates.
+evidence. This does not complete owner-controlled production gates. A later
+Codemagic iOS simulator run for this integration reported
+`NSDate.timeIntervalSince1970` as an unresolved Kotlin/Native reference in
+`BettamindIosServices`; the iOS app-service clock now uses POSIX `time(null)`
+to match the existing iOS SQLCipher store pattern.
 
 ## Locked decisions
 

@@ -6,13 +6,14 @@ import org.bettamind.shared.privacy.IosKeychainStorageKeyManager
 import org.bettamind.shared.privacy.IosSqlCipherEncryptedRecordStore
 import platform.Foundation.NSDate
 import platform.Foundation.NSDateFormatter
+import platform.posix.time
 
 fun createIosBettamindAppServices(): BettamindAppServices =
     BettamindAppServices(
         dailyRecords = EncryptedDailyRecordService(
             store = IosSqlCipherEncryptedRecordStore(),
             keyManager = IosKeychainStorageKeyManager(),
-            nowEpochMillis = { (NSDate().timeIntervalSince1970() * 1000).toLong() },
+            nowEpochMillis = { time(null) * 1000L },
             localDate = { IosLocalDateFormatter.stringFromDate(NSDate()) },
         ),
         reminders = IosReminderPlatformService,
