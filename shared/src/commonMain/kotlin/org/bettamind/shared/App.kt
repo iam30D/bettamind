@@ -1,5 +1,6 @@
 package org.bettamind.shared
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -30,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +42,16 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import org.bettamind.shared.ai.AiGrowthMode
+import org.bettamind.shared.ai.AiGrowthModeEngine
+import org.bettamind.shared.ai.AiGrowthModeRequest
+import org.bettamind.shared.ai.AiGrowthModeResponse
+import org.bettamind.shared.ai.AiGrowthFallbackReason
+import org.bettamind.shared.ai.AiGrowthResponseSource
 import org.bettamind.shared.daily.BreathingExerciseCatalog
+import org.bettamind.shared.daily.DailyMetricLevel
+import org.bettamind.shared.daily.DecisionWorksheetCatalog
+import org.bettamind.shared.daily.DecisionWorksheetKind
+import org.bettamind.shared.daily.GroundingExerciseCatalog
 import org.bettamind.shared.growth.AdultGateState
 import org.bettamind.shared.growth.DeterministicGrowthEngine
 import org.bettamind.shared.growth.GrowthSessionState
@@ -50,8 +62,15 @@ import org.bettamind.shared.design.BettamindTheme
 import org.bettamind.shared.generated.resources.Res
 import org.bettamind.shared.generated.resources.*
 import org.bettamind.shared.privacy.PrivacyLockTimeout
+import org.bettamind.shared.support.LocalSupportResourceScope
+import org.bettamind.shared.support.SafetySupportActionType
+import org.bettamind.shared.support.SafetySupportBridgeEngine
+import org.bettamind.shared.support.SafetySupportDecision
+import org.bettamind.shared.support.SafetySupportRiskLevel
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import kotlinx.coroutines.launch
 
 private enum class BettamindDestination(
     val title: StringResource,
@@ -65,10 +84,12 @@ private enum class BettamindDestination(
 }
 
 private val primaryDestinations = BettamindDestination.entries
-private const val PhaseFourEncryptedStorageAvailable = false
 
 @Composable
-fun BettamindApp() {
+fun BettamindApp(services: BettamindAppServices = BettamindAppServices()) {
+    val coroutineScope = rememberCoroutineScope()
+    val aiGrowthEngine = remember { AiGrowthModeEngine() }
+    val supportEngine = remember { SafetySupportBridgeEngine() }
     var selectedDestination by remember { mutableStateOf(BettamindDestination.Today) }
     var themeMode by remember { mutableStateOf(BettamindThemeMode.Light) }
     var useAccessibleTypography by remember { mutableStateOf(false) }
@@ -76,6 +97,23 @@ fun BettamindApp() {
     var useLowLiteracyCopy by remember { mutableStateOf(false) }
     var growthState by remember { mutableStateOf(DeterministicGrowthEngine.locked()) }
     var privacyLockTimeout by remember { mutableStateOf(PrivacyLockTimeout.OneMinute) }
+    var selectedAiMode by remember { mutableStateOf(AiGrowthMode.QuickGuidance) }
+    var concernText by remember { mutableStateOf("") }
+    var aiResponse by remember { mutableStateOf<AiGrowthModeResponse?>(null) }
+    var aiPromptSubmittedBlank by remember { mutableStateOf(false) }
+    var mood by remember { mutableStateOf(DailyMetricLevel.Steady) }
+    var energy by remember { mutableStateOf(DailyMetricLevel.Steady) }
+    var stress by remember { mutableStateOf(DailyMetricLevel.Steady) }
+    var sleep by remember { mutableStateOf(DailyMetricLevel.Steady) }
+    var checkInCaptured by remember { mutableStateOf(false) }
+    var dailyRecordSaveResult by remember { mutableStateOf<DailyRecordSaveResult?>(null) }
+    var dailyRecordCount by remember { mutableStateOf(0) }
+    var breathingStepIndex by remember { mutableStateOf(0) }
+    var groundingStepIndex by remember { mutableStateOf(0) }
+    var selectedWorksheetKind by remember { mutableStateOf(DecisionWorksheetKind.ValuesToAction) }
+    var supportText by remember { mutableStateOf("") }
+    var supportDecision by remember { mutableStateOf<SafetySupportDecision?>(null) }
+    var supportPromptSubmittedBlank by remember { mutableStateOf(false) }
 
     BettamindTheme(
         themeMode = themeMode,
@@ -123,9 +161,13 @@ fun BettamindApp() {
                     onPrivacyLockTimeoutChange = { privacyLockTimeout = it },
                     growthState = growthState,
                     onConfirmAdult = {
+                        val encryptedStorageAvailable = services.dailyRecords.available()
                         growthState = DeterministicGrowthEngine.adultConfirmed(
-                            encryptedStorageAvailable = PhaseFourEncryptedStorageAvailable,
+                            encryptedStorageAvailable = encryptedStorageAvailable,
                         )
+                        if (encryptedStorageAvailable) {
+                            dailyRecordCount = services.dailyRecords.recordCount()
+                        }
                     },
                     onBlockMinorOrUnknown = {
                         growthState = DeterministicGrowthEngine.blockedMinorOrUnknown()
@@ -136,6 +178,97 @@ fun BettamindApp() {
                     onResetGrowth = {
                         growthState = DeterministicGrowthEngine.resetFrom(growthState)
                     },
+                    selectedAiMode = selectedAiMode,
+                    onSelectedAiModeChange = { selectedAiMode = it },
+                    concernText = concernText,
+                    onConcernTextChange = {
+                        concernText = it
+                        aiPromptSubmittedBlank = false
+                    },
+                    aiResponse = aiResponse,
+                    aiPromptSubmittedBlank = aiPromptSubmittedBlank,
+                    onRunAiGrowthMode = {
+                        val input = concernText.trim()
+                        if (input.isBlank()) {
+                            aiPromptSubmittedBlank = true
+                        } else {
+                            coroutineScope.launch {
+                                aiResponse = aiGrowthEngine.respond(
+                                    AiGrowthModeRequest(
+                                        mode = selectedAiMode,
+                                        userInput = input,
+                                    ),
+                                )
+                            }
+                        }
+                    },
+                    mood = mood,
+                    onMoodChange = {
+                        mood = it
+                        checkInCaptured = false
+                        dailyRecordSaveResult = null
+                    },
+                    energy = energy,
+                    onEnergyChange = {
+                        energy = it
+                        checkInCaptured = false
+                        dailyRecordSaveResult = null
+                    },
+                    stress = stress,
+                    onStressChange = {
+                        stress = it
+                        checkInCaptured = false
+                        dailyRecordSaveResult = null
+                    },
+                    sleep = sleep,
+                    onSleepChange = {
+                        sleep = it
+                        checkInCaptured = false
+                        dailyRecordSaveResult = null
+                    },
+                    checkInCaptured = checkInCaptured,
+                    dailyToolsUnlocked = growthState.personalFeaturesAvailable,
+                    onCaptureCheckIn = {
+                        val result = services.dailyRecords.saveCheckIn(
+                            mood = mood,
+                            energy = energy,
+                            stress = stress,
+                            sleep = sleep,
+                        )
+                        dailyRecordSaveResult = result
+                        checkInCaptured = result is DailyRecordSaveResult.Saved
+                        dailyRecordCount = services.dailyRecords.recordCount()
+                    },
+                    dailyRecordSaveResult = dailyRecordSaveResult,
+                    dailyRecordCount = dailyRecordCount,
+                    breathingStepIndex = breathingStepIndex,
+                    onNextBreathingStep = {
+                        val stepCount = BreathingExerciseCatalog.boxBreathing().steps.size
+                        breathingStepIndex = (breathingStepIndex + 1) % stepCount
+                    },
+                    groundingStepIndex = groundingStepIndex,
+                    onNextGroundingStep = {
+                        val stepCount = GroundingExerciseCatalog.fiveFourThreeTwoOne().size
+                        groundingStepIndex = (groundingStepIndex + 1) % stepCount
+                    },
+                    selectedWorksheetKind = selectedWorksheetKind,
+                    onSelectedWorksheetKindChange = { selectedWorksheetKind = it },
+                    supportText = supportText,
+                    onSupportTextChange = {
+                        supportText = it
+                        supportPromptSubmittedBlank = false
+                    },
+                    supportDecision = supportDecision,
+                    supportPromptSubmittedBlank = supportPromptSubmittedBlank,
+                    onAssessSupport = {
+                        val input = supportText.trim()
+                        if (input.isBlank()) {
+                            supportPromptSubmittedBlank = true
+                        } else {
+                            supportDecision = supportEngine.assess(input)
+                        }
+                    },
+                    services = services,
                 )
             }
         }
@@ -149,11 +282,13 @@ private fun AppHeader() {
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
+        Image(
+            painter = painterResource(Res.drawable.bettamind_mark),
+            contentDescription = stringResource(Res.string.app_header_logo_description),
             modifier = Modifier
                 .size(64.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary)
+                .background(MaterialTheme.colorScheme.surface)
                 .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape),
         )
         Column(
@@ -165,7 +300,7 @@ private fun AppHeader() {
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                text = stringResource(Res.string.phase_twelve_status),
+                text = stringResource(Res.string.app_status_release_candidate),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -207,50 +342,107 @@ private fun DestinationPanel(
     onBlockMinorOrUnknown: () -> Unit,
     onAdvanceGrowth: () -> Unit,
     onResetGrowth: () -> Unit,
+    selectedAiMode: AiGrowthMode,
+    onSelectedAiModeChange: (AiGrowthMode) -> Unit,
+    concernText: String,
+    onConcernTextChange: (String) -> Unit,
+    aiResponse: AiGrowthModeResponse?,
+    aiPromptSubmittedBlank: Boolean,
+    onRunAiGrowthMode: () -> Unit,
+    mood: DailyMetricLevel,
+    onMoodChange: (DailyMetricLevel) -> Unit,
+    energy: DailyMetricLevel,
+    onEnergyChange: (DailyMetricLevel) -> Unit,
+    stress: DailyMetricLevel,
+    onStressChange: (DailyMetricLevel) -> Unit,
+    sleep: DailyMetricLevel,
+    onSleepChange: (DailyMetricLevel) -> Unit,
+    checkInCaptured: Boolean,
+    dailyToolsUnlocked: Boolean,
+    onCaptureCheckIn: () -> Unit,
+    dailyRecordSaveResult: DailyRecordSaveResult?,
+    dailyRecordCount: Int,
+    breathingStepIndex: Int,
+    onNextBreathingStep: () -> Unit,
+    groundingStepIndex: Int,
+    onNextGroundingStep: () -> Unit,
+    selectedWorksheetKind: DecisionWorksheetKind,
+    onSelectedWorksheetKindChange: (DecisionWorksheetKind) -> Unit,
+    supportText: String,
+    onSupportTextChange: (String) -> Unit,
+    supportDecision: SafetySupportDecision?,
+    supportPromptSubmittedBlank: Boolean,
+    onAssessSupport: () -> Unit,
+    services: BettamindAppServices,
 ) {
-    Surface(
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-        shape = RoundedCornerShape(8.dp),
-        tonalElevation = 1.dp,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Column(
-            modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            Text(
-                text = stringResource(destination.title),
-                style = MaterialTheme.typography.titleLarge,
+        Text(
+            text = stringResource(destination.title),
+            style = MaterialTheme.typography.titleLarge,
+        )
+        Text(
+            text = stringResource(destination.description),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        if (destination == BettamindDestination.Settings) {
+            SettingsPanel(
+                themeMode = themeMode,
+                onThemeModeChange = onThemeModeChange,
+                useAccessibleTypography = useAccessibleTypography,
+                onAccessibleTypographyChange = onAccessibleTypographyChange,
+                useReducedMotion = useReducedMotion,
+                onReducedMotionChange = onReducedMotionChange,
+                useLowLiteracyCopy = useLowLiteracyCopy,
+                onLowLiteracyCopyChange = onLowLiteracyCopyChange,
+                privacyLockTimeout = privacyLockTimeout,
+                onPrivacyLockTimeoutChange = onPrivacyLockTimeoutChange,
+                services = services,
             )
-            Text(
-                text = stringResource(destination.description),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+        } else {
+            GrowthDestinationContent(
+                destination = destination,
+                growthState = growthState,
+                onConfirmAdult = onConfirmAdult,
+                onBlockMinorOrUnknown = onBlockMinorOrUnknown,
+                onAdvanceGrowth = onAdvanceGrowth,
+                onResetGrowth = onResetGrowth,
+                selectedAiMode = selectedAiMode,
+                onSelectedAiModeChange = onSelectedAiModeChange,
+                concernText = concernText,
+                onConcernTextChange = onConcernTextChange,
+                aiResponse = aiResponse,
+                aiPromptSubmittedBlank = aiPromptSubmittedBlank,
+                onRunAiGrowthMode = onRunAiGrowthMode,
+                mood = mood,
+                onMoodChange = onMoodChange,
+                energy = energy,
+                onEnergyChange = onEnergyChange,
+                stress = stress,
+                onStressChange = onStressChange,
+                sleep = sleep,
+                onSleepChange = onSleepChange,
+                checkInCaptured = checkInCaptured,
+                dailyToolsUnlocked = dailyToolsUnlocked,
+                onCaptureCheckIn = onCaptureCheckIn,
+                dailyRecordSaveResult = dailyRecordSaveResult,
+                dailyRecordCount = dailyRecordCount,
+                breathingStepIndex = breathingStepIndex,
+                onNextBreathingStep = onNextBreathingStep,
+                groundingStepIndex = groundingStepIndex,
+                onNextGroundingStep = onNextGroundingStep,
+                selectedWorksheetKind = selectedWorksheetKind,
+                onSelectedWorksheetKindChange = onSelectedWorksheetKindChange,
+                supportText = supportText,
+                onSupportTextChange = onSupportTextChange,
+                supportDecision = supportDecision,
+                supportPromptSubmittedBlank = supportPromptSubmittedBlank,
+                onAssessSupport = onAssessSupport,
+                services = services,
             )
-            if (destination == BettamindDestination.Settings) {
-                SettingsPanel(
-                    themeMode = themeMode,
-                    onThemeModeChange = onThemeModeChange,
-                    useAccessibleTypography = useAccessibleTypography,
-                    onAccessibleTypographyChange = onAccessibleTypographyChange,
-                    useReducedMotion = useReducedMotion,
-                    onReducedMotionChange = onReducedMotionChange,
-                    useLowLiteracyCopy = useLowLiteracyCopy,
-                    onLowLiteracyCopyChange = onLowLiteracyCopyChange,
-                    privacyLockTimeout = privacyLockTimeout,
-                    onPrivacyLockTimeoutChange = onPrivacyLockTimeoutChange,
-                )
-            } else {
-                GrowthDestinationContent(
-                    destination = destination,
-                    growthState = growthState,
-                    onConfirmAdult = onConfirmAdult,
-                    onBlockMinorOrUnknown = onBlockMinorOrUnknown,
-                    onAdvanceGrowth = onAdvanceGrowth,
-                    onResetGrowth = onResetGrowth,
-                )
-            }
         }
     }
 }
@@ -263,6 +455,38 @@ private fun GrowthDestinationContent(
     onBlockMinorOrUnknown: () -> Unit,
     onAdvanceGrowth: () -> Unit,
     onResetGrowth: () -> Unit,
+    selectedAiMode: AiGrowthMode,
+    onSelectedAiModeChange: (AiGrowthMode) -> Unit,
+    concernText: String,
+    onConcernTextChange: (String) -> Unit,
+    aiResponse: AiGrowthModeResponse?,
+    aiPromptSubmittedBlank: Boolean,
+    onRunAiGrowthMode: () -> Unit,
+    mood: DailyMetricLevel,
+    onMoodChange: (DailyMetricLevel) -> Unit,
+    energy: DailyMetricLevel,
+    onEnergyChange: (DailyMetricLevel) -> Unit,
+    stress: DailyMetricLevel,
+    onStressChange: (DailyMetricLevel) -> Unit,
+    sleep: DailyMetricLevel,
+    onSleepChange: (DailyMetricLevel) -> Unit,
+    checkInCaptured: Boolean,
+    dailyToolsUnlocked: Boolean,
+    onCaptureCheckIn: () -> Unit,
+    dailyRecordSaveResult: DailyRecordSaveResult?,
+    dailyRecordCount: Int,
+    breathingStepIndex: Int,
+    onNextBreathingStep: () -> Unit,
+    groundingStepIndex: Int,
+    onNextGroundingStep: () -> Unit,
+    selectedWorksheetKind: DecisionWorksheetKind,
+    onSelectedWorksheetKindChange: (DecisionWorksheetKind) -> Unit,
+    supportText: String,
+    onSupportTextChange: (String) -> Unit,
+    supportDecision: SafetySupportDecision?,
+    supportPromptSubmittedBlank: Boolean,
+    onAssessSupport: () -> Unit,
+    services: BettamindAppServices,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -275,7 +499,27 @@ private fun GrowthDestinationContent(
         StorageStatusPanel(growthState.narrativeStorageStatus)
         when (destination) {
             BettamindDestination.Today -> {
-                DailyToolsFoundationPanel()
+                DailyToolsPanel(
+                    mood = mood,
+                    onMoodChange = onMoodChange,
+                    energy = energy,
+                    onEnergyChange = onEnergyChange,
+                    stress = stress,
+                    onStressChange = onStressChange,
+                    sleep = sleep,
+                    onSleepChange = onSleepChange,
+                    checkInCaptured = checkInCaptured,
+                    dailyToolsUnlocked = growthState.personalFeaturesAvailable,
+                    onCaptureCheckIn = onCaptureCheckIn,
+                    dailyRecordSaveResult = dailyRecordSaveResult,
+                    dailyRecordCount = dailyRecordCount,
+                    breathingStepIndex = breathingStepIndex,
+                    onNextBreathingStep = onNextBreathingStep,
+                    groundingStepIndex = groundingStepIndex,
+                    onNextGroundingStep = onNextGroundingStep,
+                    selectedWorksheetKind = selectedWorksheetKind,
+                    onSelectedWorksheetKindChange = onSelectedWorksheetKindChange,
+                )
                 TodayGrowthPanel(
                     growthState = growthState,
                     onAdvanceGrowth = onAdvanceGrowth,
@@ -285,35 +529,176 @@ private fun GrowthDestinationContent(
 
             BettamindDestination.Reflect -> StepMapPanel(growthState)
             BettamindDestination.Grow -> {
-                AiGrowthModesFoundationPanel()
+                AiGrowthModesPanel(
+                    selectedMode = selectedAiMode,
+                    onSelectedModeChange = onSelectedAiModeChange,
+                    concernText = concernText,
+                    onConcernTextChange = onConcernTextChange,
+                    response = aiResponse,
+                    promptSubmittedBlank = aiPromptSubmittedBlank,
+                    onRun = onRunAiGrowthMode,
+                )
                 GrowthSummaryPanel(growthState)
             }
-            BettamindDestination.Support -> SupportPanel()
+            BettamindDestination.Support -> SupportPanel(
+                supportText = supportText,
+                onSupportTextChange = onSupportTextChange,
+                supportDecision = supportDecision,
+                promptSubmittedBlank = supportPromptSubmittedBlank,
+                onAssessSupport = onAssessSupport,
+            )
             BettamindDestination.Settings -> Unit
         }
     }
 }
 
 @Composable
-private fun DailyToolsFoundationPanel() {
+private fun DailyToolsPanel(
+    mood: DailyMetricLevel,
+    onMoodChange: (DailyMetricLevel) -> Unit,
+    energy: DailyMetricLevel,
+    onEnergyChange: (DailyMetricLevel) -> Unit,
+    stress: DailyMetricLevel,
+    onStressChange: (DailyMetricLevel) -> Unit,
+    sleep: DailyMetricLevel,
+    onSleepChange: (DailyMetricLevel) -> Unit,
+    checkInCaptured: Boolean,
+    dailyToolsUnlocked: Boolean,
+    onCaptureCheckIn: () -> Unit,
+    dailyRecordSaveResult: DailyRecordSaveResult?,
+    dailyRecordCount: Int,
+    breathingStepIndex: Int,
+    onNextBreathingStep: () -> Unit,
+    groundingStepIndex: Int,
+    onNextGroundingStep: () -> Unit,
+    selectedWorksheetKind: DecisionWorksheetKind,
+    onSelectedWorksheetKindChange: (DecisionWorksheetKind) -> Unit,
+) {
     val breathing = BreathingExerciseCatalog.boxBreathing()
+    val breathingStep = breathing.steps[breathingStepIndex.coerceIn(0, breathing.steps.lastIndex)]
+    val grounding = GroundingExerciseCatalog.fiveFourThreeTwoOne()
+    val groundingStep = grounding[groundingStepIndex.coerceIn(0, grounding.lastIndex)]
+    val worksheet = DecisionWorksheetCatalog.template(selectedWorksheetKind)
     StatusBlock(
         title = Res.string.daily_tools_title,
         body = Res.string.daily_tools_description,
     ) {
-        StatusLine(
-            title = Res.string.daily_checkin_title,
-            body = Res.string.daily_checkin_description,
+        Text(
+            text = stringResource(Res.string.daily_checkin_session_title),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        MetricSelector(Res.string.daily_checkin_mood, mood, onMoodChange)
+        MetricSelector(Res.string.daily_checkin_energy, energy, onEnergyChange)
+        MetricSelector(Res.string.daily_checkin_stress, stress, onStressChange)
+        MetricSelector(Res.string.daily_checkin_sleep, sleep, onSleepChange)
+        Button(
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+            enabled = dailyToolsUnlocked,
+            onClick = onCaptureCheckIn,
+        ) {
+            Text(stringResource(Res.string.daily_checkin_capture_session))
+        }
+        Text(
+            text = stringResource(
+                dailyRecordSaveResult.messageResource(
+                    checkInCaptured = checkInCaptured,
+                    dailyToolsUnlocked = dailyToolsUnlocked,
+                ),
+                dailyRecordCount,
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         StatusLine(
-            title = Res.string.daily_breathing_title,
-            body = Res.string.daily_breathing_description,
+            title = Res.string.daily_checkin_history_title,
+            body = Res.string.daily_checkin_history_description,
+        )
+        Text(
+            text = stringResource(Res.string.daily_checkin_history_count, dailyRecordCount),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = stringResource(Res.string.daily_breathing_box_title),
+            style = MaterialTheme.typography.titleMedium,
         )
         Text(
             text = stringResource(Res.string.daily_breathing_pattern, breathing.cycleDurationSeconds),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        Text(
+            text = stringResource(
+                Res.string.daily_breathing_step_label,
+                breathingStepIndex + 1,
+                breathing.steps.size,
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = stringResource(breathingStep.instruction()),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        OutlinedButton(
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+            onClick = onNextBreathingStep,
+        ) {
+            Text(stringResource(Res.string.daily_breathing_next_step))
+        }
+        Text(
+            text = stringResource(Res.string.daily_grounding_title),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text(
+            text = stringResource(
+                Res.string.daily_grounding_step_label,
+                groundingStepIndex + 1,
+                grounding.size,
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = stringResource(groundingStep.prompt()),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        OutlinedButton(
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+            onClick = onNextGroundingStep,
+        ) {
+            Text(stringResource(Res.string.daily_grounding_next_step))
+        }
+        Text(
+            text = stringResource(Res.string.daily_worksheet_select_title),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        WorksheetButtonRow(
+            leftKind = DecisionWorksheetKind.ValuesToAction,
+            leftSelected = selectedWorksheetKind == DecisionWorksheetKind.ValuesToAction,
+            onLeftClick = { onSelectedWorksheetKindChange(DecisionWorksheetKind.ValuesToAction) },
+            rightKind = DecisionWorksheetKind.ProblemSolving,
+            rightSelected = selectedWorksheetKind == DecisionWorksheetKind.ProblemSolving,
+            onRightClick = { onSelectedWorksheetKindChange(DecisionWorksheetKind.ProblemSolving) },
+        )
+        WorksheetButtonRow(
+            leftKind = DecisionWorksheetKind.RepairPreparation,
+            leftSelected = selectedWorksheetKind == DecisionWorksheetKind.RepairPreparation,
+            onLeftClick = { onSelectedWorksheetKindChange(DecisionWorksheetKind.RepairPreparation) },
+            rightKind = DecisionWorksheetKind.DifficultConversation,
+            rightSelected = selectedWorksheetKind == DecisionWorksheetKind.DifficultConversation,
+            onRightClick = { onSelectedWorksheetKindChange(DecisionWorksheetKind.DifficultConversation) },
+        )
+        worksheet.promptKeys.forEachIndexed { index, key ->
+            Text(
+                text = stringResource(
+                    Res.string.daily_worksheet_prompt_label,
+                    index + 1,
+                    stringResource(worksheetPrompt(key)),
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
         StatusLine(
             title = Res.string.daily_reminder_title,
             body = Res.string.daily_reminder_description,
@@ -340,16 +725,61 @@ private fun DailyToolsFoundationPanel() {
 }
 
 @Composable
-private fun AiGrowthModesFoundationPanel() {
+private fun AiGrowthModesPanel(
+    selectedMode: AiGrowthMode,
+    onSelectedModeChange: (AiGrowthMode) -> Unit,
+    concernText: String,
+    onConcernTextChange: (String) -> Unit,
+    response: AiGrowthModeResponse?,
+    promptSubmittedBlank: Boolean,
+    onRun: () -> Unit,
+) {
     StatusBlock(
         title = Res.string.ai_growth_modes_title,
         body = Res.string.ai_growth_modes_description,
     ) {
-        AiGrowthMode.entries.forEach { mode ->
-            StatusLine(
-                title = mode.title(),
-                body = mode.description(),
+        AiModeButtonRow(
+            leftMode = AiGrowthMode.QuickGuidance,
+            leftSelected = selectedMode == AiGrowthMode.QuickGuidance,
+            onLeftClick = { onSelectedModeChange(AiGrowthMode.QuickGuidance) },
+            rightMode = AiGrowthMode.GuidedReflection,
+            rightSelected = selectedMode == AiGrowthMode.GuidedReflection,
+            onRightClick = { onSelectedModeChange(AiGrowthMode.GuidedReflection) },
+        )
+        AiModeButtonRow(
+            leftMode = AiGrowthMode.DeepExploration,
+            leftSelected = selectedMode == AiGrowthMode.DeepExploration,
+            onLeftClick = { onSelectedModeChange(AiGrowthMode.DeepExploration) },
+            rightMode = AiGrowthMode.ActionOnly,
+            rightSelected = selectedMode == AiGrowthMode.ActionOnly,
+            onRightClick = { onSelectedModeChange(AiGrowthMode.ActionOnly) },
+        )
+        Text(
+            text = stringResource(selectedMode.description()),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth().heightIn(min = 112.dp),
+            value = concernText,
+            onValueChange = onConcernTextChange,
+            label = { Text(stringResource(Res.string.ai_growth_prompt_label)) },
+            placeholder = { Text(stringResource(Res.string.ai_growth_prompt_placeholder)) },
+            minLines = 3,
+        )
+        if (promptSubmittedBlank) {
+            Text(
+                text = stringResource(Res.string.ai_growth_blank_prompt_error),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
             )
+        }
+        Button(
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+            enabled = concernText.isNotBlank(),
+            onClick = onRun,
+        ) {
+            Text(stringResource(Res.string.ai_growth_run_button))
         }
         Text(
             text = stringResource(Res.string.ai_growth_no_model_note),
@@ -363,6 +793,70 @@ private fun AiGrowthModesFoundationPanel() {
         )
         Text(
             text = stringResource(Res.string.ai_growth_privacy_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        response?.let { AiGrowthResponsePanel(it) }
+    }
+}
+
+@Composable
+private fun AiGrowthResponsePanel(response: AiGrowthModeResponse) {
+    StatusBlock(
+        title = Res.string.ai_growth_response_title,
+        body = if (response.modelText == null) {
+            fallbackResource(response.fallbackLocalizationKey)
+        } else {
+            Res.string.ai_growth_model_text_available
+        },
+    ) {
+        response.modelText?.let { modelText ->
+            Text(
+                text = modelText,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+        Text(
+            text = stringResource(
+                Res.string.ai_growth_response_source,
+                stringResource(response.source.label()),
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        if (response.fallbackReason != AiGrowthFallbackReason.None) {
+            Text(
+                text = stringResource(
+                    Res.string.ai_growth_response_fallback_reason,
+                    stringResource(response.fallbackReason.label()),
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Text(
+            text = stringResource(
+                if (response.metadata.safetyBoundaryApplied) {
+                    Res.string.ai_growth_safety_boundary_applied
+                } else {
+                    Res.string.ai_growth_safety_boundary_clear
+                },
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = stringResource(Res.string.ai_growth_actions_title),
+            style = MaterialTheme.typography.titleSmall,
+        )
+        response.actionKeys.forEach { key ->
+            Text(
+                text = stringResource(actionResource(key)),
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+        Text(
+            text = stringResource(Res.string.ai_growth_memory_export_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -515,11 +1009,40 @@ private fun GrowthSummaryPanel(growthState: GrowthSessionState) {
 }
 
 @Composable
-private fun SupportPanel() {
+private fun SupportPanel(
+    supportText: String,
+    onSupportTextChange: (String) -> Unit,
+    supportDecision: SafetySupportDecision?,
+    promptSubmittedBlank: Boolean,
+    onAssessSupport: () -> Unit,
+) {
     StatusBlock(
         title = Res.string.support_bridge_title,
         body = Res.string.support_bridge_description,
     ) {
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth().heightIn(min = 112.dp),
+            value = supportText,
+            onValueChange = onSupportTextChange,
+            label = { Text(stringResource(Res.string.support_prompt_label)) },
+            placeholder = { Text(stringResource(Res.string.support_prompt_placeholder)) },
+            minLines = 3,
+        )
+        if (promptSubmittedBlank) {
+            Text(
+                text = stringResource(Res.string.ai_growth_blank_prompt_error),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+            )
+        }
+        Button(
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+            enabled = supportText.isNotBlank(),
+            onClick = onAssessSupport,
+        ) {
+            Text(stringResource(Res.string.support_assess_button))
+        }
+        supportDecision?.let { SupportDecisionPanel(it) }
         StatusLine(
             title = Res.string.support_bridge_no_auto_contact_title,
             body = Res.string.support_bridge_no_auto_contact_body,
@@ -538,6 +1061,58 @@ private fun SupportPanel() {
         )
         Text(
             text = stringResource(Res.string.support_bridge_review_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun SupportDecisionPanel(decision: SafetySupportDecision) {
+    StatusBlock(
+        title = Res.string.support_result_title,
+        body = Res.string.support_result_description,
+    ) {
+        Text(
+            text = stringResource(
+                Res.string.support_result_risk_level,
+                stringResource(decision.riskLevel.label()),
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Text(
+            text = stringResource(Res.string.support_result_actions_title),
+            style = MaterialTheme.typography.titleSmall,
+        )
+        decision.actions.forEach { action ->
+            StatusLine(
+                title = action.type.title(),
+                body = action.type.body(),
+            )
+        }
+        Text(
+            text = stringResource(Res.string.support_result_resources_title),
+            style = MaterialTheme.typography.titleSmall,
+        )
+        decision.localResources.forEach { resource ->
+            StatusLine(
+                title = resource.scope.title(),
+                body = resource.scope.body(),
+            )
+        }
+        Text(
+            text = stringResource(
+                if (decision.noAutomaticContact) {
+                    Res.string.support_no_auto_contact_short
+                } else {
+                    Res.string.support_auto_contact_forbidden
+                },
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = stringResource(Res.string.support_share_preview_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -693,6 +1268,7 @@ private fun SettingsPanel(
     onLowLiteracyCopyChange: (Boolean) -> Unit,
     privacyLockTimeout: PrivacyLockTimeout,
     onPrivacyLockTimeoutChange: (PrivacyLockTimeout) -> Unit,
+    services: BettamindAppServices,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(14.dp),
@@ -725,6 +1301,7 @@ private fun SettingsPanel(
             useLowLiteracyCopy = useLowLiteracyCopy,
             onLowLiteracyCopyChange = onLowLiteracyCopyChange,
         )
+        PlatformIntegrationsSettingsPanel(services)
         OfflineSpeechSettingsPanel()
         Text(
             text = stringResource(Res.string.settings_locale_note),
@@ -739,6 +1316,39 @@ private fun SettingsPanel(
         HarmSafetySettingsPanel()
         EncryptedExportSyncSettingsPanel()
         ReleaseReadinessSettingsPanel()
+    }
+}
+
+@Composable
+private fun PlatformIntegrationsSettingsPanel(services: BettamindAppServices) {
+    val reminderStatus = services.reminders.status()
+    val calendarStatus = services.calendar.status()
+    val speechStatus = services.speech.status()
+    val modelPackStatus = services.modelPacks.status()
+    StatusBlock(
+        title = Res.string.platform_integrations_title,
+        body = Res.string.platform_integrations_description,
+    ) {
+        StatusLine(
+            title = Res.string.platform_reminder_title,
+            body = reminderStatus.resource(),
+        )
+        StatusLine(
+            title = Res.string.platform_calendar_title,
+            body = calendarStatus.resource(),
+        )
+        StatusLine(
+            title = Res.string.platform_speech_title,
+            body = speechStatus.resource(),
+        )
+        StatusLine(
+            title = Res.string.platform_model_pack_title,
+            body = modelPackStatus.resource(),
+        )
+        StatusLine(
+            title = Res.string.platform_model_pack_first_title,
+            body = Res.string.platform_model_pack_qwen_first,
+        )
     }
 }
 
@@ -1030,6 +1640,297 @@ private fun AiGrowthMode.description(): StringResource = when (this) {
     AiGrowthMode.GuidedReflection -> Res.string.ai_growth_guided_reflection_description
     AiGrowthMode.DeepExploration -> Res.string.ai_growth_deep_exploration_description
     AiGrowthMode.ActionOnly -> Res.string.ai_growth_action_only_description
+}
+
+private fun DailyMetricLevel.label(): StringResource = when (this) {
+    DailyMetricLevel.VeryLow -> Res.string.daily_metric_very_low
+    DailyMetricLevel.Low -> Res.string.daily_metric_low
+    DailyMetricLevel.Steady -> Res.string.daily_metric_steady
+    DailyMetricLevel.High -> Res.string.daily_metric_high
+    DailyMetricLevel.VeryHigh -> Res.string.daily_metric_very_high
+}
+
+private fun DailyRecordSaveResult?.messageResource(
+    checkInCaptured: Boolean,
+    dailyToolsUnlocked: Boolean,
+): StringResource =
+    when (this) {
+        is DailyRecordSaveResult.Saved -> Res.string.daily_checkin_encrypted_saved
+        DailyRecordSaveResult.StorageUnavailable -> Res.string.daily_checkin_storage_unavailable
+        DailyRecordSaveResult.Failed -> Res.string.daily_checkin_save_failed
+        null -> when {
+            !dailyToolsUnlocked -> Res.string.daily_checkin_locked
+            checkInCaptured -> Res.string.daily_checkin_encrypted_saved
+            else -> Res.string.daily_checkin_privacy_note
+        }
+    }
+
+private fun ReminderPlatformStatus.resource(): StringResource =
+    if (available && neutralPreviewOnly) {
+        Res.string.platform_reminder_available
+    } else {
+        Res.string.platform_reminder_unavailable
+    }
+
+private fun CalendarPlatformStatus.resource(): StringResource =
+    if (available && explicitHandoffOnly && !readsBroadCalendarData) {
+        Res.string.platform_calendar_available
+    } else {
+        Res.string.platform_calendar_unavailable
+    }
+
+private fun SpeechPlatformStatus.resource(): StringResource =
+    if (available && osOfflinePreferred && requiresExplicitMicrophonePermission && textFallbackAvailable) {
+        Res.string.platform_speech_available
+    } else {
+        Res.string.platform_speech_unavailable
+    }
+
+private fun ModelPackPlatformStatus.resource(): StringResource =
+    when {
+        installerAvailable && runtimeAvailable && requiresSignedManifest && autoDownloadDisabled ->
+            Res.string.platform_model_pack_runtime_available
+
+        installerAvailable && requiresSignedManifest && autoDownloadDisabled ->
+            Res.string.platform_model_pack_installer_ready
+
+        else -> Res.string.platform_model_pack_unavailable
+    }
+
+private fun org.bettamind.shared.daily.BreathingStep.instruction(): StringResource =
+    when (instructionKey) {
+        "daily_breathing_inhale" -> Res.string.daily_breathing_inhale
+        "daily_breathing_hold" -> Res.string.daily_breathing_hold
+        "daily_breathing_exhale" -> Res.string.daily_breathing_exhale
+        else -> Res.string.daily_breathing_rest
+    }
+
+private fun org.bettamind.shared.daily.GroundingStep.prompt(): StringResource =
+    when (promptKey) {
+        "daily_grounding_see" -> Res.string.daily_grounding_see
+        "daily_grounding_touch" -> Res.string.daily_grounding_touch
+        "daily_grounding_hear" -> Res.string.daily_grounding_hear
+        "daily_grounding_smell" -> Res.string.daily_grounding_smell
+        else -> Res.string.daily_grounding_taste
+    }
+
+private fun DecisionWorksheetKind.title(): StringResource = when (this) {
+    DecisionWorksheetKind.ValuesToAction -> Res.string.daily_worksheet_values_title
+    DecisionWorksheetKind.ProblemSolving -> Res.string.daily_worksheet_problem_title
+    DecisionWorksheetKind.RepairPreparation -> Res.string.daily_worksheet_repair_title
+    DecisionWorksheetKind.DifficultConversation -> Res.string.daily_worksheet_conversation_title
+}
+
+private fun worksheetPrompt(key: String): StringResource = when (key) {
+    "daily_worksheet_values_prompt" -> Res.string.daily_worksheet_values_prompt
+    "daily_worksheet_action_prompt" -> Res.string.daily_worksheet_action_prompt
+    "daily_worksheet_next_step_prompt" -> Res.string.daily_worksheet_next_step_prompt
+    "daily_worksheet_problem_prompt" -> Res.string.daily_worksheet_problem_prompt
+    "daily_worksheet_options_prompt" -> Res.string.daily_worksheet_options_prompt
+    "daily_worksheet_first_step_prompt" -> Res.string.daily_worksheet_first_step_prompt
+    "daily_worksheet_repair_effect_prompt" -> Res.string.daily_worksheet_repair_effect_prompt
+    "daily_worksheet_repair_need_prompt" -> Res.string.daily_worksheet_repair_need_prompt
+    "daily_worksheet_repair_action_prompt" -> Res.string.daily_worksheet_repair_action_prompt
+    "daily_worksheet_conversation_goal_prompt" -> Res.string.daily_worksheet_conversation_goal_prompt
+    "daily_worksheet_conversation_boundary_prompt" -> Res.string.daily_worksheet_conversation_boundary_prompt
+    else -> Res.string.daily_worksheet_conversation_next_prompt
+}
+
+private fun AiGrowthResponseSource.label(): StringResource = when (this) {
+    AiGrowthResponseSource.LocalModel -> Res.string.ai_growth_source_local_model
+    AiGrowthResponseSource.DeterministicFallback -> Res.string.ai_growth_source_deterministic_fallback
+}
+
+private fun AiGrowthFallbackReason.label(): StringResource = when (this) {
+    AiGrowthFallbackReason.None -> Res.string.ai_growth_fallback_reason_none
+    AiGrowthFallbackReason.NoModelAvailable -> Res.string.ai_growth_fallback_reason_no_model
+    AiGrowthFallbackReason.PreGenerationHarmSafety -> Res.string.ai_growth_fallback_reason_harm_safety
+    AiGrowthFallbackReason.PreGenerationRelationalBoundary -> Res.string.ai_growth_fallback_reason_relational_boundary
+    AiGrowthFallbackReason.MalformedModelOutput -> Res.string.ai_growth_fallback_reason_malformed_output
+    AiGrowthFallbackReason.UnsafeGeneratedOutput -> Res.string.ai_growth_fallback_reason_unsafe_output
+    AiGrowthFallbackReason.ModelGenerationFailed -> Res.string.ai_growth_fallback_reason_generation_failed
+}
+
+private fun fallbackResource(key: String?): StringResource = when (key) {
+    "ai_growth_fallback_quick_guidance" -> Res.string.ai_growth_fallback_quick_guidance
+    "ai_growth_fallback_guided_reflection" -> Res.string.ai_growth_fallback_guided_reflection
+    "ai_growth_fallback_deep_exploration" -> Res.string.ai_growth_fallback_deep_exploration
+    "ai_growth_fallback_action_only" -> Res.string.ai_growth_fallback_action_only
+    "ai_growth_fallback_model_generation_failed" -> Res.string.ai_growth_fallback_model_generation_failed
+    "ai_growth_fallback_malformed_model_output" -> Res.string.ai_growth_fallback_malformed_model_output
+    "relational_fallback_software_boundary" -> Res.string.relational_fallback_software_boundary
+    "relational_fallback_sexual_boundary" -> Res.string.relational_fallback_sexual_boundary
+    "relational_fallback_dependency_support" -> Res.string.relational_fallback_dependency_support
+    "relational_fallback_human_relationship_support" -> Res.string.relational_fallback_human_relationship_support
+    "relational_fallback_clinical_scope" -> Res.string.relational_fallback_clinical_scope
+    "relational_fallback_emergency_scope" -> Res.string.relational_fallback_emergency_scope
+    "relational_fallback_urgent_safety" -> Res.string.relational_fallback_urgent_safety
+    "harm_safety_fallback_clarify" -> Res.string.harm_safety_fallback_clarify
+    "harm_safety_fallback_refuse_capability" -> Res.string.harm_safety_fallback_refuse_capability
+    "harm_safety_fallback_self_harm_support" -> Res.string.harm_safety_fallback_self_harm_support
+    "harm_safety_fallback_suicide_immediate" -> Res.string.harm_safety_fallback_suicide_immediate
+    "harm_safety_fallback_threat_deescalation" -> Res.string.harm_safety_fallback_threat_deescalation
+    "harm_safety_fallback_safe_prevention" -> Res.string.harm_safety_fallback_safe_prevention
+    "harm_safety_fallback_emergency_response" -> Res.string.harm_safety_fallback_emergency_response
+    "harm_safety_fallback_intrusive_thought" -> Res.string.harm_safety_fallback_intrusive_thought
+    "harm_safety_fallback_anger_deescalation" -> Res.string.harm_safety_fallback_anger_deescalation
+    "harm_safety_fallback_safe_disposal" -> Res.string.harm_safety_fallback_safe_disposal
+    "harm_safety_fallback_policy_bypass" -> Res.string.harm_safety_fallback_policy_bypass
+    "compassionate_safety_fallback_anger_without_intent" -> Res.string.compassionate_safety_fallback_anger_without_intent
+    "compassionate_safety_fallback_intrusive_thought" -> Res.string.compassionate_safety_fallback_intrusive_thought
+    "compassionate_safety_fallback_direct_harm_intent" -> Res.string.compassionate_safety_fallback_direct_harm_intent
+    "compassionate_safety_fallback_revenge_planning" -> Res.string.compassionate_safety_fallback_revenge_planning
+    "compassionate_safety_fallback_self_harm_concern" -> Res.string.compassionate_safety_fallback_self_harm_concern
+    "compassionate_safety_fallback_self_harm_method" -> Res.string.compassionate_safety_fallback_self_harm_method
+    "compassionate_safety_fallback_dangerous_capability" -> Res.string.compassionate_safety_fallback_dangerous_capability
+    "compassionate_safety_fallback_chemical_weapon_explosive_poison" ->
+        Res.string.compassionate_safety_fallback_chemical_weapon_explosive_poison
+    "compassionate_safety_fallback_relational_dependency" -> Res.string.compassionate_safety_fallback_relational_dependency
+    "compassionate_safety_fallback_romantic_dependency" -> Res.string.compassionate_safety_fallback_romantic_dependency
+    "compassionate_safety_fallback_sexualized_bettamind" -> Res.string.compassionate_safety_fallback_sexualized_bettamind
+    "compassionate_safety_fallback_unsafe_reminder" -> Res.string.compassionate_safety_fallback_unsafe_reminder
+    "compassionate_safety_fallback_ambiguous" -> Res.string.compassionate_safety_fallback_ambiguous
+    "compassionate_safety_fallback_safe_prevention" -> Res.string.compassionate_safety_fallback_safe_prevention
+    "compassionate_safety_fallback_emergency_response" -> Res.string.compassionate_safety_fallback_emergency_response
+    "compassionate_safety_fallback_shame_after_thought" -> Res.string.compassionate_safety_fallback_shame_after_thought
+    "compassionate_safety_fallback_help_not_to_act" -> Res.string.compassionate_safety_fallback_help_not_to_act
+    "compassionate_safety_fallback_unsafe_generated_output" -> Res.string.compassionate_safety_fallback_unsafe_generated_output
+    "compassionate_safety_fallback_invalid_generated_output" -> Res.string.compassionate_safety_fallback_invalid_generated_output
+    else -> Res.string.ai_growth_fallback_quick_guidance
+}
+
+private fun actionResource(key: String): StringResource = when (key) {
+    "ai_growth_action_reflect_choice_consequence" -> Res.string.ai_growth_action_reflect_choice_consequence
+    "ai_growth_action_map_pattern_values_repair" -> Res.string.ai_growth_action_map_pattern_values_repair
+    "ai_growth_action_choose_one_concrete_step" -> Res.string.ai_growth_action_choose_one_concrete_step
+    else -> Res.string.ai_growth_action_pause_name_next_step
+}
+
+private fun SafetySupportRiskLevel.label(): StringResource = when (this) {
+    SafetySupportRiskLevel.None -> Res.string.support_risk_none
+    SafetySupportRiskLevel.Reflective -> Res.string.support_risk_reflective
+    SafetySupportRiskLevel.Concern -> Res.string.support_risk_concern
+    SafetySupportRiskLevel.Urgent -> Res.string.support_risk_urgent
+    SafetySupportRiskLevel.Immediate -> Res.string.support_risk_immediate
+    SafetySupportRiskLevel.RefusedCapability -> Res.string.support_risk_refused_capability
+}
+
+private fun SafetySupportActionType.title(): StringResource = when (this) {
+    SafetySupportActionType.DailyCheckIn -> Res.string.support_bridge_action_check_in_title
+    SafetySupportActionType.GroundingExercise -> Res.string.support_bridge_action_grounding_title
+    SafetySupportActionType.BreathingTimer -> Res.string.support_bridge_action_breathing_title
+    SafetySupportActionType.DelayAction -> Res.string.support_bridge_action_delay_title
+    SafetySupportActionType.LeaveSituation -> Res.string.support_bridge_action_leave_title
+    SafetySupportActionType.ContactTrustedPerson -> Res.string.support_bridge_action_trusted_person_title
+    SafetySupportActionType.UseLocalEmergencyHelp -> Res.string.support_bridge_action_emergency_title
+    SafetySupportActionType.ConflictReflection -> Res.string.support_bridge_action_conflict_reflection_title
+    SafetySupportActionType.RepairPlanning -> Res.string.support_bridge_action_repair_title
+    SafetySupportActionType.NonviolentMessage -> Res.string.support_bridge_action_nonviolent_message_title
+    SafetySupportActionType.ValuesToAction -> Res.string.support_bridge_action_values_title
+    SafetySupportActionType.SafePrevention -> Res.string.support_bridge_action_safe_prevention_title
+    SafetySupportActionType.NoActionNeeded -> Res.string.support_bridge_action_no_action_title
+}
+
+private fun SafetySupportActionType.body(): StringResource = when (this) {
+    SafetySupportActionType.DailyCheckIn -> Res.string.support_bridge_action_check_in_body
+    SafetySupportActionType.GroundingExercise -> Res.string.support_bridge_action_grounding_body
+    SafetySupportActionType.BreathingTimer -> Res.string.support_bridge_action_breathing_body
+    SafetySupportActionType.DelayAction -> Res.string.support_bridge_action_delay_body
+    SafetySupportActionType.LeaveSituation -> Res.string.support_bridge_action_leave_body
+    SafetySupportActionType.ContactTrustedPerson -> Res.string.support_bridge_action_trusted_person_body
+    SafetySupportActionType.UseLocalEmergencyHelp -> Res.string.support_bridge_action_emergency_body
+    SafetySupportActionType.ConflictReflection -> Res.string.support_bridge_action_conflict_reflection_body
+    SafetySupportActionType.RepairPlanning -> Res.string.support_bridge_action_repair_body
+    SafetySupportActionType.NonviolentMessage -> Res.string.support_bridge_action_nonviolent_message_body
+    SafetySupportActionType.ValuesToAction -> Res.string.support_bridge_action_values_body
+    SafetySupportActionType.SafePrevention -> Res.string.support_bridge_action_safe_prevention_body
+    SafetySupportActionType.NoActionNeeded -> Res.string.support_bridge_action_no_action_body
+}
+
+private fun LocalSupportResourceScope.title(): StringResource = when (this) {
+    LocalSupportResourceScope.LocalEmergency -> Res.string.support_bridge_resource_local_emergency_title
+    LocalSupportResourceScope.LocalCrisisOrCommunitySupport -> Res.string.support_bridge_resource_local_crisis_title
+    LocalSupportResourceScope.TrustedPerson -> Res.string.support_bridge_resource_trusted_person_title
+    LocalSupportResourceScope.ProfessionalSupport -> Res.string.support_bridge_resource_professional_title
+}
+
+private fun LocalSupportResourceScope.body(): StringResource = when (this) {
+    LocalSupportResourceScope.LocalEmergency -> Res.string.support_bridge_resource_local_emergency_body
+    LocalSupportResourceScope.LocalCrisisOrCommunitySupport -> Res.string.support_bridge_resource_local_crisis_body
+    LocalSupportResourceScope.TrustedPerson -> Res.string.support_bridge_resource_trusted_person_body
+    LocalSupportResourceScope.ProfessionalSupport -> Res.string.support_bridge_resource_professional_body
+}
+
+@Composable
+private fun MetricSelector(
+    title: StringResource,
+    selected: DailyMetricLevel,
+    onSelectedChange: (DailyMetricLevel) -> Unit,
+) {
+    Text(
+        text = stringResource(title),
+        style = MaterialTheme.typography.titleSmall,
+    )
+    ThemeButtonRow(
+        leftLabel = DailyMetricLevel.VeryLow.label(),
+        leftSelected = selected == DailyMetricLevel.VeryLow,
+        onLeftClick = { onSelectedChange(DailyMetricLevel.VeryLow) },
+        rightLabel = DailyMetricLevel.Low.label(),
+        rightSelected = selected == DailyMetricLevel.Low,
+        onRightClick = { onSelectedChange(DailyMetricLevel.Low) },
+    )
+    ThemeButtonRow(
+        leftLabel = DailyMetricLevel.Steady.label(),
+        leftSelected = selected == DailyMetricLevel.Steady,
+        onLeftClick = { onSelectedChange(DailyMetricLevel.Steady) },
+        rightLabel = DailyMetricLevel.High.label(),
+        rightSelected = selected == DailyMetricLevel.High,
+        onRightClick = { onSelectedChange(DailyMetricLevel.High) },
+    )
+    ThemeModeButton(
+        label = DailyMetricLevel.VeryHigh.label(),
+        selected = selected == DailyMetricLevel.VeryHigh,
+        onClick = { onSelectedChange(DailyMetricLevel.VeryHigh) },
+        modifier = Modifier.fillMaxWidth(),
+    )
+}
+
+@Composable
+private fun WorksheetButtonRow(
+    leftKind: DecisionWorksheetKind,
+    leftSelected: Boolean,
+    onLeftClick: () -> Unit,
+    rightKind: DecisionWorksheetKind,
+    rightSelected: Boolean,
+    onRightClick: () -> Unit,
+) {
+    ThemeButtonRow(
+        leftLabel = leftKind.title(),
+        leftSelected = leftSelected,
+        onLeftClick = onLeftClick,
+        rightLabel = rightKind.title(),
+        rightSelected = rightSelected,
+        onRightClick = onRightClick,
+    )
+}
+
+@Composable
+private fun AiModeButtonRow(
+    leftMode: AiGrowthMode,
+    leftSelected: Boolean,
+    onLeftClick: () -> Unit,
+    rightMode: AiGrowthMode,
+    rightSelected: Boolean,
+    onRightClick: () -> Unit,
+) {
+    ThemeButtonRow(
+        leftLabel = leftMode.title(),
+        leftSelected = leftSelected,
+        onLeftClick = onLeftClick,
+        rightLabel = rightMode.title(),
+        rightSelected = rightSelected,
+        onRightClick = onRightClick,
+    )
 }
 
 @Composable

@@ -1,6 +1,6 @@
 # Model Licence Approval Records
 
-Date updated: 2026-06-19
+Date updated: 2026-06-26
 
 ## Purpose
 
@@ -47,7 +47,7 @@ For each model to release:
 ```yaml
 model_id: google/gemma-4-E2B-it
 provider: Google
-recommended_use: Primary optional local AI pack
+recommended_use: Later optional local AI candidate after Qwen device testing
 runtime_id: litert-lm
 license_spdx_id: Apache-2.0
 model_card_url: https://ai.google.dev/gemma/docs/core/model_card_4
@@ -78,7 +78,7 @@ release_notes: Licence approved by CORE-NOVANESS LIMITED for future optional loc
 ```yaml
 model_id: Qwen/Qwen2.5-1.5B-Instruct
 provider: Alibaba Cloud / Qwen
-recommended_use: Smaller optional local AI fallback pack
+recommended_use: First optional local AI pack for the production pipeline
 runtime_id: litert-lm
 license_spdx_id: Apache-2.0
 model_card_url: https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct

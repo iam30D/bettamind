@@ -1,6 +1,6 @@
 # Model Third-Party Notices
 
-Date updated: 2026-06-19
+Date updated: 2026-06-26
 
 ## Status
 
@@ -18,20 +18,20 @@ user content to this file.
 Bettamind can optionally install local AI model packs. Bettamind works without
 these models, and model installation requires user approval.
 
-Optional local AI model: Gemma 4 E2B
-Provider: Google
-Model ID: google/gemma-4-E2B-it
-Licence: Apache License, Version 2.0
-Source: https://huggingface.co/google/gemma-4-E2B-it
-Model card: https://ai.google.dev/gemma/docs/core/model_card_4
-Licence text: https://ai.google.dev/gemma/docs/gemma_4_license
-
 Optional local AI model: Qwen2.5 1.5B Instruct
 Provider: Alibaba Cloud / Qwen
 Model ID: Qwen/Qwen2.5-1.5B-Instruct
 Licence: Apache License, Version 2.0
 Source: https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct
 Licence text: https://www.apache.org/licenses/LICENSE-2.0
+
+Deferred optional local AI model: Gemma 4 E2B
+Provider: Google
+Model ID: google/gemma-4-E2B-it
+Licence: Apache License, Version 2.0
+Source: https://huggingface.co/google/gemma-4-E2B-it
+Model card: https://ai.google.dev/gemma/docs/core/model_card_4
+Licence text: https://ai.google.dev/gemma/docs/gemma_4_license
 ```
 
 ## Release checklist

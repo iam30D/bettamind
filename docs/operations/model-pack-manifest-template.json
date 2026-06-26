@@ -1,9 +1,9 @@
 {
-  "modelId": "google/gemma-4-E2B-it",
+  "modelId": "Qwen/Qwen2.5-1.5B-Instruct",
   "version": 1,
-  "displayName": "Gemma 4 E2B local model",
+  "displayName": "Qwen2.5 1.5B Instruct local model",
   "runtimeId": "litert-lm",
-  "artifactFileName": "gemma-4-e2b-it.litertlm",
+  "artifactFileName": "qwen2.5-1.5b-instruct.litertlm",
   "artifactSizeBytes": 0,
   "artifactChecksumSha256": "<sha256-of-final-litertlm-artifact>",
   "capabilities": [

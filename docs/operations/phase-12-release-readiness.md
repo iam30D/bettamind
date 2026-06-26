@@ -1,6 +1,6 @@
 # Phase 12 Release Readiness
 
-Date updated: 2026-06-25
+Date updated: 2026-06-26
 
 ## Scope
 
@@ -32,6 +32,34 @@ Codemagic secure credentials before it can pass.
 - Settings exposes a release-readiness foundation panel without claiming that
   production approval is complete.
 
+## Code-Side App UX Integration
+
+The shared Compose app now exposes more of the implemented repository
+foundation as usable local UI:
+
+- the header renders the Bettamind brand mark from approved Compose resources;
+- Today exposes encrypted check-in controls after adult confirmation, plus
+  breathing steps, grounding steps and deterministic worksheet prompts without
+  creating unencrypted fallback storage;
+- Grow exposes Quick Guidance, Guided Reflection, Deep Exploration and
+  Action-Only as selectable concern-prompt modes backed by the existing
+  `AiGrowthModeEngine`;
+- no-model operation is explicit: when no local model pack is installed, the
+  app shows deterministic fallback guidance and records no automatic memory,
+  export, sync or notification;
+- Support exposes deterministic local support assessment, voluntary actions
+  and local resource types without automatic contact.
+- Settings exposes local platform integration states for reminders, calendar
+  handoff, OS speech and optional signed model packs.
+- Qwen2.5 1.5B Instruct is the first optional model-pack target; production
+  model-pack status stays blocked until the real `.litertlm` artifact, signed
+  manifest, owner public trust anchor and device evidence are complete.
+
+This is a code-side production-readiness improvement, not production approval.
+Model-pack installation/runtime artifacts, platform reminder scheduling,
+platform calendar handoff, TestFlight evidence, store metadata and qualified
+translation review remain separate release gates.
+
 ## Manual Owner Gates
 
 - Run Android release-candidate smoke tests on representative low, standard and
@@ -49,6 +77,9 @@ Codemagic secure credentials before it can pass.
   safety, crisis, legal, privacy and consent string.
 - Document rollback owners and revocation paths for app binary releases,
   signed model packs, speech packs and knowledge packs.
+- Record release evidence in `docs/operations/release-evidence-template.md`
+  and model-pack evidence in
+  `docs/operations/model-pack-owner-evidence-template.md`.
 
 ## Artifact Rules
 

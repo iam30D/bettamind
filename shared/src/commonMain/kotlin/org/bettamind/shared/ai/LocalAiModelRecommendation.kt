@@ -95,7 +95,7 @@ object BettamindLocalAiModelPolicy {
             return fallbackDecision(LocalAiModelRecommendationStatus.DeterministicFallbackOnly)
         }
 
-        val pack = selectPack(input.deviceTier, input.availableStorageBytes)
+        val pack = selectPack(input.availableStorageBytes)
         return if (pack == null) {
             fallbackDecision(LocalAiModelRecommendationStatus.DeterministicFallbackOnly)
         } else {
@@ -110,19 +110,10 @@ object BettamindLocalAiModelPolicy {
         }
     }
 
-    private fun selectPack(
-        deviceTier: LocalAiDeviceTier,
-        availableStorageBytes: Long,
-    ): RecommendedLocalAiModelPack? {
+    private fun selectPack(availableStorageBytes: Long): RecommendedLocalAiModelPack? {
         val catalog = BettamindLocalAiModelCatalog
-        return when {
-            deviceTier != LocalAiDeviceTier.Low &&
-                availableStorageBytes >= catalog.gemma4E2B.recommendedFreeStorageBytes ->
-                catalog.gemma4E2B
-            availableStorageBytes >= catalog.qwen25OnePoint5B.recommendedFreeStorageBytes ->
-                catalog.qwen25OnePoint5B
-            else -> null
-        }
+        return catalog.qwen25OnePoint5B
+            .takeIf { availableStorageBytes >= it.recommendedFreeStorageBytes }
     }
 
     private fun fallbackDecision(status: LocalAiModelRecommendationStatus): LocalAiModelRecommendation =

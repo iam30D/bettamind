@@ -54,11 +54,11 @@
   manager accepts externally supplied chunks, verifies signed manifests and
   checksums, and does not download models automatically.
 - Adopt an optional local model-pack recommendation policy, not a bundled model
-  shipment: Bettamind runs with no installed AI model, Gemma 4 E2B is the
-  preferred LiteRT-LM recommendation for standard/high devices after device
-  testing, Qwen2.5 1.5B Instruct is the smaller fallback recommendation, and
-  every install requires explicit user approval plus signed/checksum-verified
-  removable model packs.
+  shipment: Bettamind runs with no installed AI model, Qwen2.5 1.5B Instruct
+  is the first LiteRT-LM release-candidate pack to prove the signed artifact
+  pipeline, Gemma 4 E2B is deferred until device/storage tests support the
+  larger pack, and every install requires explicit user approval plus
+  signed/checksum-verified removable model packs.
 - Keep Phase 6.6 daily tools deterministic and shared. Personal daily records
   are serialized through `EncryptedDailyRecordRepository` and written only to
   the shared encrypted record-store contract. Local reminders use neutral copy,

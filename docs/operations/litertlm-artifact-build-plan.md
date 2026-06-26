@@ -1,6 +1,6 @@
 # LiteRT-LM Artifact Build Plan
 
-Date updated: 2026-06-19
+Date updated: 2026-06-26
 
 ## When the artifact build occurs
 
@@ -19,7 +19,7 @@ Until then, Bettamind still runs with deterministic no-model fallback.
 
 ## Build process
 
-1. Select one model for packaging first, usually `google/gemma-4-E2B-it`.
+1. Select one model for packaging first: `Qwen/Qwen2.5-1.5B-Instruct`.
 2. Re-check the model page, licence and exact source revision.
 3. Obtain the approved source model or official LiteRT-LM-compatible artifact
    outside Git.

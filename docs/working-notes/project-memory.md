@@ -47,6 +47,18 @@ now includes that key. A static public website has been added under
 `apps/website` as an isolated Astro site for support, privacy, safety, AI
 transparency, data deletion and brand pages; this did not modify mobile app,
 backend, AI, sync or safety-system runtime code.
+A later production-readiness app integration now makes the shared Compose app
+more release-candidate-like: the header renders the Bettamind mark, production
+facing scaffold copy is removed, Today saves encrypted check-ins through
+Android/iOS SQLCipher-backed app services after local adult confirmation,
+draft locale resource directories mirror English source text for the
+English-only production scope, Settings exposes local platform integration
+states, Grow exposes selectable concern prompts backed by deterministic
+no-model AI growth fallbacks, and Support exposes deterministic local support
+assessment. Qwen2.5 1.5B Instruct is the first optional model-pack target, but
+production model-pack status stays blocked until the owner supplies a real
+`.litertlm` artifact, signed manifest, Ed25519 public trust anchor and device
+evidence. This does not complete owner-controlled production gates.
 
 ## Locked decisions
 
@@ -184,9 +196,9 @@ backend, AI, sync or safety-system runtime code.
 - Phase 9 device revocation must require explicit user action and local
   step-up authentication, and revocation records/manifests must be versioned.
 - Local AI model packs remain optional recommendations only. Bettamind installs
-  and runs with no model; Gemma 4 E2B is the preferred LiteRT-LM recommendation
-  for standard/high devices after testing, Qwen2.5 1.5B Instruct is the smaller
-  fallback recommendation, and every model install requires explicit user
+  and runs with no model; Qwen2.5 1.5B Instruct is the first LiteRT-LM
+  release-candidate pack, Gemma 4 E2B is deferred until device/storage evidence
+  supports the larger pack, and every model install requires explicit user
   approval plus signed/checksum-verified removable packs.
 - Owner licence acceptance and release records are required before packaging or
   distributing any production model artifact. User install consent does not
@@ -195,10 +207,12 @@ backend, AI, sync or safety-system runtime code.
   runtime and deterministic fallback. It does not generate learned-model
   intelligence; it routes deterministic flows, local resources, optional
   signed knowledge retrieval and model-free safety policies.
-- Phase 10 target locale resources must remain key-complete, but non-English
-  strings are draft fallbacks until qualified human review records exist for
-  production locales, especially safety, crisis, legal, privacy, consent,
-  relational-boundary, support, export/sync and daily-tool copy.
+- Phase 10 target locale resources must remain key-complete. The current
+  production scope is English-only; non-English Compose resource directories
+  intentionally mirror English source strings until qualified human review
+  records exist for production locales, especially safety, crisis, legal,
+  privacy, consent, relational-boundary, support, export/sync and daily-tool
+  copy.
 - Phase 10 accessibility support covers deterministic policy for RTL layout,
   script font fallbacks, large text, reduced motion, screen-reader labels,
   accessible typography and low-literacy mode. Platform-specific assistive
@@ -617,9 +631,9 @@ backend, AI, sync or safety-system runtime code.
   register were updated for Phase 7.
 - Owner confirmed Codemagic `ios-simulator-unsigned` passed for pushed commit
   `621b3c2`.
-- `BettamindLocalAiModelPolicy` now records the optional local AI model-pack
-  recommendation rules: Gemma 4 E2B for standard/high devices with storage
-  headroom, Qwen2.5 1.5B Instruct as the smaller fallback, no auto-install,
+- `BettamindLocalAiModelPolicy` originally recorded Gemma/Qwen tiered
+  recommendations. The current release-candidate policy supersedes that with
+  Qwen2.5 1.5B Instruct as the first model-pack target, no auto-install,
   explicit user approval before install and deterministic fallback when a model
   is unavailable, declined or removed.
 - Local AI model-pack recommendation policy commit `540f733` was pushed to
@@ -796,6 +810,42 @@ backend, AI, sync or safety-system runtime code.
   memory, no romantic/sexual companion positioning, no therapy/diagnosis/
   emergency/legal/financial-advice positioning and no fake account deletion
   flow.
+- Shared Compose app UX integration now renders
+  `shared/src/commonMain/composeResources/drawable/bettamind_mark.png` in the
+  app header, replacing the plain circular placeholder while still leaving the
+  canonical brand source untouched.
+- Today now exposes interactive check-in metric controls, deterministic
+  box-breathing steps, deterministic grounding steps and worksheet prompt
+  selection. The current release-candidate app saves check-ins through
+  encrypted app services after adult confirmation and does not add an
+  unencrypted fallback.
+- Grow now exposes Quick Guidance, Guided Reflection, Deep Exploration and
+  Action-Only as selectable concern-prompt modes wired to `AiGrowthModeEngine`.
+  With no installed local model, the UI shows deterministic fallback guidance,
+  fallback reason, safety-boundary status and suggested next action without
+  automatic memory, export, sync or notification.
+- Support now exposes a deterministic concern assessment wired to
+  `SafetySupportBridgeEngine`, showing local risk level, voluntary actions and
+  local resource types while preserving no automatic contact.
+- Compose source strings and matching draft fallback entries were added across
+  all 10 locale resource files for the new app UX. Non-English strings remain
+  draft fallbacks pending qualified human review.
+- Production-facing scaffold/foundation/later-phase copy was removed from the
+  shared Compose app source. Draft non-English Compose resource directories now
+  mirror English source text for the English-only production scope until
+  qualified review approves real locale strings.
+- `BettamindAppServices` now wires Android and iOS app entry points to
+  SQLCipher-backed encrypted daily-record services using Android Keystore and
+  iOS Keychain key managers. Daily check-in persistence activates after local
+  adult confirmation and does not create an unencrypted fallback.
+- Settings now exposes platform integration states for local reminders,
+  explicit calendar handoff, OS speech and optional signed model packs.
+- Qwen2.5 1.5B Instruct is now the first optional local AI model-pack target.
+  `BettamindModelPackTrustPolicy` blocks production model-pack availability
+  until a real owner-approved Ed25519 public trust anchor is committed.
+- Owner evidence templates were added at
+  `docs/operations/release-evidence-template.md` and
+  `docs/operations/model-pack-owner-evidence-template.md`.
 - Optimized website image assets were generated from `brand/generated/`
   without overwriting `brand/source/bettamind-logo-master.png`.
 - `docs/operations/website-cloudflare-pages.md` documents Cloudflare Pages
@@ -828,6 +878,7 @@ backend, AI, sync or safety-system runtime code.
 - `docs/working-notes/project-memory.md`
 - `scripts/generate_brand_assets.py`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/App.kt`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/BettamindAppServices.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/design/BettamindTheme.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/design/BettamindColorTokens.kt`
 - `shared/src/commonMain/composeResources/`
@@ -839,6 +890,7 @@ backend, AI, sync or safety-system runtime code.
 - `shared/src/commonMain/kotlin/org/bettamind/shared/ai/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/ai/AiGrowthModes.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/ai/LocalAiModelRecommendation.kt`
+- `shared/src/commonMain/kotlin/org/bettamind/shared/ai/ModelPackTrustPolicy.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/safety/`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/safety/CompassionateSafetyRedirection.kt`
 - `shared/src/commonMain/kotlin/org/bettamind/shared/support/SafetySupportBridge.kt`
@@ -865,7 +917,9 @@ backend, AI, sync or safety-system runtime code.
 - `backend/app/schemas/sync.py`
 - `backend/tests/test_sync.py`
 - `shared/src/androidMain/kotlin/org/bettamind/shared/privacy/`
+- `shared/src/androidMain/kotlin/org/bettamind/shared/BettamindAndroidServices.kt`
 - `shared/src/iosMain/kotlin/org/bettamind/shared/privacy/`
+- `shared/src/iosMain/kotlin/org/bettamind/shared/BettamindIosServices.kt`
 - `shared/src/iosTest/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/nativeInterop/cinterop/`
 - `androidApp/src/main/res/`
@@ -876,6 +930,8 @@ backend, AI, sync or safety-system runtime code.
 - `docs/security/phase-6-ai-model-manager.md`
 - `docs/operations/local-ai-model-pack-release.md`
 - `docs/operations/model-license-approval-records.md`
+- `docs/operations/model-pack-owner-evidence-template.md`
+- `docs/operations/release-evidence-template.md`
 - `docs/operations/litertlm-artifact-build-plan.md`
 - `docs/operations/model-pack-manifest-template.json`
 - `docs/legal/model-third-party-notices.md`
@@ -1287,6 +1343,54 @@ backend, AI, sync or safety-system runtime code.
   Compose plist-sanity fix.
 - `git diff --check` reported no whitespace errors after the build 10
   Compose plist-sanity fix, only normal Windows LF-to-CRLF warnings.
+- `.\gradlew.bat :shared:compileKotlinMetadata --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the app UX integration, with expected Windows iOS cinterop
+  target skips.
+- `.\gradlew.bat :shared:compileDebugKotlinAndroid --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the app UX integration.
+- `.\gradlew.bat :shared:testDebugUnitTest --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the app UX integration.
+- `.\gradlew.bat :androidApp:assembleDebug --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the app UX integration.
+- `.\gradlew.bat :androidApp:lintDebug --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the app UX integration.
+- `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  completed on Windows after the app UX integration, with iOS Native
+  compile/test tasks still skipped because SQLCipher cinterop cannot be
+  processed on `mingw_x64`.
+- `.\gradlew.bat phaseTwelveCheck --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the app UX integration.
+- String resource parity check reported all source string keys present across
+  10 Compose `strings.xml` files after the app UX integration.
+- Restricted artifact scan found no model, signing, secret, database,
+  audio-pack or store-archive artifacts after the app UX integration.
+- Hardcoded visible-string scan for `Text("...")`, direct text-field labels and
+  direct placeholders in `App.kt` returned no matches after the app UX
+  integration.
+- `git diff --check` reported no whitespace errors after the app UX
+  integration, only normal Windows LF-to-CRLF warnings.
+- `.\gradlew.bat :shared:compileKotlinMetadata --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the production-readiness app integration, with expected Windows
+  iOS cinterop target skips.
+- `.\gradlew.bat :shared:testDebugUnitTest --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the production-readiness app integration.
+- `.\gradlew.bat :androidApp:assembleDebug :androidApp:lintDebug --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the production-readiness app integration.
+- `.\gradlew.bat phaseTwelveCheck --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the production-readiness app integration.
+- `.\gradlew.bat :shared:compileTestKotlinIosSimulatorArm64 --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  completed after the production-readiness app integration, with iOS native
+  compile/test tasks still skipped on Windows because SQLCipher cinterop
+  cannot be processed on `mingw_x64`.
+- PowerShell XML parsing confirmed all `values-*` Compose resource folders
+  contain the complete English source key set after the English-only
+  production-scope change.
+- Restricted artifact scan found no model, signing, secret, database,
+  audio-pack or store-archive artifacts outside ignored build outputs after
+  the production-readiness app integration.
+- `git diff --check` reported no whitespace errors after the
+  production-readiness app integration, only normal Windows LF-to-CRLF
+  warnings.
 
 ## Known blockers and limitations
 
@@ -1312,17 +1416,20 @@ backend, AI, sync or safety-system runtime code.
 - Phase 6.5 relational-boundary policy is a deterministic heuristic foundation.
   It needs owner, safety and localization review before production use and
   before Phase 7 response-mode prompts rely on it.
-- Phase 6.6 deterministic daily tools are a shared foundation. Platform
-  reminder scheduling, platform calendar handoff UI and fully wired encrypted
-  production storage credentials remain future hardening/integration work.
+- Phase 6.6 deterministic daily tools are a shared foundation. App-level
+  encrypted check-in persistence is now wired to Android and iOS SQLCipher
+  services after adult confirmation. Platform reminder scheduling, full
+  calendar handoff behavior, daily-record delete/export UI and device evidence
+  remain release hardening work.
 - Phase 6.7 harmful-intent safeguards are a deterministic heuristic foundation.
   They need owner, safety, legal and localization review before production use
   and before Phase 7 response-mode prompts rely on them.
 - Phase 7 is implemented against the existing `LocalAiRuntime` boundary and
-  unavailable-runtime/no-model path. The recommendation policy names Gemma 4
-  E2B and Qwen2.5 1.5B Instruct, but exact artifacts, licence acceptance,
-  checksums, trust anchors, signing keys, delivery governance and prompt/output
-  review remain future owner/release work.
+  unavailable-runtime/no-model path. The recommendation policy now names
+  Qwen2.5 1.5B Instruct as the first release-candidate pack and defers Gemma 4
+  E2B, but exact artifacts, final licence re-check, checksums, trust anchors,
+  signing keys, delivery governance and prompt/output review remain future
+  owner/release work.
 - Phase 7.5 is a deterministic heuristic foundation. Compassionate
   safety-redirection categories, fallback keys, reminder replacements and AI
   metadata should receive owner, safety, legal and qualified localization
@@ -1336,10 +1443,11 @@ backend, AI, sync or safety-system runtime code.
   operational monitoring and release security review. None of those secrets or
   runtime databases should be committed.
 - Phase 10 is a localisation/accessibility foundation. Target locale key
-  coverage is complete at the resource level, but qualified human review is
-  still required before production use of safety, crisis, legal, privacy,
-  consent, relational-boundary, support, export/sync and daily-tool
-  translations.
+  coverage is complete at the resource level. Production scope is English-only
+  for now, and non-English Compose resource directories mirror English source
+  text until qualified human review approves production translations for
+  safety, crisis, legal, privacy, consent, relational-boundary, support,
+  export/sync and daily-tool copy.
 - Phase 11 is an optional offline speech foundation. Production speech still
   needs platform STT/TTS adapters, microphone permission copy, OS voice support
   review, speech-pack licence approvals, signed artifacts, device tests and
@@ -1389,6 +1497,14 @@ backend, AI, sync or safety-system runtime code.
   encrypted storage unavailable until a separate approved pass wires the
   platform encrypted store into the growth flow. There is no unencrypted
   fallback.
+- The new daily-tool UI now saves check-ins through encrypted app services
+  after adult confirmation. Worksheet/timer/calendar record persistence,
+  delete/export UI and physical-device evidence still need completion before
+  production release.
+- The new Grow concern prompt runs through `AiGrowthModeEngine`, but real local
+  AI remains unavailable until owner-approved signed Qwen `.litertlm` model
+  packs, trust anchors, checksums, platform LiteRT-LM bridge and device tests
+  exist.
 - Phase 5 does not include production content packs, production signing keys or
   owner-approved trust anchors. Release work must provide those before real
   public packs are accepted.
@@ -1399,10 +1515,9 @@ backend, AI, sync or safety-system runtime code.
   the PNG fallback.
 - The source PNG has a baked checkerboard background; generated assets use a
   documented mask to derive transparency.
-- Locale packs are draft implementation foundations and require qualified human
-  review before production use. Phase 4, Phase 6.6 and Phase 7 non-English
-  strings are draft fallback text and are not production-approved
-  translations.
+- Locale packs remain key-complete, but production scope is English-only.
+  Non-English resource directories mirror English source text until qualified
+  human review approves production translations.
 - `java` is not available on global `PATH`; current checks used JetBrains'
   bundled JBR at `C:\Program Files\JetBrains\PyCharm 2025.2.3\jbr`.
 - Local Windows Gradle checks require a non-committed `local.properties` with
@@ -1450,7 +1565,9 @@ backend, AI, sync or safety-system runtime code.
   Android physical-device matrix, low-resource startup/memory behavior,
   battery/thermal review, TestFlight installation/smoke testing, store
   metadata and privacy labels, screenshots, support/safety claims, qualified
-  human review for production locale strings and rollback/revocation process.
+  human review for any non-English production locale strings and
+  rollback/revocation process. Use
+  `docs/operations/release-evidence-template.md` as the record format.
 - Review Phase 6.5 relational-boundary categories and fallback copy before
   production localization or Phase 7 AI response-mode prompts.
 - Review Phase 6.6 daily-tool copy, reminder defaults, quiet-hours defaults
@@ -1467,20 +1584,25 @@ backend, AI, sync or safety-system runtime code.
   `com.corenovaness.bettamind`.
 - Provide owner-approved production knowledge-pack trust anchors and content
   governance before accepting real public packs.
-- Provide owner-approved production model choices, licences, trust anchors and
-  delivery governance before accepting real model packs.
+- Provide owner-approved Qwen production model artifact metadata, final
+  licence re-check, public trust anchor and delivery governance before
+  accepting real model packs. Use
+  `docs/operations/model-pack-owner-evidence-template.md` as the record
+  format.
 - Provide owner-approved production speech adapters, speech-pack choices,
   licences, trust anchors, signing keys and device-test results before
   accepting or offering real speech packs.
-- Accept or confirm the exact Gemma 4 E2B and/or Qwen2.5 1.5B Instruct model
-  licences under the publishing entity before any model artifact is packaged,
-  signed, uploaded or offered to users.
+- Reconfirm the exact Qwen2.5 1.5B Instruct licence and source revision under
+  the publishing entity before the first model artifact is packaged, signed,
+  uploaded or offered to users. Revisit Gemma 4 E2B only after Qwen device and
+  storage evidence passes.
 - Complete `docs/operations/model-license-approval-records.md` and review
   `docs/legal/model-third-party-notices.md` before packaging or offering any
   optional local AI model artifact.
-- Build or obtain the final `.litertlm` artifact outside Git, then complete
-  source revision, artifact URL, byte size, SHA-256 checksum, signed manifest
-  and device-test records before setting any model to `APPROVED_FOR_RELEASE`.
+- Build or obtain the final Qwen `.litertlm` artifact outside Git, then
+  complete source revision, artifact URL, byte size, SHA-256 checksum, signed
+  manifest, public trust anchor and device-test records before setting any
+  model to `APPROVED_FOR_RELEASE`.
 - Review Phase 7 AI-growth fallback identifiers, prompt boundaries, model
   schema and production model-output governance before enabling a real local
   model broadly.
@@ -1489,9 +1611,9 @@ backend, AI, sync or safety-system runtime code.
 - Arrange qualified human review for all Phase 8 safety-support, crisis,
   emergency, consent and support-sharing strings in every production locale
   before release.
-- Arrange qualified human review for production translations, especially any
-  safety, crisis, legal, privacy, consent, relational-boundary or daily-tool
-  copy.
+- Arrange qualified human review before enabling any non-English production
+  locale, especially safety, crisis, legal, privacy, consent,
+  relational-boundary or daily-tool copy.
 - Create the Cloudflare Pages project `bettamind-website` with root directory
   `apps/website`, build command `npm ci && npm run verify`, output directory
   `dist`, no deploy command, production branch `main` and custom domain
@@ -1505,12 +1627,13 @@ backend, AI, sync or safety-system runtime code.
 
 ## Next approved task
 
-Prepare the first internal TestFlight run: configure owner Apple Developer,
-App Store Connect and Codemagic secure signing as documented in
-`docs/operations/testflight-readiness.md`, push the SQLCipher duplicate-output
-fix, then run `ios-testflight-release` against the pushed release-candidate commit and
-record internal TestFlight smoke evidence. Deploying the static website through
-Cloudflare Pages remains a separate open owner action. Production release still
-requires Android physical-device testing, low-resource startup/memory checks,
-battery/thermal review, store metadata and privacy labels, qualified human
-review for production locale strings and the rollback/revocation record.
+Verify and push the production-readiness app integration, then run Codemagic
+`ios-simulator-unsigned` against the pushed commit because shared Kotlin,
+Compose resources and iOS entry points changed. After that, prepare the first
+internal TestFlight run and record evidence in
+`docs/operations/release-evidence-template.md`. The first real local AI pass is
+Qwen2.5 1.5B Instruct and remains blocked until the owner supplies the final
+`.litertlm` artifact metadata, signed manifest metadata, public Ed25519 trust
+anchor and device evidence recorded in
+`docs/operations/model-pack-owner-evidence-template.md`. Deploying the static
+website through Cloudflare Pages remains a separate open owner action.

@@ -271,11 +271,12 @@ eligibility decisions. Responses use a structured JSON schema with safety
 metadata, memory/export eligibility and fallback identifiers. Permanent memory
 is proposal-only, disabled for automatic writes and requires separate approval.
 No cloud AI, model downloads, model weights, backend dependency, speech,
-support bridge or sync implementation was added. Model-pack recommendation
-policy now records Gemma 4 E2B as the preferred optional LiteRT-LM pack for
-standard/high devices after testing, Qwen2.5 1.5B Instruct as the smaller
-fallback, and explicit user approval plus owner licence acceptance as required
-before any signed model pack is distributed or installed.
+support bridge or sync implementation was added. The release-candidate model
+policy now records Qwen2.5 1.5B Instruct as the first optional LiteRT-LM pack
+to prove the signed `.litertlm` pipeline, while Gemma 4 E2B remains cataloged
+as a later candidate after storage, thermal and memory testing. Explicit user
+approval plus owner licence acceptance is required before any signed model
+pack is distributed or installed.
 
 ## Phase 7.5: Compassionate safety redirection and better-human pathways
 
@@ -469,4 +470,13 @@ not production-ready until owner evidence is recorded for low-resource
 physical-device testing, battery/thermal/memory behavior, Android devices,
 Codemagic iOS validation for the pushed Phase 12 commit, TestFlight,
 store metadata/privacy labels/screenshots/support claims, qualified
-translation review and rollback.
+translation review and rollback. Later code-side production-readiness work
+made the shared Compose surface more release-candidate-like by rendering the
+Bettamind brand mark, removing production-facing scaffold copy, wiring Today
+check-ins through Android/iOS SQLCipher-backed app services after adult
+confirmation, exposing platform integration states in Settings, adding a
+concern prompt backed by deterministic no-model AI growth fallbacks and adding
+deterministic support assessment. Qwen2.5 1.5B Instruct is now the first
+model-pack target, with a trust-anchor policy and owner evidence templates in
+place. This does not complete owner-controlled production gates for the real
+artifact, public trust anchor, device evidence, screenshots or store records.

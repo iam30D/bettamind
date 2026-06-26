@@ -8,7 +8,13 @@ import kotlin.test.assertTrue
 
 class LocalAiModelRecommendationTest {
     @Test
-    fun standardAndHighTierDevicesRecommendGemmaWhenStorageAllows() {
+    fun allEligibleDeviceTiersRecommendQwenFirstForReleasePipeline() {
+        val lowDecision = BettamindLocalAiModelPolicy.recommendationFor(
+            LocalAiModelRecommendationInput(
+                deviceTier = LocalAiDeviceTier.Low,
+                availableStorageBytes = 5_000_000_000L,
+            ),
+        )
         val standardDecision = BettamindLocalAiModelPolicy.recommendationFor(
             LocalAiModelRecommendationInput(
                 deviceTier = LocalAiDeviceTier.Standard,
@@ -22,31 +28,25 @@ class LocalAiModelRecommendationTest {
             ),
         )
 
+        assertEquals(BettamindLocalAiModelCatalog.qwen25OnePoint5B, lowDecision.recommendedPack)
         assertEquals(LocalAiModelRecommendationStatus.RecommendInstall, standardDecision.status)
-        assertEquals(BettamindLocalAiModelCatalog.gemma4E2B, standardDecision.recommendedPack)
-        assertEquals(BettamindLocalAiModelCatalog.gemma4E2B, highDecision.recommendedPack)
+        assertEquals(BettamindLocalAiModelCatalog.qwen25OnePoint5B, standardDecision.recommendedPack)
+        assertEquals(BettamindLocalAiModelCatalog.qwen25OnePoint5B, highDecision.recommendedPack)
+        assertRecommendationRequiresExplicitApproval(lowDecision)
         assertRecommendationRequiresExplicitApproval(standardDecision)
         assertRecommendationRequiresExplicitApproval(highDecision)
     }
 
     @Test
-    fun lowTierOrStorageLimitedDevicesRecommendQwenWhenStorageAllows() {
-        val lowTierDecision = BettamindLocalAiModelPolicy.recommendationFor(
-            LocalAiModelRecommendationInput(
-                deviceTier = LocalAiDeviceTier.Low,
-                availableStorageBytes = 5_000_000_000L,
-            ),
-        )
+    fun standardDevicesStillUseQwenWhenGemmaStorageWouldHaveBeenAvailable() {
         val storageLimitedDecision = BettamindLocalAiModelPolicy.recommendationFor(
             LocalAiModelRecommendationInput(
                 deviceTier = LocalAiDeviceTier.Standard,
-                availableStorageBytes = 3_000_000_000L,
+                availableStorageBytes = 8_000_000_000L,
             ),
         )
 
-        assertEquals(BettamindLocalAiModelCatalog.qwen25OnePoint5B, lowTierDecision.recommendedPack)
         assertEquals(BettamindLocalAiModelCatalog.qwen25OnePoint5B, storageLimitedDecision.recommendedPack)
-        assertRecommendationRequiresExplicitApproval(lowTierDecision)
         assertRecommendationRequiresExplicitApproval(storageLimitedDecision)
     }
 

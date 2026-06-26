@@ -1,7 +1,9 @@
 package org.bettamind.shared
 
 import androidx.compose.ui.window.ComposeUIViewController
+import androidx.compose.runtime.remember
 
 fun MainViewController() = ComposeUIViewController {
-    BettamindApp()
+    val services = remember { createIosBettamindAppServices() }
+    BettamindApp(services = services)
 }

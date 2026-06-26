@@ -1,6 +1,6 @@
 # Local AI Model Pack Release
 
-Date updated: 2026-06-19
+Date updated: 2026-06-26
 
 ## Policy
 
@@ -18,13 +18,13 @@ licence compliance.
 
 | Use | Model | Runtime | Approximate artifact size | Licence | Owner action |
 | --- | --- | --- | --- | --- | --- |
-| Primary optional pack | `google/gemma-4-E2B-it` | `litert-lm` | 2.58 GB | Apache-2.0 | Accept or confirm Gemma 4 licence terms before packaging |
-| Smaller fallback | `Qwen/Qwen2.5-1.5B-Instruct` | `litert-lm` | 1.6 GB | Apache-2.0 | Confirm Qwen licence and notices before packaging |
+| First release pack | `Qwen/Qwen2.5-1.5B-Instruct` | `litert-lm` | 1.6 GB | Apache-2.0 | Complete final artifact, trust anchor and device evidence |
+| Later candidate | `google/gemma-4-E2B-it` | `litert-lm` | 2.58 GB | Apache-2.0 | Reconsider after Qwen passes storage, thermal and memory tests |
 
-Gemma 4 E2B is the default recommendation for standard or high-tier devices
-with enough free storage. Qwen2.5 1.5B Instruct is the fallback recommendation
-for low-tier or storage-limited devices when enough free storage remains. These
-recommendations are not bundled and do not auto-install.
+Qwen2.5 1.5B Instruct is the first production pipeline target because it is
+smaller and exercises the full signed `.litertlm` install, load, generate and
+remove flow before the app takes on a larger Gemma pack. These recommendations
+are not bundled and do not auto-install.
 
 Licence confirmation and owner-editable approval records live in
 `docs/operations/model-license-approval-records.md`. Draft release notice text
