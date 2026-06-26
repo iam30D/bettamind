@@ -39,8 +39,11 @@ release-candidate patch removes first-render Compose font and decorative image
 resource loading while the iOS launch abort is isolated. Build 9 still crashed
 on launch with the same `EXC_CRASH`/`SIGABRT` shape and no dyld error; the
 workflow now collects and publishes zipped iOS dSYMs plus UUID logs so the
-next crash report can be symbolicated. A static public website has been added
-under
+next crash report can be symbolicated. Build 10 was symbolicated with the
+matching dSYM and traced to Compose Multiplatform
+`androidx.compose.ui.uikit.PlistSanityCheck`, which aborts when
+`Info.plist` lacks `CADisableMinimumFrameDurationOnPhone=true`. The iOS plist
+now includes that key. A static public website has been added under
 `apps/website` as an isolated Astro site for support, privacy, safety, AI
 transparency, data deletion and brand pages; this did not modify mobile app,
 backend, AI, sync or safety-system runtime code.
@@ -246,6 +249,10 @@ backend, AI, sync or safety-system runtime code.
   `build/ios/dsyms/Bettamind-dSYMs.zip`, `dsym-files.log` and
   `dsym-uuids.log` after archive creation. Use those artifacts with the
   matching TestFlight `.ips` crash report to symbolicate iOS launch crashes.
+- Compose Multiplatform 1.8.2 on iOS requires
+  `CADisableMinimumFrameDurationOnPhone=true` in `Info.plist` unless strict
+  plist sanity checks are disabled. Bettamind keeps the check enabled and adds
+  the key to `iosApp/iosApp/Info.plist`.
 
 ## Completed work
 
@@ -1275,6 +1282,11 @@ backend, AI, sync or safety-system runtime code.
 - `git diff --check` reported no whitespace errors after the build 8
   TestFlight launch-crash resource-loading patch, only normal Windows
   LF-to-CRLF warnings.
+- PowerShell XML parsing confirmed `iosApp/iosApp/Info.plist` contains
+  `CADisableMinimumFrameDurationOnPhone` after the build 10 symbolicated
+  Compose plist-sanity fix.
+- `git diff --check` reported no whitespace errors after the build 10
+  Compose plist-sanity fix, only normal Windows LF-to-CRLF warnings.
 
 ## Known blockers and limitations
 
