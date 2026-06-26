@@ -15,7 +15,13 @@ failed during `xcode-project build-ipa`; the likely cause was the checked-in
 iOS Xcode config still defaulting to `dev.bettamind.placeholder` while
 Codemagic fetched the App Store profile for `com.corenovaness.bettamind`.
 The iOS Debug and Release xcconfig bundle-ID defaults are now updated to
-`com.corenovaness.bettamind`. A
+`com.corenovaness.bettamind`. A later Codemagic release build successfully
+built and signed `Bettamind.ipa` with bundle ID `com.corenovaness.bettamind`
+and version code 4, then failed only during App Store Connect publishing
+because Xcode 16.4 produced an iOS 18.5 SDK build and App Store Connect now
+requires iOS 26 SDK or later. Codemagic iOS workflows are now updated to Xcode
+26.0, and Kotlin is updated to 2.2.21 to match JetBrains' documented Xcode
+26.0 compatibility. A
 static public website has been added under
 `apps/website` as an isolated Astro site for support, privacy, safety, AI
 transparency, data deletion and brand pages; this did not modify mobile app,
@@ -27,6 +33,9 @@ backend, AI, sync or safety-system runtime code.
 - Primary development environment: Windows.
 - iOS validation: Codemagic macOS using the real `iosApp` Xcode project.
 - Owner-confirmed iOS bundle ID: `com.corenovaness.bettamind`.
+- Current release toolchain: Kotlin 2.2.21, Compose Multiplatform 1.8.2,
+  Android Gradle Plugin 8.11.1, Gradle 8.14.3 and Codemagic Xcode 26.0 for iOS
+  workflows.
 - Optional backend: FastAPI.
 - Core mobile use remains offline, account-free, backend-independent and useful
   without AI.
@@ -202,6 +211,10 @@ backend, AI, sync or safety-system runtime code.
   `BETTAMIND_IOS_BUNDLE_ID` to `com.corenovaness.bettamind` so archive signing
   can match the App Store provisioning profile. The Codemagic
   `bettamind-testflight` group should use the same value.
+- Codemagic iOS workflows must use Xcode 26.0 or later for App Store Connect
+  uploads. Kotlin 2.2.21 is the current project patch because JetBrains'
+  Kotlin Multiplatform compatibility table documents Xcode 26.0 support for
+  that version.
 
 ## Completed work
 
@@ -1184,6 +1197,26 @@ backend, AI, sync or safety-system runtime code.
   now use that identifier.
 - `codemagic.yaml` now uses `com.corenovaness.bettamind` for the
   `ios-simulator-unsigned` default iOS bundle ID as well.
+- Codemagic `ios-testflight-release` built and signed `Bettamind.ipa` for
+  bundle ID `com.corenovaness.bettamind` and version code 4, then App Store
+  Connect rejected the upload because it was built with Xcode 16.4/iOS 18.5
+  SDK. This proved signing was configured but the upload SDK requirement was
+  not met.
+- `codemagic.yaml` now pins both iOS workflows to Xcode 26.0.
+- `gradle/libs.versions.toml` now pins Kotlin to 2.2.21 for documented Xcode
+  26.0 compatibility.
+- After the Xcode 26.0/Kotlin 2.2.21 toolchain fix, `git diff --check`
+  reported no whitespace errors, only normal Windows LF-to-CRLF warnings.
+- After the Xcode 26.0/Kotlin 2.2.21 toolchain fix, the restricted artifact
+  scan found no model, signing, secret, database, audio-pack or store-archive
+  artifacts.
+- Local Windows Gradle verification after the Xcode 26.0/Kotlin 2.2.21 bump
+  timed out for both `.\gradlew.bat :shared:testDebugUnitTest --no-daemon
+  --no-configuration-cache --max-workers=1 --stacktrace --console=plain` and
+  `.\gradlew.bat :shared:compileDebugKotlinAndroid --no-daemon
+  --no-configuration-cache --max-workers=1 --stacktrace --console=plain`.
+  Gradle daemons were stopped cleanly with `.\gradlew.bat --stop`. Required
+  proof for this release-toolchain change is Codemagic macOS using Xcode 26.0.
 - `git diff --check` reported no whitespace errors after the iOS bundle-ID
   config fix, only normal Windows LF-to-CRLF warnings.
 - `rg --files --glob '!**/.git/**' --glob '!**/build/**' | rg
@@ -1278,6 +1311,10 @@ backend, AI, sync or safety-system runtime code.
   The remaining Java worker exited on its own. Targeted release-readiness
   tests, full shared Android unit tests, Android assemble and Android lint
   passed afterward.
+- Local Windows Gradle commands after the Kotlin 2.2.21 patch did not return
+  within the tool timeout. This is unresolved locally and must be validated by
+  Codemagic because the actual release requirement is an iOS 26 SDK archive on
+  macOS.
 - During Phase 8 local verification, initial short-timeout Gradle task runs
   exceeded the tool timeout and left stale Java/Gradle workers, which were
   terminated with `taskkill`. Re-running with longer timeouts passed targeted
@@ -1405,8 +1442,9 @@ backend, AI, sync or safety-system runtime code.
 
 Prepare the first internal TestFlight run: configure owner Apple Developer,
 App Store Connect and Codemagic secure signing as documented in
-`docs/operations/testflight-readiness.md`, push the iOS bundle-ID config fix,
-then run `ios-testflight-release` against the pushed release-candidate commit and
+`docs/operations/testflight-readiness.md`, push the Xcode 26.0/Kotlin 2.2.21
+toolchain fix, then run `ios-testflight-release` against the pushed
+release-candidate commit and
 record internal TestFlight smoke evidence. Deploying the static website through
 Cloudflare Pages remains a separate open owner action. Production release still
 requires Android physical-device testing, low-resource startup/memory checks,

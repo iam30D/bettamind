@@ -4,7 +4,7 @@ workflows:
     instance_type: mac_mini_m2
     max_build_duration: 60
     environment:
-      xcode: 16.4
+      xcode: 26.0
       vars:
         BETTAMIND_ANDROID_APPLICATION_ID: dev.bettamind.placeholder
         BETTAMIND_IOS_BUNDLE_ID: com.corenovaness.bettamind
@@ -123,7 +123,7 @@ workflows:
     integrations:
       app_store_connect: bettamind-app-store-connect
     environment:
-      xcode: 16.4
+      xcode: 26.0
       groups:
         - bettamind-testflight
       ios_signing:

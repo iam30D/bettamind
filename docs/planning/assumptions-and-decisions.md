@@ -14,9 +14,11 @@
 
 ## Decisions
 
-- Use Kotlin 2.2.20, Compose Multiplatform 1.8.2, Android Gradle Plugin 8.11.1
-  and Gradle 8.14.3 for Phase 1 because they are compatible with Xcode 16.4
-  according to the Kotlin Multiplatform compatibility guidance.
+- Use Kotlin 2.2.21, Compose Multiplatform 1.8.2, Android Gradle Plugin 8.11.1
+  and Gradle 8.14.3 for the current release branch because Kotlin 2.2.21 is
+  compatible with Xcode 26.0 according to the Kotlin Multiplatform
+  compatibility guidance, and App Store Connect now requires iOS 26 SDK or
+  later uploads.
 - Use `brand/` as the canonical brand root from the definitive prompt.
 - Use a single shared KMP module in Phase 1 and package-level architecture
   foundations inside it. More Gradle modules may be added when product features
@@ -72,6 +74,9 @@
   integrations and variable groups, must fail on placeholder bundle IDs, must
   upload to App Store Connect only when started manually and must not commit
   signing files or Apple API keys.
+- Pin Codemagic iOS workflows to Xcode 26.0 for App Store Connect upload
+  compatibility while staying on the smallest Kotlin patch that documents
+  Xcode 26.0 support.
 
 ## Deferred decisions
 

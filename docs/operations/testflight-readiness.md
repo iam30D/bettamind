@@ -15,6 +15,10 @@ The owner-confirmed iOS bundle identifier is
 configuration files use this identifier so Xcode archive signing can match the
 App Store provisioning profile.
 
+App Store Connect rejected a signed IPA built with Xcode 16.4 because it used
+the iOS 18.5 SDK. The release workflow now pins Codemagic to Xcode 26.0 so the
+IPA is built with an iOS 26 SDK.
+
 This does not approve a production App Store release. TestFlight is the next
 required release-validation gate before any production approval.
 
@@ -25,6 +29,8 @@ required release-validation gate before any production approval.
   `dev.bettamind.placeholder` identifier.
 - The Xcode target defaults to `com.corenovaness.bettamind`; Codemagic should
   use the same value in the `bettamind-testflight` variable group.
+- Codemagic iOS workflows pin `xcode: 26.0`; Kotlin is pinned to `2.2.21`,
+  which is the smallest project patch with documented Xcode 26.0 compatibility.
 - App Store signing files are fetched through Codemagic `ios_signing` with
   `distribution_type: app_store`.
 - The IPA is uploaded through the Codemagic App Store Connect integration named
