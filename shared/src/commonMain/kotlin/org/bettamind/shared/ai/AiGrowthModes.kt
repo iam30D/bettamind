@@ -164,9 +164,8 @@ class AiGrowthModeEngine(
             )
         }
 
-        val structured = runCatching {
-            json.decodeFromString<AiGrowthStructuredModelResponse>(rawModelOutput)
-        }.getOrElse {
+        val structured = decodeStructuredModelOutput(rawModelOutput)
+        if (structured == null) {
             return deterministicFallback(
                 mode = request.mode,
                 preGeneration = preGeneration,
@@ -454,6 +453,8 @@ class AiGrowthModeEngine(
             add("tone=respectful_nonjudgmental_autonomy_respecting")
             add("boundaries=no_cloud_ai_no_romance_no_diagnosis_no_emergency_claims_no_actionable_harm")
             add("response_shape=json_object_with_schemaVersion_mode_text_actionKeys_safety_metadata_memoryEligible_exportEligible")
+            add("output_rules=return_only_one_valid_json_object_no_markdown_no_explanation_no_code_fence")
+            add("json_schema_keys=schemaVersion,mode,text,actionKeys,safetyBoundaryApplied,safetyBoundaryReason,userIntentConfidence,allowedDiscussionScope,betterHumanPathway,recommendedTool,memoryEligible,exportEligible,requiresStepUpAuth,requiresUrgentSupport")
             add("safetyBoundaryApplied=false")
             add("allowedDiscussionScope=${preGeneration.safetyRedirectDecision.allowedDiscussionScope.wireName}")
             add("betterHumanPathway=${preGeneration.safetyRedirectDecision.recommendedTool.wireName}")
@@ -462,6 +463,43 @@ class AiGrowthModeEngine(
                 .forEach { add("consented_context=${it.wireName}") }
             add("user_input=${request.userInput}")
         }.joinToString(separator = "\n")
+
+    private fun decodeStructuredModelOutput(rawOutput: String): AiGrowthStructuredModelResponse? {
+        runCatching {
+            return json.decodeFromString<AiGrowthStructuredModelResponse>(rawOutput)
+        }
+        val jsonObject = firstJsonObject(rawOutput) ?: return null
+        return runCatching {
+            json.decodeFromString<AiGrowthStructuredModelResponse>(jsonObject)
+        }.getOrNull()
+    }
+
+    private fun firstJsonObject(rawOutput: String): String? {
+        val start = rawOutput.indexOf('{')
+        if (start < 0) return null
+        var depth = 0
+        var inString = false
+        var escaped = false
+        for (index in start until rawOutput.length) {
+            val char = rawOutput[index]
+            if (escaped) {
+                escaped = false
+                continue
+            }
+            when {
+                char == '\\' && inString -> escaped = true
+                char == '"' -> inString = !inString
+                !inString && char == '{' -> depth += 1
+                !inString && char == '}' -> {
+                    depth -= 1
+                    if (depth == 0) {
+                        return rawOutput.substring(start, index + 1)
+                    }
+                }
+            }
+        }
+        return null
+    }
 
     companion object {
         const val ResponseSchemaVersion: Int = 1

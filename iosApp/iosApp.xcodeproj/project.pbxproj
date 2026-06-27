@@ -10,6 +10,8 @@
         A10000000000000000000010 /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000020 /* iOSApp.swift */; };
         A10000000000000000000011 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000025 /* Assets.xcassets */; };
         A10000000000000000000012 /* SQLCipher in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000081 /* SQLCipher */; };
+        A10000000000000000000013 /* LiteRTLM in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000082 /* LiteRTLM */; };
+        A10000000000000000000014 /* BettamindIosNativeAiBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000026 /* BettamindIosNativeAiBridge.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +21,7 @@
         A10000000000000000000023 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
         A10000000000000000000024 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
         A10000000000000000000025 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+        A10000000000000000000026 /* BettamindIosNativeAiBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BettamindIosNativeAiBridge.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -27,6 +30,7 @@
             buildActionMask = 2147483647;
             files = (
                 A10000000000000000000012 /* SQLCipher in Frameworks */,
+                A10000000000000000000013 /* LiteRTLM in Frameworks */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
@@ -46,6 +50,7 @@
             isa = PBXGroup;
             children = (
                 A10000000000000000000020 /* iOSApp.swift */,
+                A10000000000000000000026 /* BettamindIosNativeAiBridge.swift */,
                 A10000000000000000000021 /* Info.plist */,
                 A10000000000000000000025 /* Assets.xcassets */,
             );
@@ -88,6 +93,7 @@
             name = iosApp;
             packageProductDependencies = (
                 A10000000000000000000081 /* SQLCipher */,
+                A10000000000000000000082 /* LiteRTLM */,
             );
             productName = Bettamind;
             productReference = A10000000000000000000022 /* Bettamind.app */;
@@ -119,6 +125,7 @@
             mainGroup = A10000000000000000000040;
             packageReferences = (
                 A10000000000000000000080 /* XCRemoteSwiftPackageReference "SQLCipher.swift" */,
+                A10000000000000000000083 /* XCRemoteSwiftPackageReference "LiteRT-LM" */,
             );
             productRefGroup = A10000000000000000000043 /* Products */;
             projectDirPath = "";
@@ -168,6 +175,7 @@
             buildActionMask = 2147483647;
             files = (
                 A10000000000000000000010 /* iOSApp.swift in Sources */,
+                A10000000000000000000014 /* BettamindIosNativeAiBridge.swift in Sources */,
             );
             runOnlyForDeploymentPostprocessing = 0;
         };
@@ -182,6 +190,14 @@
                 version = 4.16.0;
             };
         };
+        A10000000000000000000083 /* XCRemoteSwiftPackageReference "LiteRT-LM" */ = {
+            isa = XCRemoteSwiftPackageReference;
+            repositoryURL = "https://github.com/google-ai-edge/LiteRT-LM.git";
+            requirement = {
+                kind = exactVersion;
+                version = 0.13.1;
+            };
+        };
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -189,6 +205,11 @@
             isa = XCSwiftPackageProductDependency;
             package = A10000000000000000000080 /* XCRemoteSwiftPackageReference "SQLCipher.swift" */;
             productName = SQLCipher;
+        };
+        A10000000000000000000082 /* LiteRTLM */ = {
+            isa = XCSwiftPackageProductDependency;
+            package = A10000000000000000000083 /* XCRemoteSwiftPackageReference "LiteRT-LM" */;
+            productName = LiteRTLM;
         };
 /* End XCSwiftPackageProductDependency section */
 

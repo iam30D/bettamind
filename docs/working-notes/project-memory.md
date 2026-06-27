@@ -73,8 +73,13 @@ later app-usability pass improved prompt submission and launch polish without
 pretending that Qwen generation is live: Grow and Support now handle keyboard
 Send, show blank/loading/result states, support recommendations can route to
 safe local Today tools, Android/iOS have branded launch screens, and platform
-model-pack status now says the LiteRT-LM runtime and install/load/generate/
-remove flow remain unconnected.
+model-pack status now exposes the user-approved signed-pack install path. A
+later local-model runtime pass wires Android to Google's `litertlm-android`
+`0.13.1` package and wires iOS through a native Swift bridge that links the
+official `LiteRTLM` Swift Package at `0.13.1`. The app still does not
+auto-download or bundle model weights: users must explicitly select the signed
+Qwen manifest and matching `.litertlm` artifact, and iOS must still pass
+Codemagic/Xcode validation plus device smoke testing before production approval.
 
 ## Locked decisions
 
@@ -233,6 +238,17 @@ remove flow remain unconnected.
   runtime and deterministic fallback. It does not generate learned-model
   intelligence; it routes deterministic flows, local resources, optional
   signed knowledge retrieval and model-free safety policies.
+- Android local AI generation uses the signed Qwen `.litertlm` artifact only
+  after user-approved document selection, Ed25519 manifest verification,
+  SHA-256/size verification and LiteRT-LM runtime load. No model artifacts are
+  committed or downloaded automatically.
+- iOS local AI generation is bridged through `BettamindIosNativeAiBridge`,
+  which presents a document picker, validates the same signed Qwen manifest and
+  artifact metadata, stores the pack under app support, links `LiteRTLM`
+  through Swift Package Manager and streams generated text back into the shared
+  `LocalAiRuntime` interface. Windows cannot compile this Swift/Xcode path;
+  Codemagic `ios-simulator-unsigned` and device/TestFlight model smoke evidence
+  remain required.
 - Phase 10 target locale resources must remain key-complete. The current
   production scope is English-only; non-English Compose resource directories
   intentionally mirror English source strings until qualified human review
@@ -901,6 +917,22 @@ remove flow remain unconnected.
   Android/iOS model-pack status so it no longer implies an installer/runtime is
   available, and added branded Android/iOS launch-screen configuration. This
   does not implement real Qwen LiteRT-LM generation.
+- Android now includes the LiteRT-LM runtime dependency
+  `com.google.ai.edge.litertlm:litertlm-android:0.13.1`, a document-picker
+  signed model-pack installer, Ed25519 signature verification, SHA-256/size
+  artifact verification, removable no-backup storage and a real
+  install/load/generate/unload bridge into `LocalAiRuntime`.
+- iOS now includes `BettamindIosNativeAiBridge.swift`, links the official
+  `https://github.com/google-ai-edge/LiteRT-LM.git` Swift Package product
+  `LiteRTLM` at exact version `0.13.1`, passes the bridge into the shared
+  Compose app, validates the signed Qwen manifest/artifact before storing it
+  under Application Support and routes generated text back into the shared
+  runtime adapter. This must be validated by Codemagic/Xcode because Windows
+  cannot compile the Swift bridge or iOS Kotlin/Native SQLCipher cinterop.
+- `AiGrowthModeEngine` now asks model runtimes for strict JSON, extracts the
+  first balanced JSON object from model output when models wrap it in extra
+  text and still falls back deterministically if schema, relational-boundary or
+  harm-safety validation fails.
 - Optimized website image assets were generated from `brand/generated/`
   without overwriting `brand/source/bettamind-logo-master.png`.
 - `docs/operations/website-cloudflare-pages.md` documents Cloudflare Pages
@@ -975,9 +1007,12 @@ remove flow remain unconnected.
 - `shared/src/androidMain/kotlin/org/bettamind/shared/BettamindAndroidServices.kt`
 - `shared/src/iosMain/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/iosMain/kotlin/org/bettamind/shared/BettamindIosServices.kt`
+- `shared/src/iosMain/kotlin/org/bettamind/shared/MainViewController.kt`
 - `shared/src/iosTest/kotlin/org/bettamind/shared/privacy/`
 - `shared/src/nativeInterop/cinterop/`
 - `androidApp/src/main/res/`
+- `iosApp/iosApp/BettamindIosNativeAiBridge.swift`
+- `iosApp/iosApp/iOSApp.swift`
 - `iosApp/iosApp/Assets.xcassets/`
 - `iosApp/iosApp.xcodeproj/project.pbxproj`
 - `docs/security/phase-3-encrypted-storage-spike.md`
@@ -1529,15 +1564,43 @@ remove flow remain unconnected.
 - `Get-Process -Name java,gradle -ErrorAction SilentlyContinue` returned no
   leftover Java or Gradle worker processes after the app-usability prompt and
   launch-screen update.
+- `.\gradlew.bat :shared:compileKotlinMetadata --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the Android LiteRT-LM runtime wiring, iOS native bridge wiring
+  and model-pack status string updates. On Windows, Gradle skipped iOS
+  Kotlin/Native targets because SQLCipher cinterop requires macOS tooling.
+- `.\gradlew.bat :shared:compileDebugKotlinAndroid --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the Android LiteRT-LM runtime adapter was wired.
+- `.\gradlew.bat :androidApp:assembleDebug --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the LiteRT-LM dependency was added. Debug packaging warned that
+  several native libraries, including `libLiteRt.so` and `liblitertlm_jni.so`,
+  could not be stripped and were packaged as-is.
+- `.\gradlew.bat :androidApp:lintDebug --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the runtime and iOS bridge source updates.
+- `.\gradlew.bat :shared:testDebugUnitTest --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the runtime and model-output parsing updates.
+- `.\gradlew.bat phaseTwelveCheck --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the local model runtime bridge changes, with expected Windows
+  iOS cinterop target skips.
+- `rg -n "remain unconnected|Real Qwen generation still remains blocked|native LiteRT-LM Swift bridge before model replies|native bridge and device evidence|real local AI generation remains unavailable|unavailable-runtime model-pack status" docs shared iosApp androidApp`
+  returned no stale model-runtime status wording after the bridge update.
+- `git diff --check` reported no whitespace errors after the local model
+  runtime bridge changes, only normal Windows LF-to-CRLF warnings.
+- `rg --files --glob '!**/.git/**' --glob '!**/build/**' | rg "\.(litertlm|tflite|task|gguf|onnx|safetensors|bin|pt|pth|ckpt|mlmodel|mlpackage|keystore|p12|mobileprovision|cer|env|db|sqlite|aab|ipa|xcarchive|wav|mp3|m4a|flac)$"`
+  found no model, signing, secret, database, audio-pack or store-archive
+  artifacts in the repository after the bridge update.
+- `Get-Process -Name java,gradle -ErrorAction SilentlyContinue` returned no
+  leftover Java or Gradle worker processes after verification.
 
 ## Known blockers and limitations
 
 - iOS cannot be fully built locally on Windows. Every shared/iOS change still
   requires Codemagic `ios-simulator-unsigned`.
-- Real local AI generation remains unavailable in the visible app. The Qwen
-  release-candidate artifact metadata, signed manifest and public trust anchor
-  are recorded, but the platform LiteRT-LM bridge, model import/install UI,
-  load/generate/remove flow and Android/iOS device evidence are still pending.
+- Real local AI generation is now wired through platform LiteRT-LM bridges, but
+  it is not production-proven yet. Android can compile and package the runtime
+  locally; iOS bridge compilation still requires Codemagic/Xcode. Both
+  platforms still need user-installed signed Qwen pack smoke tests, interrupted
+  import testing, low-storage behavior, battery/thermal/memory observations and
+  rollback/revocation evidence before production release approval.
 - Owner confirmed Codemagic `ios-simulator-unsigned` passed for Phase 7 and
   local model recommendation policy through commit `d1811db`, and for the
   Phase 7.5 safety-redirection commit `cf4b240`.
@@ -1643,12 +1706,12 @@ remove flow remain unconnected.
   after adult confirmation. Worksheet/timer/calendar record persistence,
   delete/export UI and physical-device evidence still need completion before
   production release.
-- The new Grow concern prompt runs through `AiGrowthModeEngine`, but real local
-  AI remains unavailable in the app until the platform LiteRT-LM bridge,
-  install/load/generate/remove flow, Android physical-device evidence, iOS
-  TestFlight evidence, low-storage/interrupted-import behavior,
-  battery/thermal/memory observations and rollback/revocation records pass for
-  the signed Qwen package.
+- The new Grow concern prompt runs through `AiGrowthModeEngine` and now has a
+  real local-runtime route when a signed Qwen pack is installed. Deterministic
+  no-model fallback remains active until install and runtime load succeed.
+  Android physical-device evidence, iOS Codemagic/TestFlight evidence,
+  low-storage/interrupted-import behavior, battery/thermal/memory observations
+  and rollback/revocation records still must pass for the signed Qwen package.
 - Phase 5 does not include production content packs, production signing keys or
   owner-approved trust anchors. Release work must provide those before real
   public packs are accepted.
@@ -1680,6 +1743,14 @@ remove flow remain unconnected.
 - Run Codemagic `ios-simulator-unsigned` for pushed commits that change shared
   Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
   iOS, or Codemagic iOS workflow files.
+- Run Codemagic `ios-simulator-unsigned` against the commit that adds
+  `BettamindIosNativeAiBridge.swift` and the `LiteRTLM` Swift Package. This is
+  the first compiler proof for the iOS model bridge because Windows cannot
+  build the Swift/Xcode path.
+- After Codemagic passes, install the signed Qwen manifest plus matching
+  `.litertlm` artifact on Android and iOS and record a prompt/generation smoke
+  test, failed-install behavior, remove/reinstall behavior and any
+  memory/thermal/battery observations in the model-pack owner evidence record.
 - Run Codemagic `ios-simulator-unsigned` after any future pushed commit that
   changes shared Kotlin, Compose resources, `iosApp`, Gradle configuration that
   can affect iOS, or Codemagic iOS workflow files.
@@ -1771,15 +1842,13 @@ remove flow remain unconnected.
 
 ## Next approved task
 
-After the owner-approved Qwen model-pack release-candidate metadata and
-trust-anchor update is pushed, run Codemagic `ios-simulator-unsigned` against
-that pushed commit because shared Kotlin changed. After that, prepare the first
-internal TestFlight run and record evidence in
-`docs/operations/release-evidence-template.md`. The first real local AI pass is
-Qwen2.5 1.5B Instruct; the artifact, app-compatible signed manifest and public
-trust anchor are prepared, and the remaining blockers are platform LiteRT-LM
-bridge validation, Android/iOS device evidence, low-storage/interrupted-import
-testing, battery/thermal/memory observations, rollback/revocation review and
-final owner release approval recorded in
-`docs/operations/model-pack-owner-evidence-template.md`. Deploying the static
-website through Cloudflare Pages remains a separate open owner action.
+After this local-model runtime bridge commit is pushed, run Codemagic
+`ios-simulator-unsigned` against that exact commit SHA because shared Kotlin,
+Compose resources, Gradle configuration, `iosApp` and Swift bridge code
+changed. If Codemagic passes, run Android and iOS signed-Qwen install/load/
+prompt/remove smoke tests and record the evidence in
+`docs/operations/model-pack-owner-evidence-template.md`. The remaining release
+blockers are Android/iOS device evidence, low-storage/interrupted-import
+testing, battery/thermal/memory observations, rollback/revocation review,
+TestFlight/store evidence and final owner release approval. Deploying the
+static website through Cloudflare Pages remains a separate open owner action.

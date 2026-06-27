@@ -31,8 +31,10 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -73,6 +75,7 @@ import org.bettamind.shared.support.SafetySupportRiskLevel
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 private enum class BettamindDestination(
@@ -91,7 +94,8 @@ private val primaryDestinations = BettamindDestination.entries
 @Composable
 fun BettamindApp(services: BettamindAppServices = BettamindAppServices()) {
     val coroutineScope = rememberCoroutineScope()
-    val aiGrowthEngine = remember { AiGrowthModeEngine() }
+    val modelPackStatus by services.modelPacks.status.collectAsState()
+    val aiGrowthEngine = remember(services.aiRuntime) { AiGrowthModeEngine(services.aiRuntime) }
     val supportEngine = remember { SafetySupportBridgeEngine() }
     var selectedDestination by remember { mutableStateOf(BettamindDestination.Today) }
     var themeMode by remember { mutableStateOf(BettamindThemeMode.Light) }
@@ -113,12 +117,33 @@ fun BettamindApp(services: BettamindAppServices = BettamindAppServices()) {
     var dailyRecordSaveResult by remember { mutableStateOf<DailyRecordSaveResult?>(null) }
     var dailyRecordCount by remember { mutableStateOf(0) }
     var breathingStepIndex by remember { mutableStateOf(0) }
+    var breathingTimerRunning by remember { mutableStateOf(false) }
+    var breathingTimerRemainingSeconds by remember {
+        mutableStateOf(BreathingExerciseCatalog.boxBreathing().steps.first().durationSeconds)
+    }
     var groundingStepIndex by remember { mutableStateOf(0) }
     var selectedWorksheetKind by remember { mutableStateOf(DecisionWorksheetKind.ValuesToAction) }
     var supportText by remember { mutableStateOf("") }
     var supportDecision by remember { mutableStateOf<SafetySupportDecision?>(null) }
     var supportPromptSubmittedBlank by remember { mutableStateOf(false) }
     var supportActionOpened by remember { mutableStateOf<SafetySupportActionType?>(null) }
+
+    LaunchedEffect(breathingStepIndex) {
+        breathingTimerRunning = false
+        breathingTimerRemainingSeconds = BreathingExerciseCatalog.boxBreathing()
+            .steps[breathingStepIndex]
+            .durationSeconds
+    }
+    LaunchedEffect(breathingTimerRunning, breathingTimerRemainingSeconds) {
+        if (breathingTimerRunning && breathingTimerRemainingSeconds > 0) {
+            delay(1_000L)
+            breathingTimerRemainingSeconds -= 1
+        } else if (breathingTimerRunning && breathingTimerRemainingSeconds == 0) {
+            breathingTimerRunning = false
+            val stepCount = BreathingExerciseCatalog.boxBreathing().steps.size
+            breathingStepIndex = (breathingStepIndex + 1) % stepCount
+        }
+    }
 
     BettamindTheme(
         themeMode = themeMode,
@@ -255,6 +280,11 @@ fun BettamindApp(services: BettamindAppServices = BettamindAppServices()) {
                     dailyRecordSaveResult = dailyRecordSaveResult,
                     dailyRecordCount = dailyRecordCount,
                     breathingStepIndex = breathingStepIndex,
+                    breathingTimerRunning = breathingTimerRunning,
+                    breathingTimerRemainingSeconds = breathingTimerRemainingSeconds,
+                    onToggleBreathingTimer = {
+                        breathingTimerRunning = !breathingTimerRunning
+                    },
                     onNextBreathingStep = {
                         val stepCount = BreathingExerciseCatalog.boxBreathing().steps.size
                         breathingStepIndex = (breathingStepIndex + 1) % stepCount
@@ -324,6 +354,13 @@ fun BettamindApp(services: BettamindAppServices = BettamindAppServices()) {
                             SafetySupportActionType.NoActionNeeded,
                             -> Unit
                         }
+                    },
+                    modelPackStatus = modelPackStatus,
+                    onInstallModelPack = {
+                        services.modelPacks.requestUserInstall()
+                    },
+                    onRemoveModelPack = {
+                        services.modelPacks.removeInstalledModel()
                     },
                     services = services,
                 )
@@ -421,6 +458,9 @@ private fun DestinationPanel(
     dailyRecordSaveResult: DailyRecordSaveResult?,
     dailyRecordCount: Int,
     breathingStepIndex: Int,
+    breathingTimerRunning: Boolean,
+    breathingTimerRemainingSeconds: Int,
+    onToggleBreathingTimer: () -> Unit,
     onNextBreathingStep: () -> Unit,
     groundingStepIndex: Int,
     onNextGroundingStep: () -> Unit,
@@ -433,6 +473,9 @@ private fun DestinationPanel(
     onAssessSupport: () -> Unit,
     supportActionOpened: SafetySupportActionType?,
     onOpenSupportAction: (SafetySupportActionType) -> Unit,
+    modelPackStatus: ModelPackPlatformStatus,
+    onInstallModelPack: () -> Unit,
+    onRemoveModelPack: () -> Unit,
     services: BettamindAppServices,
 ) {
     Column(
@@ -460,6 +503,9 @@ private fun DestinationPanel(
                 onLowLiteracyCopyChange = onLowLiteracyCopyChange,
                 privacyLockTimeout = privacyLockTimeout,
                 onPrivacyLockTimeoutChange = onPrivacyLockTimeoutChange,
+                modelPackStatus = modelPackStatus,
+                onInstallModelPack = onInstallModelPack,
+                onRemoveModelPack = onRemoveModelPack,
                 services = services,
             )
         } else {
@@ -492,6 +538,9 @@ private fun DestinationPanel(
                 dailyRecordSaveResult = dailyRecordSaveResult,
                 dailyRecordCount = dailyRecordCount,
                 breathingStepIndex = breathingStepIndex,
+                breathingTimerRunning = breathingTimerRunning,
+                breathingTimerRemainingSeconds = breathingTimerRemainingSeconds,
+                onToggleBreathingTimer = onToggleBreathingTimer,
                 onNextBreathingStep = onNextBreathingStep,
                 groundingStepIndex = groundingStepIndex,
                 onNextGroundingStep = onNextGroundingStep,
@@ -504,6 +553,9 @@ private fun DestinationPanel(
                 onAssessSupport = onAssessSupport,
                 supportActionOpened = supportActionOpened,
                 onOpenSupportAction = onOpenSupportAction,
+                modelPackStatus = modelPackStatus,
+                onInstallModelPack = onInstallModelPack,
+                onRemoveModelPack = onRemoveModelPack,
                 services = services,
             )
         }
@@ -540,6 +592,9 @@ private fun GrowthDestinationContent(
     dailyRecordSaveResult: DailyRecordSaveResult?,
     dailyRecordCount: Int,
     breathingStepIndex: Int,
+    breathingTimerRunning: Boolean,
+    breathingTimerRemainingSeconds: Int,
+    onToggleBreathingTimer: () -> Unit,
     onNextBreathingStep: () -> Unit,
     groundingStepIndex: Int,
     onNextGroundingStep: () -> Unit,
@@ -552,6 +607,9 @@ private fun GrowthDestinationContent(
     onAssessSupport: () -> Unit,
     supportActionOpened: SafetySupportActionType?,
     onOpenSupportAction: (SafetySupportActionType) -> Unit,
+    modelPackStatus: ModelPackPlatformStatus,
+    onInstallModelPack: () -> Unit,
+    onRemoveModelPack: () -> Unit,
     services: BettamindAppServices,
 ) {
     Column(
@@ -580,6 +638,9 @@ private fun GrowthDestinationContent(
                     dailyRecordSaveResult = dailyRecordSaveResult,
                     dailyRecordCount = dailyRecordCount,
                     breathingStepIndex = breathingStepIndex,
+                    breathingTimerRunning = breathingTimerRunning,
+                    breathingTimerRemainingSeconds = breathingTimerRemainingSeconds,
+                    onToggleBreathingTimer = onToggleBreathingTimer,
                     onNextBreathingStep = onNextBreathingStep,
                     groundingStepIndex = groundingStepIndex,
                     onNextGroundingStep = onNextGroundingStep,
@@ -604,7 +665,9 @@ private fun GrowthDestinationContent(
                     responseRunning = aiResponseRunning,
                     promptSubmittedBlank = aiPromptSubmittedBlank,
                     onRun = onRunAiGrowthMode,
-                    modelPackStatus = services.modelPacks.status(),
+                    modelPackStatus = modelPackStatus,
+                    onInstallModelPack = onInstallModelPack,
+                    onRemoveModelPack = onRemoveModelPack,
                 )
                 GrowthSummaryPanel(growthState)
             }
@@ -638,6 +701,9 @@ private fun DailyToolsPanel(
     dailyRecordSaveResult: DailyRecordSaveResult?,
     dailyRecordCount: Int,
     breathingStepIndex: Int,
+    breathingTimerRunning: Boolean,
+    breathingTimerRemainingSeconds: Int,
+    onToggleBreathingTimer: () -> Unit,
     onNextBreathingStep: () -> Unit,
     groundingStepIndex: Int,
     onNextGroundingStep: () -> Unit,
@@ -710,6 +776,27 @@ private fun DailyToolsPanel(
             text = stringResource(breathingStep.instruction()),
             style = MaterialTheme.typography.bodyMedium,
         )
+        Text(
+            text = stringResource(
+                Res.string.daily_breathing_timer_remaining,
+                breathingTimerRemainingSeconds,
+            ),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Button(
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+            onClick = onToggleBreathingTimer,
+        ) {
+            Text(
+                stringResource(
+                    if (breathingTimerRunning) {
+                        Res.string.daily_breathing_pause_timer
+                    } else {
+                        Res.string.daily_breathing_start_timer
+                    },
+                ),
+            )
+        }
         OutlinedButton(
             modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
             onClick = onNextBreathingStep,
@@ -805,6 +892,8 @@ private fun AiGrowthModesPanel(
     promptSubmittedBlank: Boolean,
     onRun: () -> Unit,
     modelPackStatus: ModelPackPlatformStatus,
+    onInstallModelPack: () -> Unit,
+    onRemoveModelPack: () -> Unit,
 ) {
     StatusBlock(
         title = Res.string.ai_growth_modes_title,
@@ -813,6 +902,11 @@ private fun AiGrowthModesPanel(
         StatusLine(
             title = Res.string.platform_model_pack_title,
             body = modelPackStatus.resource(),
+        )
+        ModelPackControls(
+            status = modelPackStatus,
+            onInstallModelPack = onInstallModelPack,
+            onRemoveModelPack = onRemoveModelPack,
         )
         AiModeButtonRow(
             leftMode = AiGrowthMode.QuickGuidance,
@@ -1407,6 +1501,9 @@ private fun SettingsPanel(
     onLowLiteracyCopyChange: (Boolean) -> Unit,
     privacyLockTimeout: PrivacyLockTimeout,
     onPrivacyLockTimeoutChange: (PrivacyLockTimeout) -> Unit,
+    modelPackStatus: ModelPackPlatformStatus,
+    onInstallModelPack: () -> Unit,
+    onRemoveModelPack: () -> Unit,
     services: BettamindAppServices,
 ) {
     Column(
@@ -1440,7 +1537,12 @@ private fun SettingsPanel(
             useLowLiteracyCopy = useLowLiteracyCopy,
             onLowLiteracyCopyChange = onLowLiteracyCopyChange,
         )
-        PlatformIntegrationsSettingsPanel(services)
+        PlatformIntegrationsSettingsPanel(
+            services = services,
+            modelPackStatus = modelPackStatus,
+            onInstallModelPack = onInstallModelPack,
+            onRemoveModelPack = onRemoveModelPack,
+        )
         OfflineSpeechSettingsPanel()
         Text(
             text = stringResource(Res.string.settings_locale_note),
@@ -1459,11 +1561,15 @@ private fun SettingsPanel(
 }
 
 @Composable
-private fun PlatformIntegrationsSettingsPanel(services: BettamindAppServices) {
+private fun PlatformIntegrationsSettingsPanel(
+    services: BettamindAppServices,
+    modelPackStatus: ModelPackPlatformStatus,
+    onInstallModelPack: () -> Unit,
+    onRemoveModelPack: () -> Unit,
+) {
     val reminderStatus = services.reminders.status()
     val calendarStatus = services.calendar.status()
     val speechStatus = services.speech.status()
-    val modelPackStatus = services.modelPacks.status()
     StatusBlock(
         title = Res.string.platform_integrations_title,
         body = Res.string.platform_integrations_description,
@@ -1488,7 +1594,76 @@ private fun PlatformIntegrationsSettingsPanel(services: BettamindAppServices) {
             title = Res.string.platform_model_pack_first_title,
             body = Res.string.platform_model_pack_qwen_first,
         )
+        ModelPackControls(
+            status = modelPackStatus,
+            onInstallModelPack = onInstallModelPack,
+            onRemoveModelPack = onRemoveModelPack,
+        )
     }
+}
+
+@Composable
+private fun ModelPackControls(
+    status: ModelPackPlatformStatus,
+    onInstallModelPack: () -> Unit,
+    onRemoveModelPack: () -> Unit,
+) {
+    StatusLine(
+        title = Res.string.model_pack_install_state_title,
+        body = status.installState.resource(),
+    )
+    status.installedModelId?.let { modelId ->
+        Text(
+            text = stringResource(
+                Res.string.model_pack_installed_detail,
+                modelId,
+                status.installedModelVersion ?: 0,
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    if (status.installState == ModelPackInstallState.Installing && status.installTotalBytes > 0L) {
+        Text(
+            text = stringResource(
+                Res.string.model_pack_install_progress,
+                status.installProgressBytes / 1_000_000L,
+                status.installTotalBytes / 1_000_000L,
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    status.lastFailure?.let { failure ->
+        Text(
+            text = stringResource(failure.resource()),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.error,
+        )
+    }
+    if (status.installState == ModelPackInstallState.Installed) {
+        OutlinedButton(
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+            onClick = onRemoveModelPack,
+        ) {
+            Text(stringResource(Res.string.model_pack_remove_button))
+        }
+    } else {
+        Button(
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+            enabled = status.installerAvailable &&
+                status.installState != ModelPackInstallState.Installing &&
+                status.installState != ModelPackInstallState.AwaitingUserSelection,
+            onClick = onInstallModelPack,
+        ) {
+            Text(stringResource(Res.string.model_pack_install_button))
+        }
+    }
+    Text(
+        text = stringResource(Res.string.model_pack_install_note),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
 
 @Composable
@@ -1656,6 +1831,11 @@ private fun PrivacyLockSettingsPanel(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Text(
+            text = stringResource(Res.string.privacy_lock_runtime_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
             text = stringResource(Res.string.privacy_lock_urgent_support),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -1671,6 +1851,11 @@ private fun RelationalBoundarySettingsPanel() {
     ) {
         Text(
             text = stringResource(Res.string.relational_boundary_memory_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = stringResource(Res.string.relational_boundary_memory_runtime_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -1830,11 +2015,37 @@ private fun ModelPackPlatformStatus.resource(): StringResource =
         installerAvailable && runtimeAvailable && requiresSignedManifest && autoDownloadDisabled ->
             Res.string.platform_model_pack_runtime_available
 
+        installState == ModelPackInstallState.Installed && !runtimeAvailable ->
+            Res.string.platform_model_pack_installed_runtime_unavailable
+
         installerAvailable && requiresSignedManifest && autoDownloadDisabled ->
             Res.string.platform_model_pack_installer_ready
 
         else -> Res.string.platform_model_pack_unavailable
     }
+
+private fun ModelPackInstallState.resource(): StringResource = when (this) {
+    ModelPackInstallState.NotInstalled -> Res.string.model_pack_state_not_installed
+    ModelPackInstallState.AwaitingUserSelection -> Res.string.model_pack_state_awaiting_selection
+    ModelPackInstallState.Installing -> Res.string.model_pack_state_installing
+    ModelPackInstallState.Installed -> Res.string.model_pack_state_installed
+    ModelPackInstallState.Failed -> Res.string.model_pack_state_failed
+    ModelPackInstallState.InstallerUnavailable -> Res.string.model_pack_state_installer_unavailable
+}
+
+private fun ModelPackInstallFailure.resource(): StringResource = when (this) {
+    ModelPackInstallFailure.SelectionCanceled -> Res.string.model_pack_failure_selection_canceled
+    ModelPackInstallFailure.MissingManifest -> Res.string.model_pack_failure_missing_manifest
+    ModelPackInstallFailure.MissingArtifact -> Res.string.model_pack_failure_missing_artifact
+    ModelPackInstallFailure.InvalidManifest -> Res.string.model_pack_failure_invalid_manifest
+    ModelPackInstallFailure.UnapprovedModel -> Res.string.model_pack_failure_unapproved_model
+    ModelPackInstallFailure.UntrustedSigningKey -> Res.string.model_pack_failure_untrusted_signing_key
+    ModelPackInstallFailure.InvalidSignature -> Res.string.model_pack_failure_invalid_signature
+    ModelPackInstallFailure.ChecksumMismatch -> Res.string.model_pack_failure_checksum_mismatch
+    ModelPackInstallFailure.ArtifactSizeMismatch -> Res.string.model_pack_failure_artifact_size_mismatch
+    ModelPackInstallFailure.StorageFailed -> Res.string.model_pack_failure_storage_failed
+    ModelPackInstallFailure.PlatformVerifierUnavailable -> Res.string.model_pack_failure_platform_verifier_unavailable
+}
 
 private fun org.bettamind.shared.daily.BreathingStep.instruction(): StringResource =
     when (instructionKey) {

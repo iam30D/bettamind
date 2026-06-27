@@ -4,8 +4,10 @@ import SwiftUI
 import UIKit
 
 struct ComposeView: UIViewControllerRepresentable {
+    let nativeAiBridge: BettamindIosNativeAiBridge
+
     func makeUIViewController(context: Context) -> UIViewController {
-        MainViewControllerKt.MainViewController()
+        MainViewControllerKt.MainViewControllerWithNativeAiBridge(nativeAiBridge: nativeAiBridge)
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
@@ -15,6 +17,7 @@ struct ComposeView: UIViewControllerRepresentable {
 @main
 struct BettamindIOSApp: App {
     @Environment(\.scenePhase) private var scenePhase
+    private let nativeAiBridge = BettamindIosNativeAiBridge()
 
     init() {
         IosStorageValidationLauncher.runIfRequested()
@@ -23,7 +26,7 @@ struct BettamindIOSApp: App {
     var body: some Scene {
         WindowGroup {
             ZStack {
-                ComposeView()
+                ComposeView(nativeAiBridge: nativeAiBridge)
                     .ignoresSafeArea()
                     .privacySensitive()
 

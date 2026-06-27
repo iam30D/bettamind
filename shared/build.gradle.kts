@@ -177,6 +177,7 @@ kotlin {
             implementation(libs.androidx.sqlite)
             implementation(libs.koin.android)
             implementation(libs.kotlinx.coroutines.android)
+            implementation(libs.litertlm.android)
             implementation(libs.sqlcipher.android)
         }
     }

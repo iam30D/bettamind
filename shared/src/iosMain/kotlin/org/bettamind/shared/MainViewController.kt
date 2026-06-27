@@ -7,3 +7,8 @@ fun MainViewController() = ComposeUIViewController {
     val services = remember { createIosBettamindAppServices() }
     BettamindApp(services = services)
 }
+
+fun MainViewControllerWithNativeAiBridge(nativeAiBridge: IosNativeAiBridge) = ComposeUIViewController {
+    val services = remember { createIosBettamindAppServices(nativeAiBridge) }
+    BettamindApp(services = services)
+}

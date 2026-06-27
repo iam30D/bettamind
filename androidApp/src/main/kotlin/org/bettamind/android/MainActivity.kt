@@ -2,7 +2,6 @@ package org.bettamind.android
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.remember
 import android.view.WindowManager
 import androidx.fragment.app.FragmentActivity
 import org.bettamind.shared.BettamindApp
@@ -16,8 +15,8 @@ class MainActivity : FragmentActivity() {
             WindowManager.LayoutParams.FLAG_SECURE,
             WindowManager.LayoutParams.FLAG_SECURE,
         )
+        val services = createAndroidBettamindAppServices(this)
         setContent {
-            val services = remember { createAndroidBettamindAppServices(this) }
             BettamindApp(services = services)
         }
     }

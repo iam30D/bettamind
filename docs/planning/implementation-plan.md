@@ -130,13 +130,16 @@ Acceptance criteria:
 - No model weights are committed.
 
 Status: implemented as a shared optional AI/model-pack foundation. `LocalAiRuntime`
-remains the replaceable interface, `LiteRtLmRuntimeAdapter` delegates to a
-platform bridge without adding LiteRT or model files, and
-`UnavailableLocalAiRuntime` preserves no-AI core operation. `ModelPackManager`
-requires signed Ed25519-labeled manifests, SHA-256 artifact checksums,
-monotonic versions, revocation policy, resumable chunk offsets and removable
-installed packs. No model weights, downloads, cloud AI or Phase 7 response modes
-were added.
+remains the replaceable interface and `UnavailableLocalAiRuntime` preserves
+no-AI core operation. `ModelPackManager` requires signed Ed25519-labeled
+manifests, SHA-256 artifact checksums, monotonic versions, revocation policy,
+resumable chunk offsets and removable installed packs. Later runtime work wires
+Android to Google's `litertlm-android` `0.13.1` dependency and iOS to the
+official `LiteRTLM` Swift Package `0.13.1` through a native Swift bridge. Model
+installation still requires explicit user file selection and signature/checksum
+verification; no model weights, automatic downloads or cloud AI are committed.
+The iOS bridge requires Codemagic/Xcode validation because Windows cannot build
+the Swift project path.
 
 ## Phase 6.4: App privacy lock
 
@@ -484,7 +487,10 @@ production gates for platform LiteRT-LM runtime validation, Android/iOS device
 evidence, rollback/revocation review, screenshots or store records. A later
 usability pass adds keyboard Send handling for Grow and Support prompts,
 loading/result states, safe routing from support recommendations to local Today
-tools, honest unavailable-runtime model-pack status and branded Android/iOS
-launch screens. Real Qwen generation still remains blocked until the LiteRT-LM
-platform bridge and install/load/generate/remove flow are implemented and
-device-tested.
+tools, honest signed-pack model status and branded Android/iOS launch screens.
+A later runtime pass implements Android and iOS LiteRT-LM install/load/
+generate/remove bridges for the signed Qwen pack without committing weights or
+adding automatic downloads. Production release still remains blocked until iOS
+Codemagic/Xcode validation, Android/iOS device model-smoke evidence,
+low-storage/interrupted-import behavior, battery/thermal/memory observations,
+rollback/revocation review, screenshots and store records are complete.

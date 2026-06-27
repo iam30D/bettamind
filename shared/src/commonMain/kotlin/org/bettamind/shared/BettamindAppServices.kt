@@ -5,8 +5,13 @@ import org.bettamind.shared.daily.DailyMetricLevel
 import org.bettamind.shared.daily.DailyToolRecordFactory
 import org.bettamind.shared.daily.EncryptedDailyRecordRepository
 import org.bettamind.shared.ai.BettamindModelPackTrustPolicy
+import org.bettamind.shared.ai.LocalAiRuntime
+import org.bettamind.shared.ai.UnavailableLocalAiRuntime
 import org.bettamind.shared.privacy.EncryptedRecordStore
 import org.bettamind.shared.privacy.StorageKeyManager
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 data class BettamindAppServices(
     val dailyRecords: DailyRecordService = UnavailableDailyRecordService,
@@ -14,6 +19,7 @@ data class BettamindAppServices(
     val calendar: CalendarPlatformService = UnavailableCalendarPlatformService,
     val speech: SpeechPlatformService = UnavailableSpeechPlatformService,
     val modelPacks: ModelPackPlatformService = UnavailableModelPackPlatformService,
+    val aiRuntime: LocalAiRuntime = UnavailableLocalAiRuntime,
 )
 
 sealed interface DailyRecordSaveResult {
@@ -177,19 +183,68 @@ data class ModelPackPlatformStatus(
     val firstModelId: String,
     val requiresSignedManifest: Boolean,
     val autoDownloadDisabled: Boolean,
+    val installState: ModelPackInstallState = ModelPackInstallState.NotInstalled,
+    val installedModelId: String? = null,
+    val installedModelVersion: Int? = null,
+    val installedArtifactFileName: String? = null,
+    val installProgressBytes: Long = 0L,
+    val installTotalBytes: Long = 0L,
+    val lastFailure: ModelPackInstallFailure? = null,
 )
 
+enum class ModelPackInstallState {
+    NotInstalled,
+    AwaitingUserSelection,
+    Installing,
+    Installed,
+    Failed,
+    InstallerUnavailable,
+}
+
+enum class ModelPackInstallFailure {
+    SelectionCanceled,
+    MissingManifest,
+    MissingArtifact,
+    InvalidManifest,
+    UnapprovedModel,
+    UntrustedSigningKey,
+    InvalidSignature,
+    ChecksumMismatch,
+    ArtifactSizeMismatch,
+    StorageFailed,
+    PlatformVerifierUnavailable,
+}
+
+enum class ModelPackPlatformActionResult {
+    Started,
+    InstallerUnavailable,
+    AlreadyBusy,
+    NothingInstalled,
+}
+
 interface ModelPackPlatformService {
-    fun status(): ModelPackPlatformStatus
+    val status: StateFlow<ModelPackPlatformStatus>
+    fun requestUserInstall(): ModelPackPlatformActionResult
+    fun removeInstalledModel(): ModelPackPlatformActionResult
 }
 
 object UnavailableModelPackPlatformService : ModelPackPlatformService {
-    override fun status(): ModelPackPlatformStatus =
+    private val statusFlow = MutableStateFlow(
         ModelPackPlatformStatus(
             installerAvailable = false,
             runtimeAvailable = false,
             firstModelId = BettamindModelPackTrustPolicy.firstProductionModelId,
             requiresSignedManifest = true,
             autoDownloadDisabled = true,
+            installState = ModelPackInstallState.InstallerUnavailable,
         )
+    )
+
+    override val status: StateFlow<ModelPackPlatformStatus> = statusFlow.asStateFlow()
+
+    override fun requestUserInstall(): ModelPackPlatformActionResult =
+        ModelPackPlatformActionResult.InstallerUnavailable
+
+    override fun removeInstalledModel(): ModelPackPlatformActionResult =
+        ModelPackPlatformActionResult.NothingInstalled
 }
