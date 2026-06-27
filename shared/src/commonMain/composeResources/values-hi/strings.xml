@@ -50,7 +50,7 @@
     <string name="ai_growth_deep_exploration_description">Looks for values, patterns and repair paths when a local model is available and safe to use.</string>
     <string name="ai_growth_action_only_title">Action-Only</string>
     <string name="ai_growth_action_only_description">Keeps the response focused on one practical action and avoids extended interpretation.</string>
-    <string name="ai_growth_no_model_note">No model is required. If a local model is unavailable, Bettamind uses deterministic fallback keys.</string>
+    <string name="ai_growth_no_model_note">Qwen release-candidate metadata is approved, but the local model runtime is not connected in this app yet. Bettamind uses deterministic guidance until install, load, generate and remove are implemented.</string>
     <string name="ai_growth_safety_note">Relational and harm-safety checks run before generation and after generated output.</string>
     <string name="ai_growth_privacy_note">Daily context is used only after explicit consent, and sensitive AI context requires local step-up authentication.</string>
     <string name="growth_age_gate_title">Adult access</string>
@@ -165,9 +165,9 @@
     <string name="platform_speech_available">OS speech integration is available with explicit microphone permission and text fallback.</string>
     <string name="platform_speech_unavailable">OS speech integration is unavailable; text-only use remains complete.</string>
     <string name="platform_model_pack_title">Local AI model</string>
-    <string name="platform_model_pack_installer_ready">Signed model-pack install and remove flow is gated; local runtime still needs the approved artifact and device evidence.</string>
+    <string name="platform_model_pack_installer_ready">Signed model-pack metadata is approved, but the app install/load/remove flow is not connected yet; deterministic guidance remains active.</string>
     <string name="platform_model_pack_runtime_available">Signed model-pack runtime is available after checksum and manifest verification.</string>
-    <string name="platform_model_pack_unavailable">Signed model-pack runtime is unavailable until the owner public trust anchor, artifact and device evidence are complete; deterministic no-model guidance remains active.</string>
+    <string name="platform_model_pack_unavailable">Local AI runtime is unavailable until the LiteRT-LM bridge, install/load/generate/remove flow and device evidence are complete; deterministic no-model guidance remains active.</string>
     <string name="platform_model_pack_first_title">First model</string>
     <string name="platform_model_pack_qwen_first">Qwen2.5 1.5B Instruct is the first optional local model target for the production pipeline.</string>
     <string name="phase_seven_five_status">Compassionate safety redirection</string>
@@ -347,6 +347,8 @@
     <string name="ai_growth_prompt_placeholder">Name what is happening and what kind of next step you want.</string>
     <string name="ai_growth_blank_prompt_error">Enter a concern before running this tool.</string>
     <string name="ai_growth_run_button">Get guidance</string>
+    <string name="ai_growth_running_button">Preparing guidance</string>
+    <string name="ai_growth_running_status">Checking local safety rules and preparing guidance on this device.</string>
     <string name="ai_growth_response_title">Guidance</string>
     <string name="ai_growth_model_text_available">Local model guidance is available for this concern.</string>
     <string name="ai_growth_response_source">Source: %1$s</string>
@@ -395,6 +397,8 @@
     <string name="support_prompt_label">Concern</string>
     <string name="support_prompt_placeholder">Name the situation and Bettamind will suggest voluntary local support steps.</string>
     <string name="support_assess_button">Assess support needs</string>
+    <string name="support_open_action_button">Open local tool</string>
+    <string name="support_opened_action_button">Opened in Today</string>
     <string name="support_result_title">Support assessment</string>
     <string name="support_result_description">This deterministic assessment stays local and does not contact anyone.</string>
     <string name="support_result_risk_level">Support level: %1$s</string>

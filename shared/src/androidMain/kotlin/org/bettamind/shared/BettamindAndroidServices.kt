@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import org.bettamind.shared.ai.BettamindModelPackTrustPolicy
-import org.bettamind.shared.ai.ModelPackTrustReleaseGate
 import org.bettamind.shared.privacy.AndroidKeystoreStorageKeyManager
 import org.bettamind.shared.privacy.AndroidSqlCipherEncryptedRecordStore
 
@@ -56,14 +55,12 @@ private object AndroidSpeechPlatformService : SpeechPlatformService {
 }
 
 private object AndroidModelPackPlatformService : ModelPackPlatformService {
-    override fun status(): ModelPackPlatformStatus {
-        val trustReady = BettamindModelPackTrustPolicy.releaseGate() == ModelPackTrustReleaseGate.Ready
-        return ModelPackPlatformStatus(
-            installerAvailable = trustReady,
+    override fun status(): ModelPackPlatformStatus =
+        ModelPackPlatformStatus(
+            installerAvailable = false,
             runtimeAvailable = false,
             firstModelId = BettamindModelPackTrustPolicy.firstProductionModelId,
             requiresSignedManifest = true,
             autoDownloadDisabled = true,
         )
-    }
 }

@@ -2,7 +2,6 @@ package org.bettamind.shared
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.bettamind.shared.ai.BettamindModelPackTrustPolicy
-import org.bettamind.shared.ai.ModelPackTrustReleaseGate
 import org.bettamind.shared.privacy.IosKeychainStorageKeyManager
 import org.bettamind.shared.privacy.IosSqlCipherEncryptedRecordStore
 import platform.Foundation.NSDate
@@ -61,14 +60,12 @@ private object IosSpeechPlatformService : SpeechPlatformService {
 }
 
 private object IosModelPackPlatformService : ModelPackPlatformService {
-    override fun status(): ModelPackPlatformStatus {
-        val trustReady = BettamindModelPackTrustPolicy.releaseGate() == ModelPackTrustReleaseGate.Ready
-        return ModelPackPlatformStatus(
-            installerAvailable = trustReady,
+    override fun status(): ModelPackPlatformStatus =
+        ModelPackPlatformStatus(
+            installerAvailable = false,
             runtimeAvailable = false,
             firstModelId = BettamindModelPackTrustPolicy.firstProductionModelId,
             requiresSignedManifest = true,
             autoDownloadDisabled = true,
         )
-    }
 }

@@ -481,4 +481,10 @@ model-pack target, with an owner-supplied LiteRT-LM release-candidate
 artifact, app-compatible signed manifest, public trust anchor and owner
 evidence templates in place. This does not complete owner-controlled
 production gates for platform LiteRT-LM runtime validation, Android/iOS device
-evidence, rollback/revocation review, screenshots or store records.
+evidence, rollback/revocation review, screenshots or store records. A later
+usability pass adds keyboard Send handling for Grow and Support prompts,
+loading/result states, safe routing from support recommendations to local Today
+tools, honest unavailable-runtime model-pack status and branded Android/iOS
+launch screens. Real Qwen generation still remains blocked until the LiteRT-LM
+platform bridge and install/load/generate/remove flow are implemented and
+device-tested.

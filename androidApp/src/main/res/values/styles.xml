@@ -2,5 +2,16 @@
     <style name="Theme.Bettamind" parent="android:style/Theme.Material.Light.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
+        <item name="android:windowBackground">@color/bettamind_splash_background</item>
+        <item name="android:navigationBarColor">@color/bettamind_splash_background</item>
+        <item name="android:statusBarColor">@color/bettamind_splash_background</item>
+    </style>
+
+    <style name="Theme.Bettamind.Starting" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowBackground">@drawable/bettamind_splash_background</item>
+        <item name="android:navigationBarColor">@color/bettamind_splash_background</item>
+        <item name="android:statusBarColor">@color/bettamind_splash_background</item>
     </style>
 </resources>

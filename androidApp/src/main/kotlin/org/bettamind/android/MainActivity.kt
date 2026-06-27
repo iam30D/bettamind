@@ -10,6 +10,7 @@ import org.bettamind.shared.createAndroidBettamindAppServices
 
 class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_Bettamind)
         super.onCreate(savedInstanceState)
         window.setFlags(
             WindowManager.LayoutParams.FLAG_SECURE,

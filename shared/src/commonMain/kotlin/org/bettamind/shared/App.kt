@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -40,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import org.bettamind.shared.ai.AiGrowthMode
 import org.bettamind.shared.ai.AiGrowthModeEngine
@@ -100,6 +103,7 @@ fun BettamindApp(services: BettamindAppServices = BettamindAppServices()) {
     var selectedAiMode by remember { mutableStateOf(AiGrowthMode.QuickGuidance) }
     var concernText by remember { mutableStateOf("") }
     var aiResponse by remember { mutableStateOf<AiGrowthModeResponse?>(null) }
+    var aiResponseRunning by remember { mutableStateOf(false) }
     var aiPromptSubmittedBlank by remember { mutableStateOf(false) }
     var mood by remember { mutableStateOf(DailyMetricLevel.Steady) }
     var energy by remember { mutableStateOf(DailyMetricLevel.Steady) }
@@ -114,6 +118,7 @@ fun BettamindApp(services: BettamindAppServices = BettamindAppServices()) {
     var supportText by remember { mutableStateOf("") }
     var supportDecision by remember { mutableStateOf<SafetySupportDecision?>(null) }
     var supportPromptSubmittedBlank by remember { mutableStateOf(false) }
+    var supportActionOpened by remember { mutableStateOf<SafetySupportActionType?>(null) }
 
     BettamindTheme(
         themeMode = themeMode,
@@ -184,21 +189,29 @@ fun BettamindApp(services: BettamindAppServices = BettamindAppServices()) {
                     onConcernTextChange = {
                         concernText = it
                         aiPromptSubmittedBlank = false
+                        aiResponse = null
                     },
                     aiResponse = aiResponse,
+                    aiResponseRunning = aiResponseRunning,
                     aiPromptSubmittedBlank = aiPromptSubmittedBlank,
                     onRunAiGrowthMode = {
                         val input = concernText.trim()
                         if (input.isBlank()) {
                             aiPromptSubmittedBlank = true
-                        } else {
+                        } else if (!aiResponseRunning) {
+                            aiResponseRunning = true
+                            aiResponse = null
                             coroutineScope.launch {
-                                aiResponse = aiGrowthEngine.respond(
-                                    AiGrowthModeRequest(
-                                        mode = selectedAiMode,
-                                        userInput = input,
-                                    ),
-                                )
+                                try {
+                                    aiResponse = aiGrowthEngine.respond(
+                                        AiGrowthModeRequest(
+                                            mode = selectedAiMode,
+                                            userInput = input,
+                                        ),
+                                    )
+                                } finally {
+                                    aiResponseRunning = false
+                                }
                             }
                         }
                     },
@@ -257,6 +270,8 @@ fun BettamindApp(services: BettamindAppServices = BettamindAppServices()) {
                     onSupportTextChange = {
                         supportText = it
                         supportPromptSubmittedBlank = false
+                        supportDecision = null
+                        supportActionOpened = null
                     },
                     supportDecision = supportDecision,
                     supportPromptSubmittedBlank = supportPromptSubmittedBlank,
@@ -266,6 +281,48 @@ fun BettamindApp(services: BettamindAppServices = BettamindAppServices()) {
                             supportPromptSubmittedBlank = true
                         } else {
                             supportDecision = supportEngine.assess(input)
+                            supportActionOpened = null
+                        }
+                    },
+                    supportActionOpened = supportActionOpened,
+                    onOpenSupportAction = { actionType ->
+                        supportActionOpened = actionType
+                        when (actionType) {
+                            SafetySupportActionType.DailyCheckIn,
+                            SafetySupportActionType.GroundingExercise,
+                            SafetySupportActionType.BreathingTimer,
+                            -> {
+                                selectedDestination = BettamindDestination.Today
+                            }
+
+                            SafetySupportActionType.DelayAction -> {
+                                selectedWorksheetKind = DecisionWorksheetKind.ProblemSolving
+                                selectedDestination = BettamindDestination.Today
+                            }
+
+                            SafetySupportActionType.ConflictReflection,
+                            SafetySupportActionType.NonviolentMessage,
+                            -> {
+                                selectedWorksheetKind = DecisionWorksheetKind.DifficultConversation
+                                selectedDestination = BettamindDestination.Today
+                            }
+
+                            SafetySupportActionType.RepairPlanning -> {
+                                selectedWorksheetKind = DecisionWorksheetKind.RepairPreparation
+                                selectedDestination = BettamindDestination.Today
+                            }
+
+                            SafetySupportActionType.ValuesToAction -> {
+                                selectedWorksheetKind = DecisionWorksheetKind.ValuesToAction
+                                selectedDestination = BettamindDestination.Today
+                            }
+
+                            SafetySupportActionType.ContactTrustedPerson,
+                            SafetySupportActionType.UseLocalEmergencyHelp,
+                            SafetySupportActionType.SafePrevention,
+                            SafetySupportActionType.LeaveSituation,
+                            SafetySupportActionType.NoActionNeeded,
+                            -> Unit
                         }
                     },
                     services = services,
@@ -347,6 +404,7 @@ private fun DestinationPanel(
     concernText: String,
     onConcernTextChange: (String) -> Unit,
     aiResponse: AiGrowthModeResponse?,
+    aiResponseRunning: Boolean,
     aiPromptSubmittedBlank: Boolean,
     onRunAiGrowthMode: () -> Unit,
     mood: DailyMetricLevel,
@@ -373,6 +431,8 @@ private fun DestinationPanel(
     supportDecision: SafetySupportDecision?,
     supportPromptSubmittedBlank: Boolean,
     onAssessSupport: () -> Unit,
+    supportActionOpened: SafetySupportActionType?,
+    onOpenSupportAction: (SafetySupportActionType) -> Unit,
     services: BettamindAppServices,
 ) {
     Column(
@@ -415,6 +475,7 @@ private fun DestinationPanel(
                 concernText = concernText,
                 onConcernTextChange = onConcernTextChange,
                 aiResponse = aiResponse,
+                aiResponseRunning = aiResponseRunning,
                 aiPromptSubmittedBlank = aiPromptSubmittedBlank,
                 onRunAiGrowthMode = onRunAiGrowthMode,
                 mood = mood,
@@ -441,6 +502,8 @@ private fun DestinationPanel(
                 supportDecision = supportDecision,
                 supportPromptSubmittedBlank = supportPromptSubmittedBlank,
                 onAssessSupport = onAssessSupport,
+                supportActionOpened = supportActionOpened,
+                onOpenSupportAction = onOpenSupportAction,
                 services = services,
             )
         }
@@ -460,6 +523,7 @@ private fun GrowthDestinationContent(
     concernText: String,
     onConcernTextChange: (String) -> Unit,
     aiResponse: AiGrowthModeResponse?,
+    aiResponseRunning: Boolean,
     aiPromptSubmittedBlank: Boolean,
     onRunAiGrowthMode: () -> Unit,
     mood: DailyMetricLevel,
@@ -486,6 +550,8 @@ private fun GrowthDestinationContent(
     supportDecision: SafetySupportDecision?,
     supportPromptSubmittedBlank: Boolean,
     onAssessSupport: () -> Unit,
+    supportActionOpened: SafetySupportActionType?,
+    onOpenSupportAction: (SafetySupportActionType) -> Unit,
     services: BettamindAppServices,
 ) {
     Column(
@@ -535,8 +601,10 @@ private fun GrowthDestinationContent(
                     concernText = concernText,
                     onConcernTextChange = onConcernTextChange,
                     response = aiResponse,
+                    responseRunning = aiResponseRunning,
                     promptSubmittedBlank = aiPromptSubmittedBlank,
                     onRun = onRunAiGrowthMode,
+                    modelPackStatus = services.modelPacks.status(),
                 )
                 GrowthSummaryPanel(growthState)
             }
@@ -546,6 +614,8 @@ private fun GrowthDestinationContent(
                 supportDecision = supportDecision,
                 promptSubmittedBlank = supportPromptSubmittedBlank,
                 onAssessSupport = onAssessSupport,
+                openedAction = supportActionOpened,
+                onOpenSupportAction = onOpenSupportAction,
             )
             BettamindDestination.Settings -> Unit
         }
@@ -731,13 +801,19 @@ private fun AiGrowthModesPanel(
     concernText: String,
     onConcernTextChange: (String) -> Unit,
     response: AiGrowthModeResponse?,
+    responseRunning: Boolean,
     promptSubmittedBlank: Boolean,
     onRun: () -> Unit,
+    modelPackStatus: ModelPackPlatformStatus,
 ) {
     StatusBlock(
         title = Res.string.ai_growth_modes_title,
         body = Res.string.ai_growth_modes_description,
     ) {
+        StatusLine(
+            title = Res.string.platform_model_pack_title,
+            body = modelPackStatus.resource(),
+        )
         AiModeButtonRow(
             leftMode = AiGrowthMode.QuickGuidance,
             leftSelected = selectedMode == AiGrowthMode.QuickGuidance,
@@ -765,6 +841,8 @@ private fun AiGrowthModesPanel(
             onValueChange = onConcernTextChange,
             label = { Text(stringResource(Res.string.ai_growth_prompt_label)) },
             placeholder = { Text(stringResource(Res.string.ai_growth_prompt_placeholder)) },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+            keyboardActions = KeyboardActions(onSend = { onRun() }),
             minLines = 3,
         )
         if (promptSubmittedBlank) {
@@ -776,10 +854,25 @@ private fun AiGrowthModesPanel(
         }
         Button(
             modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-            enabled = concernText.isNotBlank(),
+            enabled = !responseRunning,
             onClick = onRun,
         ) {
-            Text(stringResource(Res.string.ai_growth_run_button))
+            Text(
+                stringResource(
+                    if (responseRunning) {
+                        Res.string.ai_growth_running_button
+                    } else {
+                        Res.string.ai_growth_run_button
+                    },
+                ),
+            )
+        }
+        if (responseRunning) {
+            Text(
+                text = stringResource(Res.string.ai_growth_running_status),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
         Text(
             text = stringResource(Res.string.ai_growth_no_model_note),
@@ -1015,6 +1108,8 @@ private fun SupportPanel(
     supportDecision: SafetySupportDecision?,
     promptSubmittedBlank: Boolean,
     onAssessSupport: () -> Unit,
+    openedAction: SafetySupportActionType?,
+    onOpenSupportAction: (SafetySupportActionType) -> Unit,
 ) {
     StatusBlock(
         title = Res.string.support_bridge_title,
@@ -1026,6 +1121,8 @@ private fun SupportPanel(
             onValueChange = onSupportTextChange,
             label = { Text(stringResource(Res.string.support_prompt_label)) },
             placeholder = { Text(stringResource(Res.string.support_prompt_placeholder)) },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+            keyboardActions = KeyboardActions(onSend = { onAssessSupport() }),
             minLines = 3,
         )
         if (promptSubmittedBlank) {
@@ -1037,12 +1134,17 @@ private fun SupportPanel(
         }
         Button(
             modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-            enabled = supportText.isNotBlank(),
             onClick = onAssessSupport,
         ) {
             Text(stringResource(Res.string.support_assess_button))
         }
-        supportDecision?.let { SupportDecisionPanel(it) }
+        supportDecision?.let {
+            SupportDecisionPanel(
+                decision = it,
+                openedAction = openedAction,
+                onOpenSupportAction = onOpenSupportAction,
+            )
+        }
         StatusLine(
             title = Res.string.support_bridge_no_auto_contact_title,
             body = Res.string.support_bridge_no_auto_contact_body,
@@ -1068,7 +1170,11 @@ private fun SupportPanel(
 }
 
 @Composable
-private fun SupportDecisionPanel(decision: SafetySupportDecision) {
+private fun SupportDecisionPanel(
+    decision: SafetySupportDecision,
+    openedAction: SafetySupportActionType?,
+    onOpenSupportAction: (SafetySupportActionType) -> Unit,
+) {
     StatusBlock(
         title = Res.string.support_result_title,
         body = Res.string.support_result_description,
@@ -1085,9 +1191,10 @@ private fun SupportDecisionPanel(decision: SafetySupportDecision) {
             style = MaterialTheme.typography.titleSmall,
         )
         decision.actions.forEach { action ->
-            StatusLine(
-                title = action.type.title(),
-                body = action.type.body(),
+            SupportActionRow(
+                actionType = action.type,
+                opened = openedAction == action.type,
+                onOpen = onOpenSupportAction,
             )
         }
         Text(
@@ -1116,6 +1223,38 @@ private fun SupportDecisionPanel(decision: SafetySupportDecision) {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+    }
+}
+
+@Composable
+private fun SupportActionRow(
+    actionType: SafetySupportActionType,
+    opened: Boolean,
+    onOpen: (SafetySupportActionType) -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        StatusLine(
+            title = actionType.title(),
+            body = actionType.body(),
+        )
+        if (actionType.opensLocalTool()) {
+            OutlinedButton(
+                modifier = Modifier.fillMaxWidth().heightIn(min = 44.dp),
+                onClick = { onOpen(actionType) },
+            ) {
+                Text(
+                    stringResource(
+                        if (opened) {
+                            Res.string.support_opened_action_button
+                        } else {
+                            Res.string.support_open_action_button
+                        },
+                    ),
+                )
+            }
+        }
     }
 }
 
@@ -1845,6 +1984,25 @@ private fun SafetySupportActionType.body(): StringResource = when (this) {
     SafetySupportActionType.ValuesToAction -> Res.string.support_bridge_action_values_body
     SafetySupportActionType.SafePrevention -> Res.string.support_bridge_action_safe_prevention_body
     SafetySupportActionType.NoActionNeeded -> Res.string.support_bridge_action_no_action_body
+}
+
+private fun SafetySupportActionType.opensLocalTool(): Boolean = when (this) {
+    SafetySupportActionType.DailyCheckIn,
+    SafetySupportActionType.GroundingExercise,
+    SafetySupportActionType.BreathingTimer,
+    SafetySupportActionType.DelayAction,
+    SafetySupportActionType.ConflictReflection,
+    SafetySupportActionType.RepairPlanning,
+    SafetySupportActionType.NonviolentMessage,
+    SafetySupportActionType.ValuesToAction,
+    -> true
+
+    SafetySupportActionType.LeaveSituation,
+    SafetySupportActionType.ContactTrustedPerson,
+    SafetySupportActionType.UseLocalEmergencyHelp,
+    SafetySupportActionType.SafePrevention,
+    SafetySupportActionType.NoActionNeeded,
+    -> false
 }
 
 private fun LocalSupportResourceScope.title(): StringResource = when (this) {

@@ -68,7 +68,13 @@ Codemagic iOS simulator run for this integration reported
 to match the existing iOS SQLCipher store pattern. A later Codemagic run then
 reported that direct POSIX `time` use requires
 `@OptIn(ExperimentalForeignApi::class)`; the iOS clock now routes through a
-small `currentEpochMillis()` helper with the opt-in scoped to that helper.
+small `currentEpochMillis()` helper with the opt-in scoped to that helper. A
+later app-usability pass improved prompt submission and launch polish without
+pretending that Qwen generation is live: Grow and Support now handle keyboard
+Send, show blank/loading/result states, support recommendations can route to
+safe local Today tools, Android/iOS have branded launch screens, and platform
+model-pack status now says the LiteRT-LM runtime and install/load/generate/
+remove flow remain unconnected.
 
 ## Locked decisions
 
@@ -889,6 +895,12 @@ small `currentEpochMillis()` helper with the opt-in scoped to that helper.
   `currentEpochMillis()` carries the scoped opt-in for `time(null)`.
 - Owner confirmed Codemagic `ios-simulator-unsigned` passed for pushed commit
   `637b614` after the scoped iOS POSIX `ExperimentalForeignApi` opt-in fix.
+- App-usability pass after owner feedback made Grow and Support prompt
+  submission clearer, added keyboard Send handling, added in-progress guidance
+  state, routed safe support actions to local Today tools, corrected
+  Android/iOS model-pack status so it no longer implies an installer/runtime is
+  available, and added branded Android/iOS launch-screen configuration. This
+  does not implement real Qwen LiteRT-LM generation.
 - Optimized website image assets were generated from `brand/generated/`
   without overwriting `brand/source/bettamind-logo-master.png`.
 - `docs/operations/website-cloudflare-pages.md` documents Cloudflare Pages
@@ -1482,11 +1494,50 @@ small `currentEpochMillis()` helper with the opt-in scoped to that helper.
   `ExperimentalForeignApi` opt-in fix.
 - Owner confirmed Codemagic `ios-simulator-unsigned` passed for pushed commit
   `637b614` after the iOS POSIX `ExperimentalForeignApi` opt-in fix.
+- Initial `.\gradlew.bat :shared:compileDebugKotlinAndroid --no-daemon
+  --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  attempt during the app-usability pass timed out and left stale Java workers;
+  the workers were stopped before rerunning checks.
+- `.\gradlew.bat :shared:compileKotlinMetadata --no-daemon
+  --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the app-usability prompt and launch-screen update, with expected
+  Windows iOS cinterop target skips.
+- `.\gradlew.bat :shared:compileDebugKotlinAndroid --rerun-tasks --no-daemon
+  --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the app-usability prompt and launch-screen update.
+- The first app-usability
+  `.\gradlew.bat :androidApp:assembleDebug :androidApp:lintDebug --no-daemon
+  --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  run failed because `android:postSplashScreenTheme` was not available to the
+  project resource linker; the attribute was removed and `MainActivity`
+  switches from the starting theme to `Theme.Bettamind`.
+- `.\gradlew.bat :androidApp:assembleDebug :androidApp:lintDebug --no-daemon
+  --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the app-usability prompt and launch-screen update.
+- `.\gradlew.bat :shared:testDebugUnitTest --no-daemon
+  --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the app-usability prompt and launch-screen update.
+- `.\gradlew.bat phaseTwelveCheck --no-daemon --no-configuration-cache
+  --max-workers=1 --stacktrace --console=plain` passed after the
+  app-usability prompt and launch-screen update, with expected Windows iOS
+  cinterop target skips.
+- `git diff --check` reported no whitespace errors after the app-usability
+  prompt and launch-screen update, only normal Windows LF-to-CRLF warnings.
+- Restricted artifact scan found no model, signing, secret, database,
+  audio-pack or store-archive artifacts inside the repository after the
+  app-usability prompt and launch-screen update.
+- `Get-Process -Name java,gradle -ErrorAction SilentlyContinue` returned no
+  leftover Java or Gradle worker processes after the app-usability prompt and
+  launch-screen update.
 
 ## Known blockers and limitations
 
 - iOS cannot be fully built locally on Windows. Every shared/iOS change still
   requires Codemagic `ios-simulator-unsigned`.
+- Real local AI generation remains unavailable in the visible app. The Qwen
+  release-candidate artifact metadata, signed manifest and public trust anchor
+  are recorded, but the platform LiteRT-LM bridge, model import/install UI,
+  load/generate/remove flow and Android/iOS device evidence are still pending.
 - Owner confirmed Codemagic `ios-simulator-unsigned` passed for Phase 7 and
   local model recommendation policy through commit `d1811db`, and for the
   Phase 7.5 safety-redirection commit `cf4b240`.
