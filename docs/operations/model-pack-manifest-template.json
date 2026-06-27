@@ -3,7 +3,7 @@
   "version": 1,
   "displayName": "Qwen2.5 1.5B Instruct local model",
   "runtimeId": "litert-lm",
-  "artifactFileName": "qwen2.5-1.5b-instruct.litertlm",
+  "artifactFileName": "qwen2_5_1_5b_instruct_bettamind_v1.litertlm",
   "artifactSizeBytes": 0,
   "artifactChecksumSha256": "<sha256-of-final-litertlm-artifact>",
   "capabilities": [

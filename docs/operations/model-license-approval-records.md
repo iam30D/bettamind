@@ -1,6 +1,6 @@
 # Model Licence Approval Records
 
-Date updated: 2026-06-26
+Date updated: 2026-06-27
 
 ## Purpose
 
@@ -15,11 +15,13 @@ artifact is signed, uploaded or offered to users.
 
 ## Current licence confirmation
 
-As checked on 2026-06-19:
+As checked on 2026-06-27:
 
 - `google/gemma-4-E2B-it` is listed as `apache-2.0` on Hugging Face and links
   to Google's Apache 2.0 Gemma licence page.
 - `Qwen/Qwen2.5-1.5B-Instruct` is listed as `apache-2.0` on Hugging Face.
+- `litert-community/Qwen2.5-1.5B-Instruct` is listed as `apache-2.0` on
+  Hugging Face for the approved LiteRT-LM release-candidate artifact.
 
 Re-check the exact model page and revision immediately before production
 packaging, because model cards and licence metadata can change.
@@ -54,7 +56,7 @@ model_card_url: https://ai.google.dev/gemma/docs/core/model_card_4
 model_source_url: https://huggingface.co/google/gemma-4-E2B-it
 license_url: https://ai.google.dev/gemma/docs/gemma_4_license
 local_release_license_text: docs/legal/licenses/apache-2.0.txt
-license_verified_on: 2026-06-19
+license_verified_on: 2026-06-27
 owner_approval_status: APPROVED_LICENSE_ONLY_PENDING_ARTIFACT
 publishing_entity: CORE-NOVANESS LIMITED
 approved_by: OYINLOLA OLUSAYO
@@ -66,9 +68,9 @@ artifact_source_url: PENDING_ARTIFACT_PACKAGING
 converted_artifact_file_name: gemma-4-e2b-it.litertlm
 artifact_size_bytes: PENDING_ARTIFACT_PACKAGING
 artifact_sha256: PENDING_ARTIFACT_PACKAGING
-redistribution_allowed: APPROVED_UNDER_APACHE_2_0_SUBJECT_TO_FINAL_ARTIFACT_RECORD
-offline_mobile_use_allowed: APPROVED_UNDER_APACHE_2_0_SUBJECT_TO_FINAL_ARTIFACT_RECORD
-target_release_countries_reviewed: PENDING_RELEASE_COUNTRY_REVIEW
+redistribution_allowed: APPROVED_UNDER_APACHE_2_0_SUBJECT_TO_FINAL_RELEASE_GATES
+offline_mobile_use_allowed: APPROVED_UNDER_APACHE_2_0_SUBJECT_TO_FINAL_RELEASE_GATES
+target_release_countries_reviewed: not restricted by owner decision at approval time
 third_party_notice_reviewed: DRAFT_NOTICE_REVIEWED_PENDING_FINAL_ARTIFACT
 release_notes: Licence approved by CORE-NOVANESS LIMITED for future optional local model packaging. Final LiteRT-LM artifact revision, source URL, byte size, SHA-256 checksum, signed manifest and device tests remain pending.
 ```
@@ -86,20 +88,22 @@ model_source_url: https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct
 license_url: https://www.apache.org/licenses/LICENSE-2.0
 local_release_license_text: docs/legal/licenses/apache-2.0.txt
 license_verified_on: 2026-06-19
-owner_approval_status: APPROVED_LICENSE_ONLY_PENDING_ARTIFACT
+owner_approval_status: APPROVED_ARTIFACT_PENDING_DEVICE_TESTS_AND_RELEASE_GATES
 publishing_entity: CORE-NOVANESS LIMITED
-approved_by: OYINLOLA OLUSAYO
-approval_date: 2026-06-19
-provider_terms_account_or_record: No click-through acceptance shown. Apache-2.0 licence reviewed and approved by publishing entity.
-owner_approval_statement: I have reviewed the Apache-2.0 licence for this model, approve use under my publishing entity, and understand artifact checksum/revision fields will be completed later.
-source_revision_or_commit: PENDING_ARTIFACT_PACKAGING
-artifact_source_url: PENDING_ARTIFACT_PACKAGING
-converted_artifact_file_name: qwen2.5-1.5b-instruct.litertlm
-artifact_size_bytes: PENDING_ARTIFACT_PACKAGING
-artifact_sha256: PENDING_ARTIFACT_PACKAGING
+approved_by: OYINLOLA OLUSAYO / CEO
+approval_date: 2026-06-27
+provider_terms_account_or_record: No click-through acceptance shown. Apache-2.0 licence reviewed and approved by publishing entity for the exact LiteRT-LM artifact revision.
+owner_approval_statement: I have reviewed the Apache-2.0 licence for this model and approve packaging this exact artifact under my publishing entity, pending device tests and final release gates before public distribution.
+source_revision_or_commit: 19edb84c69a0212f29a6ef17ba0d6f278b6a1614
+artifact_source_url: https://huggingface.co/litert-community/Qwen2.5-1.5B-Instruct
+converted_artifact_file_name: qwen2_5_1_5b_instruct_bettamind_v1.litertlm
+artifact_size_bytes: 1597931520
+artifact_sha256: FAA60663B333290C1496C499828B21D3E3254A788CACD8CCE917CE0F761A2DC9
+signed_manifest_sha256: 69F1E42B6FF9F67C362FEC21A283DA86726603391FA5EF07D27792F73029E324
+signing_key_id: bettamind-model-prod-2026-01
 redistribution_allowed: APPROVED_UNDER_APACHE_2_0_SUBJECT_TO_FINAL_ARTIFACT_RECORD
 offline_mobile_use_allowed: APPROVED_UNDER_APACHE_2_0_SUBJECT_TO_FINAL_ARTIFACT_RECORD
 target_release_countries_reviewed: PENDING_RELEASE_COUNTRY_REVIEW
-third_party_notice_reviewed: DRAFT_NOTICE_REVIEWED_PENDING_FINAL_ARTIFACT
-release_notes: Licence approved by CORE-NOVANESS LIMITED for future optional local model packaging. Final LiteRT-LM artifact revision, source URL, byte size, SHA-256 checksum, signed manifest and device tests remain pending.
+third_party_notice_reviewed: DRAFT_NOTICE_INCLUDED_PENDING_RELEASE_REVIEW
+release_notes: Artifact, checksum, app-compatible signed manifest and public trust anchor are prepared outside Git. Android physical-device, iOS TestFlight, low-storage, interrupted import/resume, battery, thermal, memory, rollback/revocation and final release approval remain pending before public distribution.
 ```

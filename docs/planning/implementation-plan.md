@@ -477,6 +477,8 @@ check-ins through Android/iOS SQLCipher-backed app services after adult
 confirmation, exposing platform integration states in Settings, adding a
 concern prompt backed by deterministic no-model AI growth fallbacks and adding
 deterministic support assessment. Qwen2.5 1.5B Instruct is now the first
-model-pack target, with a trust-anchor policy and owner evidence templates in
-place. This does not complete owner-controlled production gates for the real
-artifact, public trust anchor, device evidence, screenshots or store records.
+model-pack target, with an owner-supplied LiteRT-LM release-candidate
+artifact, app-compatible signed manifest, public trust anchor and owner
+evidence templates in place. This does not complete owner-controlled
+production gates for platform LiteRT-LM runtime validation, Android/iOS device
+evidence, rollback/revocation review, screenshots or store records.

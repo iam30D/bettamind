@@ -1,13 +1,13 @@
 # Model Third-Party Notices
 
-Date updated: 2026-06-26
+Date updated: 2026-06-27
 
 ## Status
 
-This is a draft notice template for optional local AI model packs. It is not
-production-complete until the owner has completed
-`docs/operations/model-license-approval-records.md` for each model artifact
-that will be distributed.
+This is a draft notice template for optional local AI model packs. The Qwen
+release-candidate artifact fields are now recorded, but this notice is not
+production-complete until device evidence, rollback/revocation review and final
+owner release approval are complete.
 
 Do not add model weights, signing private keys, provider credentials or real
 user content to this file.
@@ -21,8 +21,12 @@ these models, and model installation requires user approval.
 Optional local AI model: Qwen2.5 1.5B Instruct
 Provider: Alibaba Cloud / Qwen
 Model ID: Qwen/Qwen2.5-1.5B-Instruct
+LiteRT artifact source: litert-community/Qwen2.5-1.5B-Instruct
+Source revision: 19edb84c69a0212f29a6ef17ba0d6f278b6a1614
+Artifact: qwen2_5_1_5b_instruct_bettamind_v1.litertlm
+Artifact SHA-256: FAA60663B333290C1496C499828B21D3E3254A788CACD8CCE917CE0F761A2DC9
 Licence: Apache License, Version 2.0
-Source: https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct
+Source: https://huggingface.co/litert-community/Qwen2.5-1.5B-Instruct
 Licence text: https://www.apache.org/licenses/LICENSE-2.0
 
 Deferred optional local AI model: Gemma 4 E2B

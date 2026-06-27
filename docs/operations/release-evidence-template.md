@@ -63,8 +63,8 @@ speech:
   status: PENDING_DEVICE_TEST
   notes: Confirm explicit microphone permission, OS speech behavior, no raw audio retention and text fallback.
 local_ai_model_pack:
-  status: PENDING_MODEL_ARTIFACT_AND_DEVICE_TEST
-  notes: Confirm Qwen signed manifest, public trust anchor, install, load, generate, remove and deterministic fallback after removal.
+  status: PENDING_DEVICE_TEST
+  notes: Qwen artifact, app-compatible signed manifest and public trust anchor are prepared; confirm install, load, generate, remove, low-storage behavior, interrupted import/resume and deterministic fallback after removal.
 ```
 
 ## Store readiness

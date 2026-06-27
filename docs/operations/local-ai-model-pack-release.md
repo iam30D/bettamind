@@ -1,6 +1,6 @@
 # Local AI Model Pack Release
 
-Date updated: 2026-06-26
+Date updated: 2026-06-27
 
 ## Policy
 
@@ -18,13 +18,22 @@ licence compliance.
 
 | Use | Model | Runtime | Approximate artifact size | Licence | Owner action |
 | --- | --- | --- | --- | --- | --- |
-| First release pack | `Qwen/Qwen2.5-1.5B-Instruct` | `litert-lm` | 1.6 GB | Apache-2.0 | Complete final artifact, trust anchor and device evidence |
+| First release pack | `Qwen/Qwen2.5-1.5B-Instruct` | `litert-lm` | 1.6 GB | Apache-2.0 | Artifact, app-compatible signed manifest and trust anchor prepared; complete device evidence |
 | Later candidate | `google/gemma-4-E2B-it` | `litert-lm` | 2.58 GB | Apache-2.0 | Reconsider after Qwen passes storage, thermal and memory tests |
 
 Qwen2.5 1.5B Instruct is the first production pipeline target because it is
 smaller and exercises the full signed `.litertlm` install, load, generate and
 remove flow before the app takes on a larger Gemma pack. These recommendations
 are not bundled and do not auto-install.
+
+The current Qwen release candidate lives outside Git under
+`C:\bettamind-model-release\release-qwen2.5-1.5b-v1`. Its artifact is
+`qwen2_5_1_5b_instruct_bettamind_v1.litertlm`, size `1597931520` bytes, SHA-256
+`FAA60663B333290C1496C499828B21D3E3254A788CACD8CCE917CE0F761A2DC9`. The
+app-compatible signed manifest SHA-256 is
+`69F1E42B6FF9F67C362FEC21A283DA86726603391FA5EF07D27792F73029E324`, signed by
+`bettamind-model-prod-2026-01`. This does not make the model public-release
+ready until device and release gates pass.
 
 Licence confirmation and owner-editable approval records live in
 `docs/operations/model-license-approval-records.md`. Draft release notice text

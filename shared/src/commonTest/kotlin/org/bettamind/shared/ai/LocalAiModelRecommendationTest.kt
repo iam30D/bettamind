@@ -103,6 +103,11 @@ class LocalAiModelRecommendationTest {
             assertTrue(pack.artifactSizeEstimateBytes > 0L)
             assertTrue(pack.recommendedFreeStorageBytes > pack.artifactSizeEstimateBytes)
         }
+
+        assertEquals(
+            BettamindModelPackTrustPolicy.firstProductionArtifactFileName,
+            BettamindLocalAiModelCatalog.qwen25OnePoint5B.artifactFileName,
+        )
     }
 
     private fun assertRecommendationRequiresExplicitApproval(decision: LocalAiModelRecommendation) {

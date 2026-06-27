@@ -56,13 +56,19 @@ English-only production scope, Settings exposes local platform integration
 states, Grow exposes selectable concern prompts backed by deterministic
 no-model AI growth fallbacks, and Support exposes deterministic local support
 assessment. Qwen2.5 1.5B Instruct is the first optional model-pack target, but
-production model-pack status stays blocked until the owner supplies a real
-`.litertlm` artifact, signed manifest, Ed25519 public trust anchor and device
-evidence. This does not complete owner-controlled production gates. A later
+production model-pack status now has an owner-supplied Qwen `.litertlm`
+release candidate, app-compatible signed manifest and approved Ed25519 public
+trust anchor. Public release still stays blocked until platform LiteRT-LM
+runtime validation, Android/iOS device evidence, rollback/revocation review and
+final owner release approval are complete. This does not complete
+owner-controlled production gates. A later
 Codemagic iOS simulator run for this integration reported
 `NSDate.timeIntervalSince1970` as an unresolved Kotlin/Native reference in
 `BettamindIosServices`; the iOS app-service clock now uses POSIX `time(null)`
-to match the existing iOS SQLCipher store pattern.
+to match the existing iOS SQLCipher store pattern. A later Codemagic run then
+reported that direct POSIX `time` use requires
+`@OptIn(ExperimentalForeignApi::class)`; the iOS clock now routes through a
+small `currentEpochMillis()` helper with the opt-in scoped to that helper.
 
 ## Locked decisions
 
@@ -204,6 +210,16 @@ to match the existing iOS SQLCipher store pattern.
   release-candidate pack, Gemma 4 E2B is deferred until device/storage evidence
   supports the larger pack, and every model install requires explicit user
   approval plus signed/checksum-verified removable packs.
+- The Qwen2.5 1.5B Instruct release-candidate artifact is kept outside Git at
+  `C:\bettamind-model-release\release-qwen2.5-1.5b-v1` with artifact filename
+  `qwen2_5_1_5b_instruct_bettamind_v1.litertlm`, size `1597931520`, SHA-256
+  `FAA60663B333290C1496C499828B21D3E3254A788CACD8CCE917CE0F761A2DC9`,
+  app-compatible signed manifest SHA-256
+  `69F1E42B6FF9F67C362FEC21A283DA86726603391FA5EF07D27792F73029E324` and
+  signing key ID `bettamind-model-prod-2026-01`.
+- `BettamindModelPackTrustPolicy.productionTrustAnchors` now includes the
+  owner-approved Qwen model-pack Ed25519 public trust anchor. The private
+  signing key remains outside Git and must not be committed.
 - Owner licence acceptance and release records are required before packaging or
   distributing any production model artifact. User install consent does not
   replace publisher licence compliance.
@@ -655,10 +671,12 @@ to match the existing iOS SQLCipher store pattern.
   marked as Apache-2.0 on source pages and owner-approved for licence use
   before artifact packaging.
 - CORE-NOVANESS LIMITED approved Apache-2.0 licence use for both Gemma 4 E2B
-  and Qwen2.5 1.5B Instruct on 2026-06-19, approved by OYINLOLA OLUSAYO. The
-  approval records are marked `APPROVED_LICENSE_ONLY_PENDING_ARTIFACT`; final
-  `.litertlm` revision, source URL, byte size, SHA-256 checksum, signed
-  manifest and device tests remain pending.
+  and Qwen2.5 1.5B Instruct on 2026-06-19, approved by OYINLOLA OLUSAYO. On
+  2026-06-27 the owner supplied the final Qwen LiteRT-LM release-candidate
+  artifact, source revision, byte size, SHA-256 checksum, app-compatible signed
+  manifest and public trust anchor. Qwen remains
+  `APPROVED_ARTIFACT_PENDING_DEVICE_TESTS_AND_RELEASE_GATES`; Gemma remains
+  deferred.
 - `docs/operations/litertlm-artifact-build-plan.md` documents when the later
   `.litertlm` artifact build occurs and the packaging/signing/test process.
 - `docs/legal/model-third-party-notices.md` provides draft third-party notice
@@ -845,16 +863,32 @@ to match the existing iOS SQLCipher store pattern.
 - Settings now exposes platform integration states for local reminders,
   explicit calendar handoff, OS speech and optional signed model packs.
 - Qwen2.5 1.5B Instruct is now the first optional local AI model-pack target.
-  `BettamindModelPackTrustPolicy` blocks production model-pack availability
-  until a real owner-approved Ed25519 public trust anchor is committed.
+  `BettamindModelPackTrustPolicy` now includes the owner-approved Qwen
+  Ed25519 public trust anchor, while production model-pack availability remains
+  blocked by runtime, device-evidence and final release gates.
 - Owner evidence templates were added at
   `docs/operations/release-evidence-template.md` and
   `docs/operations/model-pack-owner-evidence-template.md`.
+- The Qwen external release package was regenerated outside Git with an
+  app-compatible camelCase `ModelPackManifest`, embedded base64 Ed25519
+  signature, detached raw signature, regenerated checksums, Apache-2.0 licence
+  copy and third-party notice at
+  `C:\bettamind-model-release\release-qwen2.5-1.5b-v1`.
+- `BettamindModelPackTrustPolicy` now records the approved Qwen Ed25519 public
+  trust anchor and the shared Qwen recommendation points at
+  `qwen2_5_1_5b_instruct_bettamind_v1.litertlm`.
 - Codemagic `ios-simulator-unsigned` for commit `bdefd13` failed in
   `:shared:compileKotlinIosSimulatorArm64` because
   `BettamindIosServices.kt` used `NSDate().timeIntervalSince1970` as a
   property. The iOS source now calls `NSDate().timeIntervalSince1970()` so the
   Kotlin/Native macOS compiler can resolve the API.
+- A later Codemagic `ios-simulator-unsigned` log failed in
+  `:shared:compileKotlinIosSimulatorArm64` at `BettamindIosServices.kt:16:32`
+  because `platform.posix.time` requires `ExperimentalForeignApi` opt-in. The
+  iOS service now passes `nowEpochMillis = ::currentEpochMillis`, and
+  `currentEpochMillis()` carries the scoped opt-in for `time(null)`.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed for pushed commit
+  `637b614` after the scoped iOS POSIX `ExperimentalForeignApi` opt-in fix.
 - Optimized website image assets were generated from `brand/generated/`
   without overwriting `brand/source/bettamind-logo-master.png`.
 - `docs/operations/website-cloudflare-pages.md` documents Cloudflare Pages
@@ -1400,6 +1434,54 @@ to match the existing iOS SQLCipher store pattern.
 - `git diff --check` reported no whitespace errors after the
   production-readiness app integration, only normal Windows LF-to-CRLF
   warnings.
+- Qwen external manifest verification parsed
+  `C:\bettamind-model-release\release-qwen2.5-1.5b-v1\qwen2_5_1_5b_instruct_bettamind_v1.manifest.json`
+  as strict JSON and verified the embedded Ed25519 signature against the
+  app-canonical unsigned `ModelPackManifest` bytes.
+- The regenerated Qwen release package has artifact SHA-256
+  `FAA60663B333290C1496C499828B21D3E3254A788CACD8CCE917CE0F761A2DC9`,
+  signed manifest SHA-256
+  `69F1E42B6FF9F67C362FEC21A283DA86726603391FA5EF07D27792F73029E324` and
+  detached signature SHA-256
+  `704937BDA6B9F68B1018562FDBFD58EEA12E2AEE46357FEDEB147800C77D3078`.
+- `.\gradlew.bat :shared:testDebugUnitTest --tests
+  org.bettamind.shared.ai.ModelPackTrustPolicyTest --tests
+  org.bettamind.shared.ai.LocalAiModelRecommendationTest --no-daemon
+  --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  exceeded the tool timeout after writing test XML reports; the reports showed
+  6 tests, 0 failures and 0 errors for the targeted Qwen trust/recommendation
+  tests. A stale Java worker from the first timeout was stopped before reruns.
+- `.\gradlew.bat :androidApp:assembleDebug :androidApp:lintDebug --no-daemon
+  --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the Qwen trust-anchor and release-record update, with expected
+  Windows iOS cinterop target skips.
+- `.\gradlew.bat phaseTwelveCheck --no-daemon --no-configuration-cache
+  --max-workers=1 --stacktrace --console=plain` passed after the Qwen
+  trust-anchor and release-record update, with expected Windows iOS cinterop
+  target skips.
+- `git diff --check` reported no whitespace errors after the Qwen
+  trust-anchor and release-record update, only normal Windows LF-to-CRLF
+  warnings.
+- Restricted artifact scan found no model, signing, secret, database,
+  audio-pack or store-archive artifacts inside the repository after the Qwen
+  trust-anchor and release-record update.
+- `.\gradlew.bat :shared:compileKotlinMetadata --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the iOS POSIX `ExperimentalForeignApi` opt-in fix, with expected
+  Windows iOS cinterop target skips.
+- `.\gradlew.bat phaseTwelveCheck --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the iOS POSIX `ExperimentalForeignApi` opt-in fix, with expected
+  Windows iOS cinterop target skips.
+- `git diff --check` reported no whitespace errors after the iOS POSIX
+  `ExperimentalForeignApi` opt-in fix, only normal Windows LF-to-CRLF
+  warnings.
+- Restricted artifact scan found no model, signing, secret, database,
+  audio-pack or store-archive artifacts inside the repository after the iOS
+  POSIX `ExperimentalForeignApi` opt-in fix.
+- `Get-Process -Name java,gradle -ErrorAction SilentlyContinue` returned no
+  leftover Java or Gradle worker processes after the iOS POSIX
+  `ExperimentalForeignApi` opt-in fix.
+- Owner confirmed Codemagic `ios-simulator-unsigned` passed for pushed commit
+  `637b614` after the iOS POSIX `ExperimentalForeignApi` opt-in fix.
 
 ## Known blockers and limitations
 
@@ -1511,9 +1593,11 @@ to match the existing iOS SQLCipher store pattern.
   delete/export UI and physical-device evidence still need completion before
   production release.
 - The new Grow concern prompt runs through `AiGrowthModeEngine`, but real local
-  AI remains unavailable until owner-approved signed Qwen `.litertlm` model
-  packs, trust anchors, checksums, platform LiteRT-LM bridge and device tests
-  exist.
+  AI remains unavailable in the app until the platform LiteRT-LM bridge,
+  install/load/generate/remove flow, Android physical-device evidence, iOS
+  TestFlight evidence, low-storage/interrupted-import behavior,
+  battery/thermal/memory observations and rollback/revocation records pass for
+  the signed Qwen package.
 - Phase 5 does not include production content packs, production signing keys or
   owner-approved trust anchors. Release work must provide those before real
   public packs are accepted.
@@ -1593,9 +1677,9 @@ to match the existing iOS SQLCipher store pattern.
   `com.corenovaness.bettamind`.
 - Provide owner-approved production knowledge-pack trust anchors and content
   governance before accepting real public packs.
-- Provide owner-approved Qwen production model artifact metadata, final
-  licence re-check, public trust anchor and delivery governance before
-  accepting real model packs. Use
+- Complete Qwen production model device evidence, runtime validation,
+  rollback/revocation review and final release approval before accepting real
+  model packs publicly. Use
   `docs/operations/model-pack-owner-evidence-template.md` as the record
   format.
 - Provide owner-approved production speech adapters, speech-pack choices,
@@ -1608,10 +1692,10 @@ to match the existing iOS SQLCipher store pattern.
 - Complete `docs/operations/model-license-approval-records.md` and review
   `docs/legal/model-third-party-notices.md` before packaging or offering any
   optional local AI model artifact.
-- Build or obtain the final Qwen `.litertlm` artifact outside Git, then
-  complete source revision, artifact URL, byte size, SHA-256 checksum, signed
-  manifest, public trust anchor and device-test records before setting any
-  model to `APPROVED_FOR_RELEASE`.
+- Keep the final Qwen `.litertlm` artifact and signing private key outside Git,
+  then complete Android/iOS device-test records, runtime validation,
+  rollback/revocation review and final owner release approval before setting
+  any model to `APPROVED_FOR_RELEASE`.
 - Review Phase 7 AI-growth fallback identifiers, prompt boundaries, model
   schema and production model-output governance before enabling a real local
   model broadly.
@@ -1636,13 +1720,15 @@ to match the existing iOS SQLCipher store pattern.
 
 ## Next approved task
 
-Verify and push the production-readiness app integration, then run Codemagic
-`ios-simulator-unsigned` against the pushed commit because shared Kotlin,
-Compose resources and iOS entry points changed. After that, prepare the first
+After the owner-approved Qwen model-pack release-candidate metadata and
+trust-anchor update is pushed, run Codemagic `ios-simulator-unsigned` against
+that pushed commit because shared Kotlin changed. After that, prepare the first
 internal TestFlight run and record evidence in
 `docs/operations/release-evidence-template.md`. The first real local AI pass is
-Qwen2.5 1.5B Instruct and remains blocked until the owner supplies the final
-`.litertlm` artifact metadata, signed manifest metadata, public Ed25519 trust
-anchor and device evidence recorded in
+Qwen2.5 1.5B Instruct; the artifact, app-compatible signed manifest and public
+trust anchor are prepared, and the remaining blockers are platform LiteRT-LM
+bridge validation, Android/iOS device evidence, low-storage/interrupted-import
+testing, battery/thermal/memory observations, rollback/revocation review and
+final owner release approval recorded in
 `docs/operations/model-pack-owner-evidence-template.md`. Deploying the static
 website through Cloudflare Pages remains a separate open owner action.

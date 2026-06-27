@@ -1,6 +1,6 @@
 # LiteRT-LM Artifact Build Plan
 
-Date updated: 2026-06-26
+Date updated: 2026-06-27
 
 ## When the artifact build occurs
 
@@ -16,6 +16,11 @@ happens in a later model-packaging task after all of these are true:
 - a secure model-pack signing key and public trust-anchor plan are ready.
 
 Until then, Bettamind still runs with deterministic no-model fallback.
+
+The first Qwen release-candidate artifact has now been obtained outside Git,
+checksummed and signed with the app-compatible `ModelPackManifest` schema. The
+remaining work is device validation, rollback/revocation review, runtime bridge
+validation and final release approval; Gemma remains deferred.
 
 ## Build process
 

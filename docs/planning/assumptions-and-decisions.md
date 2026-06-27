@@ -83,8 +83,11 @@
 - Final Android application ID.
 - Final iOS bundle identifier is no longer deferred:
   `com.corenovaness.bettamind`.
-- Production local AI runtime build, exact model artifacts, model licences,
-  trust anchors, signing keys, device-test results and delivery channels.
+- Production local AI runtime build, Gemma exact model artifact, production
+  signing private keys, device-test results and delivery channels. The Qwen
+  release-candidate artifact, licence approval, app-compatible signed manifest
+  and public trust anchor are recorded, but Qwen runtime/device evidence and
+  final release approval remain deferred.
 - Production offline speech adapters, OS voice support matrix, speech-pack
   artifacts, speech-pack licences, trust anchors, signing keys and device-test
   results.
