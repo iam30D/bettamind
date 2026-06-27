@@ -1,5 +1,6 @@
 package org.bettamind.shared
 
+import kotlinx.cinterop.ExperimentalForeignApi
 import org.bettamind.shared.ai.BettamindModelPackTrustPolicy
 import org.bettamind.shared.ai.ModelPackTrustReleaseGate
 import org.bettamind.shared.privacy.IosKeychainStorageKeyManager
@@ -13,7 +14,7 @@ fun createIosBettamindAppServices(): BettamindAppServices =
         dailyRecords = EncryptedDailyRecordService(
             store = IosSqlCipherEncryptedRecordStore(),
             keyManager = IosKeychainStorageKeyManager(),
-            nowEpochMillis = { time(null) * 1000L },
+            nowEpochMillis = ::currentEpochMillis,
             localDate = { IosLocalDateFormatter.stringFromDate(NSDate()) },
         ),
         reminders = IosReminderPlatformService,
@@ -25,6 +26,9 @@ fun createIosBettamindAppServices(): BettamindAppServices =
 private val IosLocalDateFormatter = NSDateFormatter().apply {
     dateFormat = "yyyy-MM-dd"
 }
+
+@OptIn(ExperimentalForeignApi::class)
+private fun currentEpochMillis(): Long = time(null) * 1000L
 
 private object IosReminderPlatformService : ReminderPlatformService {
     override fun status(): ReminderPlatformStatus =
