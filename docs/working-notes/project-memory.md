@@ -95,6 +95,12 @@ The next Codemagic run for install-only iOS model-pack support reached Swift
 compilation but failed because `NativeInstallFailure` was used as a
 `Result` failure type without conforming to `Error`; the Swift enum now
 conforms to `Error`.
+A later Android/shared usability pass keeps the app useful without an
+installed AI model and makes button actions visibly responsive on device:
+adult confirmation and encrypted daily-check-in storage work now run off the
+UI click path with in-progress button labels/status text, and Grow prompt
+responses render immediately below the run button instead of after static
+notes.
 
 ## Locked decisions
 
@@ -334,6 +340,11 @@ conforms to `Error`.
 - GitHub Actions `gradlew` permission failure was repaired.
 - Codemagic shared-test scope and Kotlin/Native `LocaleTag` compatibility were
   repaired; owner later confirmed Codemagic passed.
+- Android/shared UI responsiveness was improved after device feedback that
+  buttons and core functions appeared not to work: encrypted-storage checks and
+  daily-check-in saves now run asynchronously with visible running states, and
+  the deterministic no-model AI response appears directly under the prompt
+  action.
 - Phase 2 source logo was inspected. The source PNG was not overwritten.
 - `scripts/generate_brand_assets.py` now generates repeatable PNG-derived brand
   assets from the source logo.
@@ -1062,6 +1073,19 @@ conforms to `Error`.
 
 ## Commands that passed
 
+- `git diff --check`
+- `rg -n "LiteRT-LM.git|import LiteRTLM|productName = LiteRTLM|GIT_LFS_SKIP_SMUDGE" iosApp codemagic.yaml`
+  returned no matches.
+- `rg --files --glob '!**/.git/**' --glob '!**/build/**' | rg "\.(litertlm|tflite|task|gguf|onnx|safetensors|bin|pt|pth|ckpt|mlmodel|mlpackage|keystore|p12|mobileprovision|cer|env|db|sqlite|aab|ipa|xcarchive|wav|mp3|m4a|flac)$"`
+  returned no matches.
+- `.\gradlew.bat :shared:testDebugUnitTest --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed on Windows; iOS cinterop targets remain disabled on `mingw_x64`.
+- `.\gradlew.bat :androidApp:assembleDebug --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed on Windows; iOS cinterop targets remain disabled on `mingw_x64`.
+- `.\gradlew.bat :androidApp:lintDebug --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed on Windows; iOS cinterop targets remain disabled on `mingw_x64`.
+- `.\gradlew.bat phaseTwelveCheck --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed on Windows; iOS cinterop targets remain disabled on `mingw_x64`.
 - `.\gradlew.bat :shared:compileKotlinMetadata --no-daemon --stacktrace`
 - `.\gradlew.bat :androidApp:compileDebugKotlin --no-daemon --stacktrace`
 - `.\gradlew.bat :shared:testDebugUnitTest --no-daemon --stacktrace`
@@ -1957,15 +1981,18 @@ conforms to `Error`.
 
 ## Next approved task
 
-After the iOS install-only model-pack Swift compile fix is pushed, run Codemagic
-`ios-simulator-unsigned` against that exact commit SHA. The expected proof is
-that `Resolve iOS Swift packages` resolves only SQLCipher, the unsigned Xcode
-simulator build no longer fails on `LiteRTLM` unsafe build flags or the
-`NativeInstallFailure` Swift `Result` constraint, and the app still reaches
-app-hosted encrypted-storage validation with the signed-pack install surface
-compiled in. If Codemagic passes, run Android signed-Qwen
-install/load/prompt/remove smoke tests and iOS signed-Qwen
-install/remove/failed-install smoke tests, then record the evidence in
+After the Android/shared UI responsiveness fix is pushed, install the new
+debug APK on a physical Android device and smoke-test adult confirmation,
+Today encrypted check-in save, breathing/grounding/worksheet controls, Grow
+prompt Send/button submission without a model installed, Support assessment
+and Settings model-pack install/remove buttons. Because this change touches
+shared Kotlin and Compose resources, run Codemagic `ios-simulator-unsigned`
+against the pushed commit SHA. The expected proof is that iOS still resolves
+only SQLCipher, builds without `LiteRTLM`, and reaches app-hosted encrypted
+storage validation with the signed-pack install surface compiled in. If
+Codemagic passes, run Android signed-Qwen install/load/prompt/remove smoke
+tests and iOS signed-Qwen install/remove/failed-install smoke tests, then
+record the evidence in
 `docs/operations/model-pack-owner-evidence-template.md`. The remaining release
 blockers are Android device evidence, future approved iOS runtime integration
 and iOS generation smoke evidence, low-storage/interrupted-import behavior,

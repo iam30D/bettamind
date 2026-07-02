@@ -56,6 +56,8 @@
     <string name="growth_age_gate_title">Adult access</string>
     <string name="growth_age_gate_description">Personal growth features need local adult confirmation before use.</string>
     <string name="growth_age_confirm_adult">I am 18 or older</string>
+    <string name="growth_age_checking_storage">Checking encrypted storage...</string>
+    <string name="growth_age_checking_storage_status">Checking local encrypted storage before unlocking adult personal tools.</string>
     <string name="growth_age_not_adult">Not 18 or not sure</string>
     <string name="growth_age_adult_ready">Adult status is confirmed locally for this session.</string>
     <string name="growth_age_blocked">Adult personal features stay locked.</string>
@@ -298,6 +300,8 @@
     <string name="daily_checkin_stress">Stress</string>
     <string name="daily_checkin_sleep">Sleep</string>
     <string name="daily_checkin_capture_session">Save encrypted check-in</string>
+    <string name="daily_checkin_saving_session">Saving encrypted check-in...</string>
+    <string name="daily_checkin_saving_status">Saving to encrypted local storage. No unencrypted copy is created.</string>
     <string name="daily_checkin_session_captured">Encrypted check-in saved locally.</string>
     <string name="daily_session_privacy_note">Daily records use encrypted local storage only. Bettamind does not use unencrypted fallback storage.</string>
     <string name="daily_checkin_locked">Confirm adult access before saving encrypted daily records. %1$d encrypted daily records are stored on this device.</string>

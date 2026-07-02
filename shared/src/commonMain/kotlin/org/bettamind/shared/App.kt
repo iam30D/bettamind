@@ -76,8 +76,10 @@ import org.bettamind.shared.support.SafetySupportRiskLevel
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private enum class BettamindDestination(
     val title: StringResource,
@@ -128,6 +130,8 @@ fun BettamindApp(services: BettamindAppServices = BettamindAppServices()) {
     var supportDecision by remember { mutableStateOf<SafetySupportDecision?>(null) }
     var supportPromptSubmittedBlank by remember { mutableStateOf(false) }
     var supportActionOpened by remember { mutableStateOf<SafetySupportActionType?>(null) }
+    var adultConfirmationRunning by remember { mutableStateOf(false) }
+    var dailyRecordSaving by remember { mutableStateOf(false) }
 
     LaunchedEffect(breathingStepIndex) {
         breathingTimerRunning = false
@@ -191,13 +195,27 @@ fun BettamindApp(services: BettamindAppServices = BettamindAppServices()) {
                     privacyLockTimeout = privacyLockTimeout,
                     onPrivacyLockTimeoutChange = { privacyLockTimeout = it },
                     growthState = growthState,
+                    adultConfirmationRunning = adultConfirmationRunning,
                     onConfirmAdult = {
-                        val encryptedStorageAvailable = services.dailyRecords.available()
-                        growthState = DeterministicGrowthEngine.adultConfirmed(
-                            encryptedStorageAvailable = encryptedStorageAvailable,
-                        )
-                        if (encryptedStorageAvailable) {
-                            dailyRecordCount = services.dailyRecords.recordCount()
+                        if (!adultConfirmationRunning) {
+                            adultConfirmationRunning = true
+                            coroutineScope.launch {
+                                try {
+                                    val encryptedStorageAvailable = withContext(Dispatchers.Default) {
+                                        services.dailyRecords.available()
+                                    }
+                                    growthState = DeterministicGrowthEngine.adultConfirmed(
+                                        encryptedStorageAvailable = encryptedStorageAvailable,
+                                    )
+                                    if (encryptedStorageAvailable) {
+                                        dailyRecordCount = withContext(Dispatchers.Default) {
+                                            services.dailyRecords.recordCount()
+                                        }
+                                    }
+                                } finally {
+                                    adultConfirmationRunning = false
+                                }
+                            }
                         }
                     },
                     onBlockMinorOrUnknown = {
@@ -267,16 +285,30 @@ fun BettamindApp(services: BettamindAppServices = BettamindAppServices()) {
                     },
                     checkInCaptured = checkInCaptured,
                     dailyToolsUnlocked = growthState.personalFeaturesAvailable,
+                    dailyRecordSaving = dailyRecordSaving,
                     onCaptureCheckIn = {
-                        val result = services.dailyRecords.saveCheckIn(
-                            mood = mood,
-                            energy = energy,
-                            stress = stress,
-                            sleep = sleep,
-                        )
-                        dailyRecordSaveResult = result
-                        checkInCaptured = result is DailyRecordSaveResult.Saved
-                        dailyRecordCount = services.dailyRecords.recordCount()
+                        if (!dailyRecordSaving) {
+                            dailyRecordSaving = true
+                            coroutineScope.launch {
+                                try {
+                                    val result = withContext(Dispatchers.Default) {
+                                        services.dailyRecords.saveCheckIn(
+                                            mood = mood,
+                                            energy = energy,
+                                            stress = stress,
+                                            sleep = sleep,
+                                        )
+                                    }
+                                    dailyRecordSaveResult = result
+                                    checkInCaptured = result is DailyRecordSaveResult.Saved
+                                    dailyRecordCount = withContext(Dispatchers.Default) {
+                                        services.dailyRecords.recordCount()
+                                    }
+                                } finally {
+                                    dailyRecordSaving = false
+                                }
+                            }
+                        }
                     },
                     dailyRecordSaveResult = dailyRecordSaveResult,
                     dailyRecordCount = dailyRecordCount,
@@ -433,6 +465,7 @@ private fun DestinationPanel(
     privacyLockTimeout: PrivacyLockTimeout,
     onPrivacyLockTimeoutChange: (PrivacyLockTimeout) -> Unit,
     growthState: GrowthSessionState,
+    adultConfirmationRunning: Boolean,
     onConfirmAdult: () -> Unit,
     onBlockMinorOrUnknown: () -> Unit,
     onAdvanceGrowth: () -> Unit,
@@ -455,6 +488,7 @@ private fun DestinationPanel(
     onSleepChange: (DailyMetricLevel) -> Unit,
     checkInCaptured: Boolean,
     dailyToolsUnlocked: Boolean,
+    dailyRecordSaving: Boolean,
     onCaptureCheckIn: () -> Unit,
     dailyRecordSaveResult: DailyRecordSaveResult?,
     dailyRecordCount: Int,
@@ -513,6 +547,7 @@ private fun DestinationPanel(
             GrowthDestinationContent(
                 destination = destination,
                 growthState = growthState,
+                adultConfirmationRunning = adultConfirmationRunning,
                 onConfirmAdult = onConfirmAdult,
                 onBlockMinorOrUnknown = onBlockMinorOrUnknown,
                 onAdvanceGrowth = onAdvanceGrowth,
@@ -535,6 +570,7 @@ private fun DestinationPanel(
                 onSleepChange = onSleepChange,
                 checkInCaptured = checkInCaptured,
                 dailyToolsUnlocked = dailyToolsUnlocked,
+                dailyRecordSaving = dailyRecordSaving,
                 onCaptureCheckIn = onCaptureCheckIn,
                 dailyRecordSaveResult = dailyRecordSaveResult,
                 dailyRecordCount = dailyRecordCount,
@@ -567,6 +603,7 @@ private fun DestinationPanel(
 private fun GrowthDestinationContent(
     destination: BettamindDestination,
     growthState: GrowthSessionState,
+    adultConfirmationRunning: Boolean,
     onConfirmAdult: () -> Unit,
     onBlockMinorOrUnknown: () -> Unit,
     onAdvanceGrowth: () -> Unit,
@@ -589,6 +626,7 @@ private fun GrowthDestinationContent(
     onSleepChange: (DailyMetricLevel) -> Unit,
     checkInCaptured: Boolean,
     dailyToolsUnlocked: Boolean,
+    dailyRecordSaving: Boolean,
     onCaptureCheckIn: () -> Unit,
     dailyRecordSaveResult: DailyRecordSaveResult?,
     dailyRecordCount: Int,
@@ -618,6 +656,7 @@ private fun GrowthDestinationContent(
     ) {
         AdultGatePanel(
             growthState = growthState,
+            adultConfirmationRunning = adultConfirmationRunning,
             onConfirmAdult = onConfirmAdult,
             onBlockMinorOrUnknown = onBlockMinorOrUnknown,
         )
@@ -635,6 +674,7 @@ private fun GrowthDestinationContent(
                     onSleepChange = onSleepChange,
                     checkInCaptured = checkInCaptured,
                     dailyToolsUnlocked = growthState.personalFeaturesAvailable,
+                    dailyRecordSaving = dailyRecordSaving,
                     onCaptureCheckIn = onCaptureCheckIn,
                     dailyRecordSaveResult = dailyRecordSaveResult,
                     dailyRecordCount = dailyRecordCount,
@@ -698,6 +738,7 @@ private fun DailyToolsPanel(
     onSleepChange: (DailyMetricLevel) -> Unit,
     checkInCaptured: Boolean,
     dailyToolsUnlocked: Boolean,
+    dailyRecordSaving: Boolean,
     onCaptureCheckIn: () -> Unit,
     dailyRecordSaveResult: DailyRecordSaveResult?,
     dailyRecordCount: Int,
@@ -730,10 +771,25 @@ private fun DailyToolsPanel(
         MetricSelector(Res.string.daily_checkin_sleep, sleep, onSleepChange)
         Button(
             modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-            enabled = dailyToolsUnlocked,
+            enabled = dailyToolsUnlocked && !dailyRecordSaving,
             onClick = onCaptureCheckIn,
         ) {
-            Text(stringResource(Res.string.daily_checkin_capture_session))
+            Text(
+                stringResource(
+                    if (dailyRecordSaving) {
+                        Res.string.daily_checkin_saving_session
+                    } else {
+                        Res.string.daily_checkin_capture_session
+                    },
+                ),
+            )
+        }
+        if (dailyRecordSaving) {
+            Text(
+                text = stringResource(Res.string.daily_checkin_saving_status),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
         Text(
             text = stringResource(
@@ -975,6 +1031,7 @@ private fun AiGrowthModesPanel(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        response?.let { AiGrowthResponsePanel(it) }
         Text(
             text = stringResource(Res.string.ai_growth_no_model_note),
             style = MaterialTheme.typography.bodySmall,
@@ -990,7 +1047,6 @@ private fun AiGrowthModesPanel(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        response?.let { AiGrowthResponsePanel(it) }
     }
 }
 
@@ -1060,6 +1116,7 @@ private fun AiGrowthResponsePanel(response: AiGrowthModeResponse) {
 @Composable
 private fun AdultGatePanel(
     growthState: GrowthSessionState,
+    adultConfirmationRunning: Boolean,
     onConfirmAdult: () -> Unit,
     onBlockMinorOrUnknown: () -> Unit,
 ) {
@@ -1080,18 +1137,35 @@ private fun AdultGatePanel(
                     modifier = Modifier
                         .weight(1f)
                         .heightIn(min = 48.dp),
+                    enabled = !adultConfirmationRunning,
                     onClick = onConfirmAdult,
                 ) {
-                    Text(stringResource(Res.string.growth_age_confirm_adult))
+                    Text(
+                        stringResource(
+                            if (adultConfirmationRunning) {
+                                Res.string.growth_age_checking_storage
+                            } else {
+                                Res.string.growth_age_confirm_adult
+                            },
+                        ),
+                    )
                 }
                 OutlinedButton(
                     modifier = Modifier
                         .weight(1f)
                         .heightIn(min = 48.dp),
+                    enabled = !adultConfirmationRunning,
                     onClick = onBlockMinorOrUnknown,
                 ) {
                     Text(stringResource(Res.string.growth_age_not_adult))
                 }
+            }
+            if (adultConfirmationRunning) {
+                Text(
+                    text = stringResource(Res.string.growth_age_checking_storage_status),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         }
     }
