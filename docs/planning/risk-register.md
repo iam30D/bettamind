@@ -1,6 +1,6 @@
 # Risk Register
 
-Date updated: 2026-06-27
+Date updated: 2026-07-02
 
 | Risk | Impact | Mitigation | Status |
 | --- | --- | --- | --- |
@@ -21,6 +21,7 @@ Date updated: 2026-06-27
 | Model weights accidentally committed or downloaded automatically | Repository bloat, licence breach or privacy/safety risk | Phase 6 adds no model files and no downloader; model installation accepts externally supplied signed chunks only | Mitigated for Phase 6 |
 | Production model-pack trust roots are not supplied | Untrusted model packs could be accepted in release builds | Phase 6 enforces signed manifests, SHA-256 checksums, rollback/revocation policy and a verifier boundary; Qwen now has an owner-approved Ed25519 public trust anchor recorded in `BettamindModelPackTrustPolicy`, while runtime/device/revocation release evidence remains pending | Partially mitigated for Qwen; open for device/release gates |
 | LiteRT-LM platform bridge fails to compile or run on iOS | Signed model packs could install but not generate responses on iPhone or TestFlight | Android is wired to Google's `litertlm-android` `0.13.1` and compiles locally; iOS now links the official `LiteRTLM` Swift Package `0.13.1` through `BettamindIosNativeAiBridge`, but Windows cannot compile that Swift/Xcode path, so Codemagic `ios-simulator-unsigned` and iOS device model-smoke evidence are required before release | Partially mitigated; open for Codemagic and device evidence |
+| LiteRT-LM SwiftPM checkout attempts unrelated Git LFS Android prebuilts | Codemagic can fail before iOS compile even though the iOS package uses release-hosted binary targets | Codemagic Xcode package resolution, simulator build, validation build and signed IPA build export `GIT_LFS_SKIP_SMUDGE=1` so SwiftPM can checkout the package without downloading unrelated Android LFS objects; model weights and production artifacts still stay outside Git and user install remains explicit | Partially mitigated; requires next Codemagic validation |
 | Recommended model licences are not accepted or recorded by the app owner before distribution | Copyright, licence, store-review or redistribution failure | `docs/operations/model-license-approval-records.md` records CORE-NOVANESS LIMITED licence approval for Gemma 4 E2B and Qwen2.5 1.5B; Qwen final artifact revision, checksum and signed manifest are recorded, while device tests and final release approval remain pending; Gemma remains deferred | Partially mitigated |
 | Optional local AI recommendation feels mandatory or auto-installs | Violates offline, no-AI-required and consent rules | `BettamindLocalAiModelPolicy` keeps auto-install disabled, requires explicit user approval before install and preserves deterministic fallback when declined or removed | Mitigated for recommendation policy |
 | Recommended model pack exceeds practical device storage, memory, battery or thermal limits | Poor user experience and possible store-quality issues | Recommendation policy now uses the signed Qwen2.5 1.5B Instruct `.litertlm` release candidate to prove the smaller pipeline before reconsidering Gemma 4 E2B; production release still requires physical device tests | Open |

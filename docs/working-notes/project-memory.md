@@ -80,6 +80,13 @@ official `LiteRTLM` Swift Package at `0.13.1`. The app still does not
 auto-download or bundle model weights: users must explicitly select the signed
 Qwen manifest and matching `.litertlm` artifact, and iOS must still pass
 Codemagic/Xcode validation plus device smoke testing before production approval.
+The 2026-06-27 Codemagic `ios-simulator-unsigned` run failed in the
+`Resolve iOS Swift packages` step because SwiftPM checked out the upstream
+LiteRT-LM repository and Git LFS tried to smudge an unrelated Android prebuilt
+object that is missing from the remote. The Codemagic iOS workflows now export
+`GIT_LFS_SKIP_SMUDGE=1` around Xcode package resolution and app build steps so
+the checkout does not require unrelated Android LFS objects while the iOS
+`LiteRTLM` product continues to use the pinned release-hosted binary target.
 
 ## Locked decisions
 
@@ -247,8 +254,10 @@ Codemagic/Xcode validation plus device smoke testing before production approval.
   artifact metadata, stores the pack under app support, links `LiteRTLM`
   through Swift Package Manager and streams generated text back into the shared
   `LocalAiRuntime` interface. Windows cannot compile this Swift/Xcode path;
-  Codemagic `ios-simulator-unsigned` and device/TestFlight model smoke evidence
-  remain required.
+  Codemagic Xcode steps set `GIT_LFS_SKIP_SMUDGE=1` so the upstream package
+  checkout does not require unrelated Android LFS prebuilts. Codemagic
+  `ios-simulator-unsigned` and device/TestFlight model smoke evidence remain
+  required.
 - Phase 10 target locale resources must remain key-complete. The current
   production scope is English-only; non-English Compose resource directories
   intentionally mirror English source strings until qualified human review
@@ -929,6 +938,10 @@ Codemagic/Xcode validation plus device smoke testing before production approval.
   under Application Support and routes generated text back into the shared
   runtime adapter. This must be validated by Codemagic/Xcode because Windows
   cannot compile the Swift bridge or iOS Kotlin/Native SQLCipher cinterop.
+- Codemagic iOS Xcode package resolution and app build steps now export
+  `GIT_LFS_SKIP_SMUDGE=1` after a 2026-06-27 simulator validation failed
+  checking out the LiteRT-LM package because an unrelated Android LFS object
+  was missing upstream.
 - `AiGrowthModeEngine` now asks model runtimes for strict JSON, extracts the
   first balanced JSON object from model output when models wrap it in extra
   text and still falls back deterministically if schema, relational-boundary or
@@ -1590,6 +1603,25 @@ Codemagic/Xcode validation plus device smoke testing before production approval.
   artifacts in the repository after the bridge update.
 - `Get-Process -Name java,gradle -ErrorAction SilentlyContinue` returned no
   leftover Java or Gradle worker processes after verification.
+- `git diff --check` reported no whitespace errors after the Codemagic
+  LiteRT-LM SwiftPM LFS-smudge workflow fix, only normal Windows LF-to-CRLF
+  warnings.
+- Restricted artifact scan found no model, signing, secret, database,
+  audio-pack or store-archive artifacts inside the repository after the
+  Codemagic LiteRT-LM SwiftPM LFS-smudge workflow fix.
+- `.\gradlew.bat :shared:compileKotlinMetadata --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the Codemagic workflow fix, with expected Windows iOS cinterop
+  target skips.
+- `.\gradlew.bat :shared:testDebugUnitTest --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the Codemagic workflow fix, with expected Windows iOS cinterop
+  target skips.
+- `.\gradlew.bat :androidApp:assembleDebug :androidApp:lintDebug --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the Codemagic workflow fix.
+- `.\gradlew.bat phaseTwelveCheck --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the Codemagic workflow fix, with expected Windows iOS cinterop
+  target skips.
+- `Get-Process -Name java,gradle -ErrorAction SilentlyContinue` returned no
+  leftover Java or Gradle worker processes after the Codemagic workflow fix.
 
 ## Known blockers and limitations
 
@@ -1601,6 +1633,11 @@ Codemagic/Xcode validation plus device smoke testing before production approval.
   platforms still need user-installed signed Qwen pack smoke tests, interrupted
   import testing, low-storage behavior, battery/thermal/memory observations and
   rollback/revocation evidence before production release approval.
+- The latest owner-supplied Codemagic log failed before iOS compile during
+  Swift Package resolution because the upstream LiteRT-LM checkout tried to
+  smudge an unrelated missing Android Git LFS object. The local workflow fix
+  must be pushed and validated by Codemagic because Windows cannot run
+  Xcode/SwiftPM.
 - Owner confirmed Codemagic `ios-simulator-unsigned` passed for Phase 7 and
   local model recommendation policy through commit `d1811db`, and for the
   Phase 7.5 safety-redirection commit `cf4b240`.
@@ -1746,7 +1783,8 @@ Codemagic/Xcode validation plus device smoke testing before production approval.
 - Run Codemagic `ios-simulator-unsigned` against the commit that adds
   `BettamindIosNativeAiBridge.swift` and the `LiteRTLM` Swift Package. This is
   the first compiler proof for the iOS model bridge because Windows cannot
-  build the Swift/Xcode path.
+  build the Swift/Xcode path; the workflow now skips Git LFS smudge during
+  Xcode package/build steps to avoid unrelated upstream Android LFS objects.
 - After Codemagic passes, install the signed Qwen manifest plus matching
   `.litertlm` artifact on Android and iOS and record a prompt/generation smoke
   test, failed-install behavior, remove/reinstall behavior and any
@@ -1842,13 +1880,15 @@ Codemagic/Xcode validation plus device smoke testing before production approval.
 
 ## Next approved task
 
-After this local-model runtime bridge commit is pushed, run Codemagic
-`ios-simulator-unsigned` against that exact commit SHA because shared Kotlin,
-Compose resources, Gradle configuration, `iosApp` and Swift bridge code
-changed. If Codemagic passes, run Android and iOS signed-Qwen install/load/
-prompt/remove smoke tests and record the evidence in
-`docs/operations/model-pack-owner-evidence-template.md`. The remaining release
-blockers are Android/iOS device evidence, low-storage/interrupted-import
-testing, battery/thermal/memory observations, rollback/revocation review,
-TestFlight/store evidence and final owner release approval. Deploying the
-static website through Cloudflare Pages remains a separate open owner action.
+After this Codemagic LiteRT-LM SwiftPM LFS-smudge fix is pushed, run Codemagic
+`ios-simulator-unsigned` against that exact commit SHA. The expected proof is
+that the `Resolve iOS Swift packages` step no longer fails on the missing
+upstream Android LFS object and the workflow reaches the Xcode simulator build
+and app-hosted encrypted-storage validation. If Codemagic passes, run Android
+and iOS signed-Qwen install/load/prompt/remove smoke tests and record the
+evidence in `docs/operations/model-pack-owner-evidence-template.md`. The
+remaining release blockers are Android/iOS device evidence,
+low-storage/interrupted-import testing, battery/thermal/memory observations,
+rollback/revocation review, TestFlight/store evidence and final owner release
+approval. Deploying the static website through Cloudflare Pages remains a
+separate open owner action.

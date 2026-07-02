@@ -50,6 +50,11 @@
 - Keep Phase 6 AI runtime support behind `LocalAiRuntime`; the LiteRT-LM path is
   represented by a shared adapter plus platform bridge and does not add a
   concrete LiteRT dependency or model weights.
+- Keep the iOS `LiteRTLM` Swift Package pinned to `0.13.1`, but run Codemagic
+  Xcode package and app build steps with `GIT_LFS_SKIP_SMUDGE=1` because the
+  upstream repository tag contains unrelated Git LFS Android prebuilts while
+  the iOS Swift package product uses checksum-verified release-hosted binary
+  targets. This must not be used to commit model weights or make AI mandatory.
 - Keep Phase 6 model-pack installation source-agnostic. The shared model
   manager accepts externally supplied chunks, verifies signed manifests and
   checksums, and does not download models automatically.

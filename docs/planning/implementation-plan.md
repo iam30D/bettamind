@@ -490,7 +490,11 @@ loading/result states, safe routing from support recommendations to local Today
 tools, honest signed-pack model status and branded Android/iOS launch screens.
 A later runtime pass implements Android and iOS LiteRT-LM install/load/
 generate/remove bridges for the signed Qwen pack without committing weights or
-adding automatic downloads. Production release still remains blocked until iOS
-Codemagic/Xcode validation, Android/iOS device model-smoke evidence,
+adding automatic downloads. A later Codemagic iOS simulator run failed during
+Swift Package resolution because the upstream LiteRT-LM checkout tried to
+smudge an unrelated missing Git LFS Android prebuilt; the iOS workflows now
+skip LFS smudge for Xcode package/build steps while still using the pinned
+release-hosted iOS binary target. Production release still remains blocked
+until iOS Codemagic/Xcode validation, Android/iOS device model-smoke evidence,
 low-storage/interrupted-import behavior, battery/thermal/memory observations,
 rollback/revocation review, screenshots and store records are complete.
