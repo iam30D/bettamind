@@ -91,6 +91,10 @@ object that is missing from the remote. The next Codemagic run reached the
 unsigned Xcode simulator build, proving package resolution had advanced, but
 failed because Xcode rejected `LiteRTLM` for unsafe build flags. The Xcode
 project now removes the upstream `LiteRTLM` package dependency entirely.
+The next Codemagic run for install-only iOS model-pack support reached Swift
+compilation but failed because `NativeInstallFailure` was used as a
+`Result` failure type without conforming to `Error`; the Swift enum now
+conforms to `Error`.
 
 ## Locked decisions
 
@@ -1671,6 +1675,24 @@ project now removes the upstream `LiteRTLM` package dependency entirely.
 - `Get-Process -Name java,gradle -ErrorAction SilentlyContinue` returned no
   leftover Java or Gradle worker processes after the iOS install-only
   model-pack bridge verification.
+- `git diff --check` reported no whitespace errors after the
+  `NativeInstallFailure: Error` Swift compile fix, only normal Windows
+  LF-to-CRLF warnings.
+- `rg -n "LiteRT-LM.git|import LiteRTLM|productName = LiteRTLM|GIT_LFS_SKIP_SMUDGE" iosApp codemagic.yaml`
+  returned no stale active iOS package or Codemagic workaround references after
+  the Swift compile fix.
+- Restricted artifact scan found no model, signing, secret, database,
+  audio-pack or store-archive artifacts inside the repository after the Swift
+  compile fix.
+- `rg -n "NativeInstallFailure" iosApp\iosApp\BettamindIosNativeAiBridge.swift`
+  confirmed `NativeInstallFailure` now conforms to `Error` while remaining the
+  `Result` failure type used by the iOS install bridge.
+- `.\gradlew.bat phaseTwelveCheck --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the Swift compile fix, with expected Windows iOS cinterop target
+  skips.
+- `Get-Process -Name java,gradle -ErrorAction SilentlyContinue` returned no
+  leftover Java or Gradle worker processes after the Swift compile-fix
+  verification.
 
 ## Known blockers and limitations
 
@@ -1935,14 +1957,15 @@ project now removes the upstream `LiteRTLM` package dependency entirely.
 
 ## Next approved task
 
-After the iOS install-only model-pack bridge commit is pushed, run Codemagic
+After the iOS install-only model-pack Swift compile fix is pushed, run Codemagic
 `ios-simulator-unsigned` against that exact commit SHA. The expected proof is
 that `Resolve iOS Swift packages` resolves only SQLCipher, the unsigned Xcode
-simulator build no longer fails on `LiteRTLM` unsafe build flags and the app
-still reaches app-hosted encrypted-storage validation with the signed-pack
-install surface compiled in. If Codemagic passes, run Android signed-Qwen
-install/load/prompt/remove smoke tests and iOS signed-Qwen install/remove/
-failed-install smoke tests, then record the evidence in
+simulator build no longer fails on `LiteRTLM` unsafe build flags or the
+`NativeInstallFailure` Swift `Result` constraint, and the app still reaches
+app-hosted encrypted-storage validation with the signed-pack install surface
+compiled in. If Codemagic passes, run Android signed-Qwen
+install/load/prompt/remove smoke tests and iOS signed-Qwen
+install/remove/failed-install smoke tests, then record the evidence in
 `docs/operations/model-pack-owner-evidence-template.md`. The remaining release
 blockers are Android device evidence, future approved iOS runtime integration
 and iOS generation smoke evidence, low-storage/interrupted-import behavior,

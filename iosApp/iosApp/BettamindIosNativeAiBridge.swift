@@ -473,7 +473,7 @@ final class BettamindIosNativeAiBridge: NSObject, IosNativeAiBridge, UIDocumentP
         let manifest: NativeModelPackManifest
     }
 
-    private enum NativeInstallFailure: String {
+    private enum NativeInstallFailure: String, Error {
         case selectionCanceled = "SelectionCanceled"
         case missingManifest = "MissingManifest"
         case missingArtifact = "MissingArtifact"
