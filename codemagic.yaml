@@ -26,11 +26,6 @@ workflows:
           ./gradlew :shared:compileKotlinIosX64 :shared:compileKotlinIosSimulatorArm64 :shared:compileKotlinIosArm64 --stacktrace
       - name: Resolve iOS Swift packages
         script: |
-          # LiteRT-LM's Swift package uses release-hosted iOS binary targets,
-          # but its repository also contains unrelated LFS-tracked Android
-          # prebuilts. Skip LFS smudge so SwiftPM checkout does not require
-          # those Android objects.
-          export GIT_LFS_SKIP_SMUDGE=1
           xcodebuild \
             -project iosApp/iosApp.xcodeproj \
             -scheme iosApp \
@@ -38,7 +33,6 @@ workflows:
       - name: Build unsigned iOS simulator app with xcodebuild
         script: |
           set -o pipefail
-          export GIT_LFS_SKIP_SMUDGE=1
           xcodebuild \
             -project iosApp/iosApp.xcodeproj \
             -scheme iosApp \
@@ -57,7 +51,6 @@ workflows:
 
           VALIDATION_DERIVED_DATA="$CM_BUILD_DIR/build/ios-storage-validation-derived-data"
           set -o pipefail
-          export GIT_LFS_SKIP_SMUDGE=1
           xcodebuild \
             -project iosApp/iosApp.xcodeproj \
             -scheme iosApp \
@@ -167,11 +160,6 @@ workflows:
         script: ./gradlew phaseTwelveCheck --stacktrace
       - name: Resolve iOS Swift packages
         script: |
-          # LiteRT-LM's Swift package uses release-hosted iOS binary targets,
-          # but its repository also contains unrelated LFS-tracked Android
-          # prebuilts. Skip LFS smudge so SwiftPM checkout does not require
-          # those Android objects.
-          export GIT_LFS_SKIP_SMUDGE=1
           xcodebuild \
             -project iosApp/iosApp.xcodeproj \
             -scheme iosApp \
@@ -190,7 +178,6 @@ workflows:
       - name: Build signed IPA
         script: |
           set -o pipefail
-          export GIT_LFS_SKIP_SMUDGE=1
           xcode-project build-ipa \
             --project iosApp/iosApp.xcodeproj \
             --scheme iosApp | tee xcodebuild-ios-testflight.log

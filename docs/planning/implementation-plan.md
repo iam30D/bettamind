@@ -134,12 +134,13 @@ remains the replaceable interface and `UnavailableLocalAiRuntime` preserves
 no-AI core operation. `ModelPackManager` requires signed Ed25519-labeled
 manifests, SHA-256 artifact checksums, monotonic versions, revocation policy,
 resumable chunk offsets and removable installed packs. Later runtime work wires
-Android to Google's `litertlm-android` `0.13.1` dependency and iOS to the
-official `LiteRTLM` Swift Package `0.13.1` through a native Swift bridge. Model
-installation still requires explicit user file selection and signature/checksum
-verification; no model weights, automatic downloads or cloud AI are committed.
-The iOS bridge requires Codemagic/Xcode validation because Windows cannot build
-the Swift project path.
+Android to Google's `litertlm-android` `0.13.1` dependency. The attempted iOS
+`LiteRTLM` Swift Package route is deferred because Xcode 26 rejects the
+upstream package product for unsafe linker flags; the iOS native bridge reports
+installer/runtime unavailable and preserves deterministic no-model fallback.
+Model installation still requires explicit user file selection and
+signature/checksum verification; no model weights, automatic downloads or
+cloud AI are committed.
 
 ## Phase 6.4: App privacy lock
 
@@ -488,13 +489,13 @@ evidence, rollback/revocation review, screenshots or store records. A later
 usability pass adds keyboard Send handling for Grow and Support prompts,
 loading/result states, safe routing from support recommendations to local Today
 tools, honest signed-pack model status and branded Android/iOS launch screens.
-A later runtime pass implements Android and iOS LiteRT-LM install/load/
-generate/remove bridges for the signed Qwen pack without committing weights or
-adding automatic downloads. A later Codemagic iOS simulator run failed during
-Swift Package resolution because the upstream LiteRT-LM checkout tried to
-smudge an unrelated missing Git LFS Android prebuilt; the iOS workflows now
-skip LFS smudge for Xcode package/build steps while still using the pinned
-release-hosted iOS binary target. Production release still remains blocked
-until iOS Codemagic/Xcode validation, Android/iOS device model-smoke evidence,
+A later runtime pass implements Android LiteRT-LM install/load/generate/remove
+for the signed Qwen pack without committing weights or adding automatic
+downloads. The attempted iOS `LiteRTLM` Swift Package route first exposed an
+unrelated upstream Git LFS checkout failure and then an Xcode 26 rejection of
+the package product's unsafe linker flags. The iOS app now removes that package
+dependency and keeps the native AI bridge unavailable until an Xcode-accepted
+runtime route is approved. Production release still remains blocked until iOS
+Codemagic/Xcode validation, Android/iOS device model-smoke evidence,
 low-storage/interrupted-import behavior, battery/thermal/memory observations,
 rollback/revocation review, screenshots and store records are complete.

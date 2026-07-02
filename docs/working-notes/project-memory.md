@@ -75,18 +75,20 @@ Send, show blank/loading/result states, support recommendations can route to
 safe local Today tools, Android/iOS have branded launch screens, and platform
 model-pack status now exposes the user-approved signed-pack install path. A
 later local-model runtime pass wires Android to Google's `litertlm-android`
-`0.13.1` package and wires iOS through a native Swift bridge that links the
-official `LiteRTLM` Swift Package at `0.13.1`. The app still does not
-auto-download or bundle model weights: users must explicitly select the signed
-Qwen manifest and matching `.litertlm` artifact, and iOS must still pass
-Codemagic/Xcode validation plus device smoke testing before production approval.
+`0.13.1` package. The attempted iOS native Swift bridge route through the
+official `LiteRTLM` Swift Package at `0.13.1` is deferred because Xcode 26
+rejects the upstream package product for unsafe linker flags. The iOS bridge
+now reports installer/runtime unavailable and preserves deterministic
+no-model fallback. The app still does not auto-download or bundle model
+weights: users must explicitly select the signed Qwen manifest and matching
+`.litertlm` artifact where a platform installer is available.
 The 2026-06-27 Codemagic `ios-simulator-unsigned` run failed in the
 `Resolve iOS Swift packages` step because SwiftPM checked out the upstream
 LiteRT-LM repository and Git LFS tried to smudge an unrelated Android prebuilt
-object that is missing from the remote. The Codemagic iOS workflows now export
-`GIT_LFS_SKIP_SMUDGE=1` around Xcode package resolution and app build steps so
-the checkout does not require unrelated Android LFS objects while the iOS
-`LiteRTLM` product continues to use the pinned release-hosted binary target.
+object that is missing from the remote. The next Codemagic run reached the
+unsigned Xcode simulator build, proving package resolution had advanced, but
+failed because Xcode rejected `LiteRTLM` for unsafe build flags. The Xcode
+project now removes the upstream `LiteRTLM` package dependency entirely.
 
 ## Locked decisions
 
@@ -249,15 +251,12 @@ the checkout does not require unrelated Android LFS objects while the iOS
   after user-approved document selection, Ed25519 manifest verification,
   SHA-256/size verification and LiteRT-LM runtime load. No model artifacts are
   committed or downloaded automatically.
-- iOS local AI generation is bridged through `BettamindIosNativeAiBridge`,
-  which presents a document picker, validates the same signed Qwen manifest and
-  artifact metadata, stores the pack under app support, links `LiteRTLM`
-  through Swift Package Manager and streams generated text back into the shared
-  `LocalAiRuntime` interface. Windows cannot compile this Swift/Xcode path;
-  Codemagic Xcode steps set `GIT_LFS_SKIP_SMUDGE=1` so the upstream package
-  checkout does not require unrelated Android LFS prebuilts. Codemagic
-  `ios-simulator-unsigned` and device/TestFlight model smoke evidence remain
-  required.
+- iOS local AI generation remains unavailable in the current Xcode project.
+  `BettamindIosNativeAiBridge` satisfies the shared bridge interface but
+  reports installer/runtime unavailable after Xcode 26 rejected the upstream
+  `LiteRTLM` package product for unsafe linker flags. Deterministic no-model
+  fallback remains the iOS path until an approved runtime integration compiles
+  on Codemagic.
 - Phase 10 target locale resources must remain key-complete. The current
   production scope is English-only; non-English Compose resource directories
   intentionally mirror English source strings until qualified human review
@@ -931,17 +930,12 @@ the checkout does not require unrelated Android LFS objects while the iOS
   signed model-pack installer, Ed25519 signature verification, SHA-256/size
   artifact verification, removable no-backup storage and a real
   install/load/generate/unload bridge into `LocalAiRuntime`.
-- iOS now includes `BettamindIosNativeAiBridge.swift`, links the official
-  `https://github.com/google-ai-edge/LiteRT-LM.git` Swift Package product
-  `LiteRTLM` at exact version `0.13.1`, passes the bridge into the shared
-  Compose app, validates the signed Qwen manifest/artifact before storing it
-  under Application Support and routes generated text back into the shared
-  runtime adapter. This must be validated by Codemagic/Xcode because Windows
-  cannot compile the Swift bridge or iOS Kotlin/Native SQLCipher cinterop.
-- Codemagic iOS Xcode package resolution and app build steps now export
-  `GIT_LFS_SKIP_SMUDGE=1` after a 2026-06-27 simulator validation failed
-  checking out the LiteRT-LM package because an unrelated Android LFS object
-  was missing upstream.
+- iOS includes `BettamindIosNativeAiBridge.swift` as a compile-safe optional
+  AI bridge, but it currently reports installer/runtime unavailable. The
+  upstream `https://github.com/google-ai-edge/LiteRT-LM.git` package product
+  was removed from the Xcode project after Codemagic first hit an unrelated
+  missing Android LFS object and then Xcode 26 rejected the package product for
+  unsafe linker flags. Deterministic no-model fallback remains active on iOS.
 - `AiGrowthModeEngine` now asks model runtimes for strict JSON, extracts the
   first balanced JSON object from model output when models wrap it in extra
   text and still falls back deterministically if schema, relational-boundary or
@@ -1622,22 +1616,46 @@ the checkout does not require unrelated Android LFS objects while the iOS
   target skips.
 - `Get-Process -Name java,gradle -ErrorAction SilentlyContinue` returned no
   leftover Java or Gradle worker processes after the Codemagic workflow fix.
+- `git diff --check` reported no whitespace errors after removing the rejected
+  iOS `LiteRTLM` Swift Package dependency, only normal Windows LF-to-CRLF
+  warnings.
+- `rg -n "LiteRT-LM.git|import LiteRTLM|productName = LiteRTLM|GIT_LFS_SKIP_SMUDGE" iosApp codemagic.yaml`
+  returned no stale active iOS package or Codemagic workaround references after
+  removing the rejected Swift Package dependency.
+- Restricted artifact scan found no model, signing, secret, database,
+  audio-pack or store-archive artifacts inside the repository after the iOS
+  `LiteRTLM` package removal.
+- `.\gradlew.bat :shared:compileKotlinMetadata --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the iOS `LiteRTLM` package removal, with expected Windows iOS
+  cinterop target skips.
+- `.\gradlew.bat :shared:testDebugUnitTest --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the iOS `LiteRTLM` package removal, with expected Windows iOS
+  cinterop target skips.
+- `.\gradlew.bat :androidApp:assembleDebug :androidApp:lintDebug --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the iOS `LiteRTLM` package removal.
+- `.\gradlew.bat phaseTwelveCheck --no-daemon --no-configuration-cache --max-workers=1 --stacktrace --console=plain`
+  passed after the iOS `LiteRTLM` package removal, with expected Windows iOS
+  cinterop target skips.
+- `Get-Process -Name java,gradle -ErrorAction SilentlyContinue` returned no
+  leftover Java or Gradle worker processes after the iOS `LiteRTLM` package
+  removal verification.
 
 ## Known blockers and limitations
 
 - iOS cannot be fully built locally on Windows. Every shared/iOS change still
   requires Codemagic `ios-simulator-unsigned`.
-- Real local AI generation is now wired through platform LiteRT-LM bridges, but
-  it is not production-proven yet. Android can compile and package the runtime
-  locally; iOS bridge compilation still requires Codemagic/Xcode. Both
-  platforms still need user-installed signed Qwen pack smoke tests, interrupted
-  import testing, low-storage behavior, battery/thermal/memory observations and
-  rollback/revocation evidence before production release approval.
-- The latest owner-supplied Codemagic log failed before iOS compile during
-  Swift Package resolution because the upstream LiteRT-LM checkout tried to
-  smudge an unrelated missing Android Git LFS object. The local workflow fix
-  must be pushed and validated by Codemagic because Windows cannot run
-  Xcode/SwiftPM.
+- Real local AI generation is wired on Android through LiteRT-LM, but it is not
+  production-proven yet. Android can compile and package the runtime locally
+  and still needs signed Qwen install/load/prompt/remove smoke tests,
+  interrupted import testing, low-storage behavior, battery/thermal/memory
+  observations and rollback/revocation evidence before production release
+  approval.
+- iOS local AI generation is unavailable in the current Xcode project. The
+  latest owner-supplied Codemagic logs first proved the LFS workaround reached
+  package resolution, then failed during unsigned simulator build because
+  Xcode 26 rejects the upstream `LiteRTLM` package product for unsafe build
+  flags. The package dependency is now removed; Codemagic must validate the
+  no-model iOS simulator path.
 - Owner confirmed Codemagic `ios-simulator-unsigned` passed for Phase 7 and
   local model recommendation policy through commit `d1811db`, and for the
   Phase 7.5 safety-redirection commit `cf4b240`.
@@ -1780,15 +1798,16 @@ the checkout does not require unrelated Android LFS objects while the iOS
 - Run Codemagic `ios-simulator-unsigned` for pushed commits that change shared
   Kotlin, Compose resources, `iosApp`, Gradle configuration that can affect
   iOS, or Codemagic iOS workflow files.
-- Run Codemagic `ios-simulator-unsigned` against the commit that adds
-  `BettamindIosNativeAiBridge.swift` and the `LiteRTLM` Swift Package. This is
-  the first compiler proof for the iOS model bridge because Windows cannot
-  build the Swift/Xcode path; the workflow now skips Git LFS smudge during
-  Xcode package/build steps to avoid unrelated upstream Android LFS objects.
+- Run Codemagic `ios-simulator-unsigned` against the commit that removes the
+  upstream iOS `LiteRTLM` package dependency and keeps
+  `BettamindIosNativeAiBridge.swift` as an unavailable optional bridge. This is
+  the required proof that Xcode 26 can build the iOS no-model path.
 - After Codemagic passes, install the signed Qwen manifest plus matching
-  `.litertlm` artifact on Android and iOS and record a prompt/generation smoke
-  test, failed-install behavior, remove/reinstall behavior and any
+  `.litertlm` artifact on Android and record a prompt/generation smoke test,
+  failed-install behavior, remove/reinstall behavior and any
   memory/thermal/battery observations in the model-pack owner evidence record.
+  iOS signed-Qwen smoke testing remains blocked until a future approved iOS
+  runtime route compiles on Xcode.
 - Run Codemagic `ios-simulator-unsigned` after any future pushed commit that
   changes shared Kotlin, Compose resources, `iosApp`, Gradle configuration that
   can affect iOS, or Codemagic iOS workflow files.
@@ -1880,15 +1899,16 @@ the checkout does not require unrelated Android LFS objects while the iOS
 
 ## Next approved task
 
-After this Codemagic LiteRT-LM SwiftPM LFS-smudge fix is pushed, run Codemagic
+After this iOS unsafe `LiteRTLM` package removal is pushed, run Codemagic
 `ios-simulator-unsigned` against that exact commit SHA. The expected proof is
-that the `Resolve iOS Swift packages` step no longer fails on the missing
-upstream Android LFS object and the workflow reaches the Xcode simulator build
-and app-hosted encrypted-storage validation. If Codemagic passes, run Android
-and iOS signed-Qwen install/load/prompt/remove smoke tests and record the
+that `Resolve iOS Swift packages` resolves only SQLCipher, the unsigned Xcode
+simulator build no longer fails on `LiteRTLM` unsafe build flags and the
+workflow reaches app-hosted encrypted-storage validation. If Codemagic passes,
+run Android signed-Qwen install/load/prompt/remove smoke tests and record the
 evidence in `docs/operations/model-pack-owner-evidence-template.md`. The
-remaining release blockers are Android/iOS device evidence,
-low-storage/interrupted-import testing, battery/thermal/memory observations,
-rollback/revocation review, TestFlight/store evidence and final owner release
-approval. Deploying the static website through Cloudflare Pages remains a
-separate open owner action.
+remaining release blockers are Android device evidence, future approved iOS
+runtime integration and iOS model smoke evidence, low-storage/interrupted-
+import testing, battery/thermal/memory observations, rollback/revocation
+review, TestFlight/store evidence and final owner release approval. Deploying
+the static website through Cloudflare Pages remains a separate open owner
+action.
