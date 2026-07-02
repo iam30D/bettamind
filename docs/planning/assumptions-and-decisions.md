@@ -52,7 +52,8 @@
   concrete LiteRT dependency or model weights.
 - Do not link the upstream iOS `LiteRTLM` Swift Package into `iosApp` while
   Xcode 26 rejects its package product for unsafe linker flags. The iOS native
-  AI bridge must report installer/runtime unavailable and preserve
+  AI bridge may expose signed model-pack install, removal and installed status
+  without linking `LiteRTLM`, but must report runtime unavailable and preserve
   deterministic no-model fallback until an Xcode-accepted runtime route is
   approved.
 - Keep Phase 6 model-pack installation source-agnostic. The shared model

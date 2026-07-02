@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -895,6 +896,12 @@ private fun AiGrowthModesPanel(
     onInstallModelPack: () -> Unit,
     onRemoveModelPack: () -> Unit,
 ) {
+    val focusManager = LocalFocusManager.current
+    fun submitPrompt() {
+        onRun()
+        focusManager.clearFocus()
+    }
+
     StatusBlock(
         title = Res.string.ai_growth_modes_title,
         body = Res.string.ai_growth_modes_description,
@@ -936,7 +943,7 @@ private fun AiGrowthModesPanel(
             label = { Text(stringResource(Res.string.ai_growth_prompt_label)) },
             placeholder = { Text(stringResource(Res.string.ai_growth_prompt_placeholder)) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-            keyboardActions = KeyboardActions(onSend = { onRun() }),
+            keyboardActions = KeyboardActions(onSend = { submitPrompt() }),
             minLines = 3,
         )
         if (promptSubmittedBlank) {
@@ -949,7 +956,7 @@ private fun AiGrowthModesPanel(
         Button(
             modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
             enabled = !responseRunning,
-            onClick = onRun,
+            onClick = { submitPrompt() },
         ) {
             Text(
                 stringResource(
@@ -1205,6 +1212,12 @@ private fun SupportPanel(
     openedAction: SafetySupportActionType?,
     onOpenSupportAction: (SafetySupportActionType) -> Unit,
 ) {
+    val focusManager = LocalFocusManager.current
+    fun submitSupportPrompt() {
+        onAssessSupport()
+        focusManager.clearFocus()
+    }
+
     StatusBlock(
         title = Res.string.support_bridge_title,
         body = Res.string.support_bridge_description,
@@ -1216,7 +1229,7 @@ private fun SupportPanel(
             label = { Text(stringResource(Res.string.support_prompt_label)) },
             placeholder = { Text(stringResource(Res.string.support_prompt_placeholder)) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-            keyboardActions = KeyboardActions(onSend = { onAssessSupport() }),
+            keyboardActions = KeyboardActions(onSend = { submitSupportPrompt() }),
             minLines = 3,
         )
         if (promptSubmittedBlank) {
@@ -1228,7 +1241,7 @@ private fun SupportPanel(
         }
         Button(
             modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-            onClick = onAssessSupport,
+            onClick = { submitSupportPrompt() },
         ) {
             Text(stringResource(Res.string.support_assess_button))
         }

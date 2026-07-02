@@ -136,8 +136,10 @@ manifests, SHA-256 artifact checksums, monotonic versions, revocation policy,
 resumable chunk offsets and removable installed packs. Later runtime work wires
 Android to Google's `litertlm-android` `0.13.1` dependency. The attempted iOS
 `LiteRTLM` Swift Package route is deferred because Xcode 26 rejects the
-upstream package product for unsafe linker flags; the iOS native bridge reports
-installer/runtime unavailable and preserves deterministic no-model fallback.
+upstream package product for unsafe linker flags; the iOS native bridge now
+supports signed model-pack install, removal and installed status without
+linking `LiteRTLM`, but reports runtime unavailable and preserves
+deterministic no-model fallback.
 Model installation still requires explicit user file selection and
 signature/checksum verification; no model weights, automatic downloads or
 cloud AI are committed.
@@ -494,8 +496,9 @@ for the signed Qwen pack without committing weights or adding automatic
 downloads. The attempted iOS `LiteRTLM` Swift Package route first exposed an
 unrelated upstream Git LFS checkout failure and then an Xcode 26 rejection of
 the package product's unsafe linker flags. The iOS app now removes that package
-dependency and keeps the native AI bridge unavailable until an Xcode-accepted
-runtime route is approved. Production release still remains blocked until iOS
+dependency and keeps the native AI bridge install-only/runtime-unavailable
+until an Xcode-accepted runtime route is approved. Production release still
+remains blocked until iOS
 Codemagic/Xcode validation, Android/iOS device model-smoke evidence,
 low-storage/interrupted-import behavior, battery/thermal/memory observations,
 rollback/revocation review, screenshots and store records are complete.
